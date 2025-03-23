@@ -80,5 +80,10 @@ enum EPrimitiveType : uint8
 	EPT_Custom = 100,
 };
 
-extern TMap<EPrimitiveType, TArray<FVertexSimple>> OriginVertices;
-extern TMap<EPrimitiveType, TArray<uint32_t>> OriginIndices;
+struct ObjVertexData
+{
+	TArray<FVertexSimple> Vertices;
+	TArray<uint32_t> Indices;
+};
+
+extern TMap<EPrimitiveType, TArray<ObjVertexData>> OriginObjData;

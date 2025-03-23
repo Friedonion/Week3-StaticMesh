@@ -107,8 +107,8 @@ void LegacyTexture::Render(ID3D11Device* Device, ID3D11DeviceContext* DeviceCont
 	D3D11_BUFFER_DESC VertexBufferDesc, IndexBufferDesc;
 	D3D11_SUBRESOURCE_DATA VertexData, IndexData;
 
-	Vertices = OriginVertices[EPrimitiveType::EPT_Texture];
-	Indices = OriginIndices[EPrimitiveType::EPT_Texture];
+	Vertices = OriginObjData[EPrimitiveType::EPT_Texture][0].Vertices;
+	Indices = OriginObjData[EPrimitiveType::EPT_Texture][0].Indices;
 
 	VertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	VertexBufferDesc.ByteWidth = sizeof(FVertexSimple) * Vertices.Num();

@@ -43,11 +43,10 @@ enum class EConstantType : uint32
 	Pixel,
 };
 
-struct VertexBufferInfo
+struct VertexBufferData
 {
 public:
-	VertexBufferInfo() = default;
-	VertexBufferInfo(ID3D11Buffer* InVertexBuffer, ID3D11Buffer* InIndexBuffer, D3D_PRIMITIVE_TOPOLOGY InTopology, TArray<FVertexSimple>& InVertices, TArray<uint32_t>& InIndices)
+	VertexBufferData(ID3D11Buffer* InVertexBuffer, ID3D11Buffer* InIndexBuffer, TArray<FVertexSimple>& InVertices, TArray<uint32_t>& InIndices)
 	{
 		VertexBuffer = InVertexBuffer;
 		IndexBuffer = InIndexBuffer;
@@ -55,53 +54,67 @@ public:
 		VertexCount = InVertices.Num();
 		IndexCount = InIndices.Num();
 		
-		Topology = InTopology;
 		//orginVertex에서 가져올거라서 복사해와야함
 		Vertices = InVertices;
 		Indices = InIndices;
-		
-		PreVertexCount = VertexCount;
 	}
 
-	VertexBufferInfo(D3D_PRIMITIVE_TOPOLOGY InTopology, TArray<FVertexSimple>& InVertices, TArray<uint32_t>& InIndices)
+	VertexBufferData(const TArray<FVertexSimple>& InVertices, const TArray<uint32_t>& InIndices)
 	{
-		// InstanceBuffer = InInstanceBuffer;
 		VertexCount = InVertices.Num();
 		IndexCount = InIndices.Num();
-		Topology = InTopology;
 		//orginVertex에서 가져올거라서 복사해와야함
 		Vertices = InVertices;
 		Indices = InIndices;
-		PreVertexCount = VertexCount;
-	}
-	
-	~VertexBufferInfo()
-	{
+
 	}
 
-	ID3D11Buffer*& GetVertexBuffer() { return VertexBuffer; }
-	uint32_t GetVertexCount() const { return VertexCount; }
-	ID3D11Buffer*& GetIndexBuffer() { return IndexBuffer; }
-	uint32_t GetIndexCount() const{return IndexCount;}
-	
-	D3D_PRIMITIVE_TOPOLOGY GetTopology() const { return Topology; }
-	TArray<FVertexSimple> GetVertices() const { return Vertices; }
-	TArray<uint32_t> GetIndices() const { return Indices; }
-	uint32_t GetVertexPreCount() const { return PreVertexCount; }
-
-	void AddVertices(TArray<FVertexSimple> InVertices, TArray<uint32_t> InIndices);
-	void ClearVertices();
-	
-private:
 	ID3D11Buffer* VertexBuffer;
 	TArray<FVertexSimple> Vertices;
 	uint32_t VertexCount;
-	uint32_t PreVertexCount;
 
 	ID3D11Buffer* IndexBuffer;
 	TArray<uint32_t> Indices;
 	uint32_t IndexCount;
+
+};
+
+struct VertexBufferInfo
+{
+public:
+	VertexBufferInfo() = default;
+	VertexBufferInfo(const TArray<VertexBufferData>& InBufferData, D3D_PRIMITIVE_TOPOLOGY InTopology)
+	{
+		BufferDatas = InBufferData;
+		
+		Topology = InTopology;
+
+		PreVertexCount = GetTotalVertexCount();
+	}
+
+	~VertexBufferInfo() = default;
+ 
+	D3D_PRIMITIVE_TOPOLOGY GetTopology() const { return Topology; }
+	TArray<VertexBufferData> GetBufferDatas() const { return BufferDatas; }
+	uint32_t GetVertexPreCount() const { return PreVertexCount; }
+	uint32_t GetTotalVertexCount() const
+	{
+		uint32_t TotalCount = 0;
+		
+		for (auto BD : BufferDatas)
+		{
+			TotalCount += BD.VertexCount;
+		}
+		
+		return TotalCount;
+	}
 	
+	void AddVertices(TArray<FVertexSimple> InVertices, TArray<uint32_t> InIndices);
+	void ClearVertices();
+	
+private:
+	TArray<VertexBufferData> BufferDatas;
+	uint32_t PreVertexCount;
 	D3D_PRIMITIVE_TOPOLOGY Topology;
 };
 
@@ -200,7 +213,7 @@ public:
 	
     /** Buffer를 해제합니다. */
 	void ReleaseVertexBuffer(D3D11_PRIMITIVE_TOPOLOGY Topology);
-    void RenderPrimtive(UPrimitiveComponent* Component);
+    void RenderPrimitive(UPrimitiveComponent* Component);
     void ReleaseAllVertexBuffer();
     /** Constant Data를 업데이트 합니다. */
     void UpdateConstant(USceneComponent* Component) const;
@@ -367,4 +380,5 @@ public:
     FMatrix GetProjectionMatrix() const { return ProjectionMatrix; }
 
 #pragma endregion
+
 };

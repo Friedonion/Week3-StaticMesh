@@ -98,7 +98,7 @@ private:
     std::vector<std::pair<ETextureResource, std::string>> TexturesToLoad = {
     {ECat, "Textures/cat.png"},
     {EEarth, "Textures/earth.png"},
-    {ECustom, "Textures/dice.png"},
+    {ECustom, "Textures/pirate.png"},
     };
 
 private:

@@ -48,7 +48,7 @@ void UBoundingBoxComponent::UpdateMinMax()
 	{
 		FMatrix TargetTransformMatrix = TargetPrimitive->GetComponentTransformMatrix();
 
-		BBox = FBox(OriginVertices[TargetPrimitive->GetType()], TargetTransformMatrix);
+		BBox = FBox(OriginObjData[TargetPrimitive->GetType()][0].Vertices, TargetTransformMatrix);
 		if (BBox.IsValid())
 		{
 			this->OverrideBoxTransform = FTransform(BBox.GetCenter(), FQuat(), BBox.GetExtent());

@@ -27,7 +27,7 @@ public:
     SpawnType CurrentPrimitiveItem = ESpawnSphere;
 	ETextureResource CurrentTextureItem = ECat;
 	
-    int NumOfSpawn = 0;
+    int NumOfSpawn = 1;
 	bool bIsInitialized = false;
     
     void Initialize(HWND hWnd, URenderer& Renderer, UINT ScreenWidth, UINT ScreenHeight);

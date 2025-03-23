@@ -267,7 +267,7 @@ void UEngine::InitWorld()
     World->LoadWorld(*World->ReleaseDefaultSceneName);
 #endif
 
-    ObjLoader::Get().LoadFromFile("cube.obj");
+    ObjLoader::Get().LoadFromFile("pirate.obj");
     
     //// Test
     // World->SpawnActor<AArrow>();

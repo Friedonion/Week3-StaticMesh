@@ -302,35 +302,43 @@ TMap<UPrimitiveComponent*, float> APicker::PickActorByRay()
     
     for (UPrimitiveComponent* Component : PrimitiveComponents)
     {
+        if (Component->IsCanPick() == false)
+        {
+            continue;
+        }
+        
         FVector MinBound(FLT_MAX), MaxBound(FLT_MIN);
 
         //정점데이터에 월드매트릭스 곱해서 x,y,z minX minY minZ maxX maxY maxZ 구하기
         FMatrix CompWorldMatrix = Component->GetComponentTransformMatrix(); //GetWorldMatrix 부모들 다 적용시키는 걸로 바꿔줘야함
 
-        TArray<FVertexSimple> Vertices = OriginVertices[Component->GetType()];
-        int Size = Vertices.Num();
-        
-        for (int i=0; i<Size; i++)
+        for (auto& OriginObj : OriginObjData[Component->GetType()]) //각 면을 돌면서 모든 구역 체크
         {
-            FVector4 CompVertex = FVector4(Vertices[i].X, Vertices[i].Y, Vertices[i].Z, 1.0f);
-            FVector4 WorldVertexLocation = CompVertex * CompWorldMatrix;
+            TArray<FVertexSimple> Vertices = OriginObj.Vertices;
+            int Size = Vertices.Num();
+        
+            for (int i=0; i<Size; i++)
+            {
+                FVector4 CompVertex = FVector4(Vertices[i].X, Vertices[i].Y, Vertices[i].Z, 1.0f);
+                FVector4 WorldVertexLocation = CompVertex * CompWorldMatrix;
             
-            //최소값과 최대값 구하기
-            MinBound.X = min(MinBound.X, WorldVertexLocation.X);
-            MinBound.Y = min(MinBound.Y, WorldVertexLocation.Y);
-            MinBound.Z = min(MinBound.Z, WorldVertexLocation.Z);
-            MaxBound.X = max(MaxBound.X, WorldVertexLocation.X);
-            MaxBound.Y = max(MaxBound.Y, WorldVertexLocation.Y);
-            MaxBound.Z = max(MaxBound.Z, WorldVertexLocation.Z);
-        }
+                //최소값과 최대값 구하기
+                MinBound.X = min(MinBound.X, WorldVertexLocation.X);
+                MinBound.Y = min(MinBound.Y, WorldVertexLocation.Y);
+                MinBound.Z = min(MinBound.Z, WorldVertexLocation.Z);
+                MaxBound.X = max(MaxBound.X, WorldVertexLocation.X);
+                MaxBound.Y = max(MaxBound.Y, WorldVertexLocation.Y);
+                MaxBound.Z = max(MaxBound.Z, WorldVertexLocation.Z);
+            }
 
-        //Priority Queue 구현해서 Add하기
-        float Distance = FVector::Distance(RayOrigin, Component->GetComponentTransform().GetPosition());
-        if (IntersectsRay(RayOrigin, RayDir, Distance, MinBound, MaxBound))
-        {
-            PickedPrimitive.Add(Component, Distance); //Priority Queue 구현
+            //Priority Queue 구현해서 Add하기
+            float Distance = FVector::Distance(RayOrigin, Component->GetComponentTransform().GetPosition());
+            if (IntersectsRay(RayOrigin, RayDir, Distance, MinBound, MaxBound))
+            {
+                PickedPrimitive.Add(Component, Distance); //Priority Queue 구현
+            }
         }
-        
+        // TArray<FVertexSimple> Vertices = OriginObjData[Component->GetType()][0].Vertices;
     }
 
     TArray<UPrimitiveComponent*> BillboardComponents = GetWorld()->GetBillBoardRenderComponents();
@@ -342,7 +350,7 @@ TMap<UPrimitiveComponent*, float> APicker::PickActorByRay()
         //정점데이터에 월드매트릭스 곱해서 x,y,z minX minY minZ maxX maxY maxZ 구하기
         FMatrix CompWorldMatrix = Component->GetComponentTransformMatrix(); //GetWorldMatrix 부모들 다 적용시키는 걸로 바꿔줘야함
 
-        TArray<FVertexSimple> Vertices = OriginVertices[Component->GetType()];
+        TArray<FVertexSimple> Vertices = OriginObjData[Component->GetType()][0].Vertices;
         int Size = Vertices.Num();
         
         for (int i=0; i<Size; i++)

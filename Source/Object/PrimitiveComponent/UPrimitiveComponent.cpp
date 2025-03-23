@@ -42,7 +42,7 @@ void UPrimitiveComponent::Render()
 	// 		bUseVertexColor = true;
 	// 	}
 	// }
-	Renderer->RenderPrimtive(this);
+	Renderer->RenderPrimitive(this);
 }
 
 void UPrimitiveComponent::RegisterComponentWithWorld(UWorld* World)
@@ -63,12 +63,14 @@ void UPrimitiveComponent::RegisterComponentWithWorld(UWorld* World)
 	}
 
 	EPrimitiveType ComponentType = GetType();
+	TArray<VertexBufferData> newBufferData;
 
-	TArray<FVertexSimple> Vertices = OriginVertices[ComponentType];
+	for (auto& OriginObj : OriginObjData[ComponentType])
+	{
+		newBufferData.Add({OriginObj.Vertices, OriginObj.Indices});
+	}
 
-	TArray<uint32_t> Indices = OriginIndices[ComponentType];
-	
-	VertexBufferInfo BufferInfo = VertexBufferInfo(Topology, Vertices, Indices);
+	VertexBufferInfo BufferInfo = VertexBufferInfo(newBufferData, Topology);
 
 	Renderer->CreateVertexBuffer(GetType(), BufferInfo);
 }

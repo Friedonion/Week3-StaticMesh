@@ -3,18 +3,19 @@
 #include "Core/Engine.h"
 #include "Object/PrimitiveComponent/UPrimitiveComponent.h"
 
-TMap<EPrimitiveType, TArray<FVertexSimple>> OriginVertices = {
-	{
-		EPrimitiveType::EPT_Line,{
-				{ -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f , -1.0, 0.0f, 0.0f, 0.0f, 0.0f},
-				{  1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f , 1.0, 0.0f, 0.0f, 1.0f, 1.0f}
+TMap<EPrimitiveType, TArray<ObjVertexData>> OriginObjData = {
+	{ EPT_Line,
+		{
+			ObjVertexData(
+			{
+		{
+				{ -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f },
+					{ 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f }
+					}, { 0, 1 }
+				}
+			)
 		}
 	}
-};
-TMap<EPrimitiveType, TArray<uint32_t>> OriginIndices = {
-	{
-		EPrimitiveType::EPT_Line, {0, 1}
-	},
 };
 
 void FVertexSimple::CreateOriginVertices()
@@ -79,13 +80,14 @@ void FVertexSimple::CreateCubeVertices()
 		20, 21, 22, 20, 22, 23  // 오른쪽
 	};
 
-	EPrimitiveType Type = EPrimitiveType::EPT_Cube;
+	EPrimitiveType Type = EPT_Cube;
 	
-	OriginVertices[Type] = Vertices;
-	OriginIndices[Type] = Indices;
+	ObjVertexData ObjData = {Vertices, Indices};
+	OriginObjData[Type].Add(ObjData);
 
-	URenderer* Renderer = UEngine::Get().GetRenderer();
-	VertexBufferInfo BufferInfo = {UPrimitiveComponent::GetTopology(Type), Vertices, Indices};
+	TArray<VertexBufferData> NewBufferData;
+	NewBufferData.Add({Vertices, Indices});
+ 	VertexBufferInfo BufferInfo = {NewBufferData, UPrimitiveComponent::GetTopology(Type)};
 	// //Renderer->CreateVertexBuffer(Type, BufferInfo);
 }
 
@@ -155,13 +157,12 @@ void FVertexSimple::CreateCylinderVertices()
 
 	EPrimitiveType Type = EPrimitiveType::EPT_Cylinder;
 	
-	OriginVertices[Type] = Vertices;
-	OriginIndices[Type] = Indices;
+	ObjVertexData ObjData = {Vertices, Indices};
+	OriginObjData[Type].Add(ObjData);
 
-	URenderer* Renderer = UEngine::Get().GetRenderer();
-	VertexBufferInfo BufferInfo = {UPrimitiveComponent::GetTopology(Type), Vertices, Indices};
-	//Renderer->CreateVertexBuffer(Type, BufferInfo);
-
+	TArray<VertexBufferData> NewBufferData;
+	NewBufferData.Add({Vertices, Indices});
+ 	VertexBufferInfo BufferInfo = {NewBufferData, UPrimitiveComponent::GetTopology(Type)};
 }
 
 void FVertexSimple::CreateTriangleVertices()
@@ -209,13 +210,12 @@ void FVertexSimple::CreateTriangleVertices()
 
 	EPrimitiveType Type = EPrimitiveType::EPT_Triangle;
 	
-	OriginVertices[Type] = Vertices;
-	OriginIndices[Type] = Indices;
+	ObjVertexData ObjData = {Vertices, Indices};
+	OriginObjData[Type].Add(ObjData);
 
-	URenderer* Renderer = UEngine::Get().GetRenderer();
-	VertexBufferInfo BufferInfo = {UPrimitiveComponent::GetTopology(Type), Vertices, Indices};
-	//Renderer->CreateVertexBuffer(Type, BufferInfo);
-
+	TArray<VertexBufferData> NewBufferData;
+	NewBufferData.Add({Vertices, Indices});
+	VertexBufferInfo BufferInfo = {NewBufferData, UPrimitiveComponent::GetTopology(Type)};
 }
 
 void FVertexSimple::CreateRingVertices()
@@ -304,13 +304,12 @@ void FVertexSimple::CreateRingVertices()
 	}
 
 	EPrimitiveType Type = EPrimitiveType::EPT_Ring;
-	OriginVertices[Type]=Vertices;
-	OriginIndices[Type]=Indices;
+	ObjVertexData ObjData = {Vertices, Indices};
+	OriginObjData[Type].Add(ObjData);
 
-	URenderer* Renderer = UEngine::Get().GetRenderer();
-	VertexBufferInfo BufferInfo = {UPrimitiveComponent::GetTopology(Type), Vertices, Indices};
-	//Renderer->CreateVertexBuffer(Type, BufferInfo);
-
+	TArray<VertexBufferData> NewBufferData;
+	NewBufferData.Add({Vertices, Indices});
+	VertexBufferInfo BufferInfo = {NewBufferData, UPrimitiveComponent::GetTopology(Type)};
 }
 
 void FVertexSimple::CreateConeVertices()
@@ -398,13 +397,12 @@ void FVertexSimple::CreateConeVertices()
 	}
 
 	EPrimitiveType Type = EPrimitiveType::EPT_Cone;
-	OriginVertices[Type]=Vertices;
-	OriginIndices[Type]=Indices;
+	ObjVertexData ObjData = {Vertices, Indices};
+	OriginObjData[Type].Add(ObjData);
 
-	URenderer* Renderer = UEngine::Get().GetRenderer();
-	VertexBufferInfo BufferInfo = {UPrimitiveComponent::GetTopology(Type), Vertices, Indices};
-	//Renderer->CreateVertexBuffer(Type, BufferInfo);
-
+	TArray<VertexBufferData> NewBufferData;
+	NewBufferData.Add({Vertices, Indices});
+	VertexBufferInfo BufferInfo = {NewBufferData, UPrimitiveComponent::GetTopology(Type)};
 }
 
 void FVertexSimple::CreateSphereVertices()
@@ -486,12 +484,12 @@ void FVertexSimple::CreateSphereVertices()
 
 	EPrimitiveType Type = EPrimitiveType::EPT_Sphere;
 
-	OriginVertices[Type]=Vertices;
-	OriginIndices[Type]=Indices;
+	ObjVertexData ObjData = {Vertices, Indices};
+	OriginObjData[Type].Add(ObjData);
 
-	URenderer* Renderer = UEngine::Get().GetRenderer();
-	VertexBufferInfo BufferInfo = {UPrimitiveComponent::GetTopology(Type), Vertices, Indices};
-	//Renderer->CreateVertexBuffer(Type, BufferInfo);
+	TArray<VertexBufferData> NewBufferData;
+	NewBufferData.Add({Vertices, Indices});
+	VertexBufferInfo BufferInfo = {NewBufferData, UPrimitiveComponent::GetTopology(Type)};
 }
 
 void FVertexSimple::CreateTextureBoardVertices()
@@ -510,12 +508,12 @@ void FVertexSimple::CreateTextureBoardVertices()
 
 	EPrimitiveType Type = EPrimitiveType::EPT_Texture;
 	
-	OriginVertices[Type]=Vertices;
-	OriginIndices[Type]=Indices;
+	ObjVertexData ObjData = {Vertices, Indices};
+	OriginObjData[Type].Add(ObjData);
 
-	URenderer* Renderer = UEngine::Get().GetRenderer();
-	VertexBufferInfo BufferInfo = {UPrimitiveComponent::GetTopology(Type), Vertices, Indices};
-	//Renderer->CreateVertexBuffer(Type, BufferInfo);
+	TArray<VertexBufferData> NewBufferData;
+	NewBufferData.Add({Vertices, Indices});
+	VertexBufferInfo BufferInfo = {NewBufferData, UPrimitiveComponent::GetTopology(Type)};
 }
 
 void FVertexSimple::CreateBoundingBoxVertices()
@@ -543,12 +541,12 @@ void FVertexSimple::CreateBoundingBoxVertices()
 	};
 
 	EPrimitiveType Type = EPrimitiveType::EPT_BoundingBox;
-	OriginVertices[Type]=Vertices;
-	OriginIndices[Type]=Indices;
+	ObjVertexData ObjData = {Vertices, Indices};
+	OriginObjData[Type].Add(ObjData);
 	
-	URenderer* Renderer = UEngine::Get().GetRenderer();
-	VertexBufferInfo BufferInfo = {UPrimitiveComponent::GetTopology(Type), Vertices, Indices};
-	Renderer->CreateVertexBuffer(Type, BufferInfo);
+	TArray<VertexBufferData> NewBufferData;
+	NewBufferData.Add({Vertices, Indices});
+	VertexBufferInfo BufferInfo = {NewBufferData, UPrimitiveComponent::GetTopology(Type)};
 }
 
 void FVertexSimple::CreateSpotlightVertices()
@@ -588,10 +586,10 @@ void FVertexSimple::CreateSpotlightVertices()
 	// normal은 없습니다.
 
 	EPrimitiveType Type = EPrimitiveType::EPT_Spotlight;
-	OriginVertices[Type]=Vertices;
-	OriginIndices[Type]=Indices;
-	
-	URenderer* Renderer = UEngine::Get().GetRenderer();
-	VertexBufferInfo BufferInfo = {UPrimitiveComponent::GetTopology(Type), Vertices, Indices};
-	Renderer->CreateVertexBuffer(Type, BufferInfo);
+	ObjVertexData ObjData = {Vertices, Indices};
+	OriginObjData[Type].Add(ObjData);
+
+	TArray<VertexBufferData> NewBufferData;
+	NewBufferData.Add({Vertices, Indices});
+	VertexBufferInfo BufferInfo = {NewBufferData, UPrimitiveComponent::GetTopology(Type)};
 }
