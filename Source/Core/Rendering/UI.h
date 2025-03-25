@@ -6,6 +6,8 @@
 #include "Core/Container/Name.h"
 #include "Static/Enum.h"
 
+namespace EViewport{ enum class Position : uint8 ;}
+
 class FName;
 class AActor;
 class URenderer;
@@ -50,6 +52,7 @@ public:// UIWindows
 	void RenderSceneManager();
     void RenderComponentsByActor();
     void RenderFNameResolver();
+    void RenderViewOption();
 
 private:
 	bool bWasWindowSizeUpdated = true;
@@ -58,7 +61,9 @@ private:
 	URenderer* Renderer;
     float windowWidth;
 	float windowHeight;
-    
+
     void SetWindowLayout(float widthRatio, float heightRatio, float posXRatio, float posYRatio);
     TArray<FName> Unselectables;
+    void SetViewOption(const char* name, int &current_item,
+        EViewport::Position viewportPos);
 };

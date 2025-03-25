@@ -11,6 +11,7 @@
 #include "Object/Actor/WorldGrid.h"
 #include "Static/FEditorManager.h"
 #include"Data/ConfigManager.h"
+#include "../FSlateApplication.h"
 #include "Data/ObjManager.h"
 #include "Core/HAL/PlatformType.h"
 #include"Static/ResourceManager.h"
@@ -130,7 +131,7 @@ void UEngine::Initialize(
     InitializedScreenHeight = ScreenHeight;
     
     ui.Initialize(WindowHandle, *Renderer, ScreenWidth, ScreenHeight);
-    
+    FSlateApplication::Get().Initialize();
 	UE_LOG("Engine Initialized!");
 }
 
@@ -198,6 +199,7 @@ void UEngine::Run()
         APlayerInput::Get().TickPlayerInput(); //잘못된 위치. 위에 달린 주석대로 처리해야 정상 플레이어 액터 내에서만 처리해야할것같다.
         
         // TickPlayerInput
+        FSlateApplication::Get().Tick();
         APlayerController::Get().ProcessPlayerInput(DeltaTime);
         
 		// ui Update
@@ -231,10 +233,21 @@ void UEngine::Shutdown()
 #else
     World->SaveWorld(*World->DefaultSceneName)
 #endif
+    FSlateApplication::Get().ShutDown();
         UResourceManager::Get().Shutdown();
     ShutdownWindow();
 }
 
+
+void UEngine::SetScreenWidth(float _screenWidth)
+{
+    ScreenWidth = _screenWidth;
+}
+
+void UEngine::SetScreenHeight(float _screenHeight)
+{
+    ScreenHeight = _screenHeight;
+}
 
 void UEngine::InitWindow(int InScreenWidth, int InScreenHeight)
 {
@@ -288,8 +301,71 @@ void UEngine::InitRenderer()
 void UEngine::InitWorld()
 {
     World = FObjectFactory::ConstructObject<UWorld>();
+    
+    
+    ACamera* mainCamera = World->SpawnActor<ACamera>();
+    mainCamera->ProjectionMode = ECameraProjectionMode::Type::Perspective;
+    mainCamera->SetCameraViewMode(ECameraViewMode::Type::Perspective);
+    FEditorManager::Get().SetCamera(mainCamera);        //메인 카메라 설정
+    FEditorManager::Get().AddOrthoCamera(ECameraViewMode::Type::Perspective, mainCamera);
+    float d = 10.0f;
 
-    FEditorManager::Get().SetCamera(World->SpawnActor<ACamera>());
+    //Front
+    ACamera* frontCamera = World->SpawnActor<ACamera>();
+    frontCamera->ProjectionMode = ECameraProjectionMode::Type::Orthographic;
+    frontCamera->SetCameraViewMode(ECameraViewMode::Type::Front);
+    FTransform frontTransform = frontCamera->GetActorRelativeTransform();
+    frontTransform.SetPosition(FVector(d,0,0));
+    frontCamera->SetActorRelatvieTransform(frontTransform);
+    FEditorManager::Get().AddOrthoCamera(ECameraViewMode::Type::Front,frontCamera);
+
+    //Top
+    ACamera* topCamera = World->SpawnActor<ACamera>();
+    topCamera->ProjectionMode = ECameraProjectionMode::Type::Orthographic;
+    topCamera->SetCameraViewMode(ECameraViewMode::Type::Top);
+    FTransform topTransform = topCamera->GetActorRelativeTransform();
+    topTransform.SetPosition(FVector(0, 0, d));
+    topCamera->SetActorRelatvieTransform(topTransform);
+    FEditorManager::Get().AddOrthoCamera(ECameraViewMode::Type::Top,topCamera);
+
+    //Right
+    ACamera* rightCamera = World->SpawnActor<ACamera>();
+    rightCamera->ProjectionMode = ECameraProjectionMode::Type::Orthographic;
+    rightCamera->SetCameraViewMode(ECameraViewMode::Type::Right);
+    FTransform rightTransform = rightCamera->GetActorRelativeTransform();
+    rightTransform.SetPosition(FVector(0, d, 0));
+    rightCamera->SetActorRelatvieTransform(rightTransform);
+    FEditorManager::Get().AddOrthoCamera(ECameraViewMode::Type::Right,rightCamera);
+
+
+    //Back
+    ACamera* backCamera = World->SpawnActor<ACamera>();
+    backCamera->ProjectionMode = ECameraProjectionMode::Type::Orthographic;
+    backCamera->SetCameraViewMode(ECameraViewMode::Type::Back);
+    FTransform backTransform = backCamera->GetActorRelativeTransform();
+    backTransform.SetPosition(FVector(-d, 0, 0));
+    backCamera->SetActorRelatvieTransform(backTransform);
+    FEditorManager::Get().AddOrthoCamera(ECameraViewMode::Type::Back,backCamera);
+
+    //Bottom
+    ACamera* bottomCamera = World->SpawnActor<ACamera>();
+    bottomCamera->ProjectionMode = ECameraProjectionMode::Type::Orthographic;
+    bottomCamera->SetCameraViewMode(ECameraViewMode::Type::Bottom);
+    FTransform bottomTransform = bottomCamera->GetActorRelativeTransform();
+    bottomTransform.SetPosition(FVector(0, 0, -d));
+    bottomCamera->SetActorRelatvieTransform(bottomTransform);
+    FEditorManager::Get().AddOrthoCamera(ECameraViewMode::Type::Bottom,bottomCamera);
+
+    //Left
+    ACamera* leftCamera = World->SpawnActor<ACamera>();
+    leftCamera->ProjectionMode = ECameraProjectionMode::Type::Orthographic;
+    leftCamera->SetCameraViewMode(ECameraViewMode::Type::Left);
+    FTransform leftTransform = leftCamera->GetActorRelativeTransform();
+    leftTransform.SetPosition(FVector(0, -d, 0));
+    leftCamera->SetActorRelatvieTransform(leftTransform);
+    FEditorManager::Get().AddOrthoCamera(ECameraViewMode::Type::Left,leftCamera);
+
+
     FEditorManager::Get().SetWorldGrid(World->SpawnActor<AWorldGrid>());
 
     ConfigManager::Get().LoadAllConfigs();
@@ -319,6 +395,10 @@ void UEngine::ShutdownWindow()
 
 void UEngine::UpdateWindowSize(UINT InScreenWidth, UINT InScreenHeight)
 {
+    float resizeWidthRatio = float(InScreenWidth) / ScreenWidth;
+    float resizeHeightRatio = float(InScreenHeight) / ScreenHeight;
+    FSlateApplication::Get().ResizeScreen(resizeWidthRatio, resizeHeightRatio);
+    UE_LOG("ResizeRatio %f %f", resizeWidthRatio, resizeHeightRatio);
 	ScreenWidth = InScreenWidth;
 	ScreenHeight = InScreenHeight;
 

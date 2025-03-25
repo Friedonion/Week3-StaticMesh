@@ -9,8 +9,8 @@
 #include "Static/FEditorManager.h"
 
 #include "Object/Actor/Camera.h"
+#include "../FSlateApplication.h"
 #include "Object/Cast.h"
-
 
 APicker::APicker()
 {
@@ -42,7 +42,7 @@ void APicker::Tick(float DeltaTime)
     APlayerInput& Input = APlayerInput::Get();
 
     UPrimitiveComponent* PickedComponent = nullptr;
-    
+
     UpdateRayInfo();
 
     if(Input.GetMouseDown(false))
@@ -161,6 +161,12 @@ void APicker::Tick(float DeltaTime)
         int ScreenWidth = Rect.right - Rect.left;
         int ScreenHeight = Rect.bottom - Rect.top;
 
+        FRect windowRect = FSlateApplication::Get().GetCurrentWindow();
+        ScreenWidth = windowRect.Max.X - windowRect.Min.X;
+        ScreenHeight = windowRect.Max.Y - windowRect.Min.Y;
+        pt.x -= windowRect.Min.X;
+        pt.y -= windowRect.Min.Y;
+
         // 커서 위치를 NDC로 변경
         float PosX = 2.0f * pt.x / ScreenWidth - 1.0f;
         float PosY = -2.0f * pt.y / ScreenHeight + 1.0f;
@@ -268,15 +274,28 @@ void APicker::UpdateRayInfo()
     GetClientRect(UEngine::Get().GetWindowHandle(), &Rect);
     int ScreenWidth = Rect.right - Rect.left;
     int ScreenHeight = Rect.bottom - Rect.top;
-			 
+
+    FRect windowRect = FSlateApplication::Get().GetCurrentWindow();
+    ScreenWidth = windowRect.Max.X - windowRect.Min.X;
+    ScreenHeight = windowRect.Max.Y - windowRect.Min.Y;
+    pt.x -= windowRect.Min.X;
+    pt.y -= windowRect.Min.Y;
+
     // 커서 위치를 NDC로 변경
     float PosX = 2.0f * pt.x / ScreenWidth - 1.0f;
     float PosY = -2.0f * pt.y / ScreenHeight + 1.0f;
-			 
     // Projection 공간으로 변환
     RayOrigin = {PosX, PosY, 0.0f, 1.0f};
     RayEnd = {PosX, PosY, 1.0f, 1.0f};
-			 
+
+    ACamera* cam = FEditorManager::Get().GetCamera();
+    if (cam->ViewMode == ECameraViewMode::Type::Perspective)
+    {
+        UEngine::Get().GetRenderer()->UpdateProjectionMatrix(cam);
+        UEngine::Get().GetRenderer()->UpdateViewMatrix(cam->GetActorRelativeTransform());
+    }
+    UE_LOG("Camera Type : %d", cam->ViewMode);
+    
     // View 공간으로 변환
     FMatrix InvProjMat = UEngine::Get().GetRenderer()->GetProjectionMatrix().Inverse();
     RayOrigin = InvProjMat.TransformVector4(RayOrigin);
@@ -284,6 +303,7 @@ void APicker::UpdateRayInfo()
     RayEnd = InvProjMat.TransformVector4(RayEnd);
     RayEnd *= FEditorManager::Get().GetCamera()->GetFar();
     RayEnd.W = 1;
+    
 
     // 마우스 포인터의 월드 위치와 방향
     FMatrix InvViewMat = FEditorManager::Get().GetCamera()->GetViewMatrix().Inverse();
