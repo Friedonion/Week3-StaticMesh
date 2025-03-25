@@ -167,6 +167,12 @@
     <ClCompile Include="Source\Core\Rendering\Texture\TextureRenderer.cpp" />
     <ClCompile Include="Source\Object\PrimitiveComponent\BillBoardComponent.cpp" />
     <ClCompile Include="Source\Object\Actor\Spotlight.cpp" />
+    <ClCompile Include="FSlateApplication.cpp" />
+    <ClCompile Include="FViewport.cpp" />
+    <ClCompile Include="Source\Core\Math\FRect.cpp" />
+    <ClCompile Include="SSplitter.cpp" />
+    <ClCompile Include="SWindow.cpp" />
+    <ClCompile Include="ISlateViewport.cpp" />
     <ClCompile Include="Source\Object\Actor\Texture.cpp" />
     <ClCompile Include="Source\Core\Rendering\LegacyTexture.cpp" />
     <ClCompile Include="Source\Static\ResourceManager.cpp">
@@ -376,6 +382,13 @@
     <ClInclude Include="Source\Core\Rendering\Texture\TextureRenderer.h" />
     <ClInclude Include="Source\Object\Actor\Spotlight.h" />
     <ClInclude Include="Source\Object\PrimitiveComponent\BillBoardComponent.h" />
+    <ClInclude Include="FSlateApplication.h" />
+    <ClInclude Include="FViewport.h" />
+    <ClInclude Include="Source\Core\Math\FRect.h" />
+    <ClInclude Include="SSplitter.h" />
+    <ClInclude Include="SWindow.h" />
+    <ClInclude Include="Unsupported.h" />
+    <ClInclude Include="ISlateViewport.h" />
     <ClInclude Include="Unsupported.h" />
     <ClInclude Include="Source\Object\Cast.h" />
     <ClInclude Include="Source\Object\Actor\Texture.h" />

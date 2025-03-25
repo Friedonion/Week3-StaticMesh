@@ -15,6 +15,20 @@ namespace ECameraProjectionMode
     };
 }
 
+namespace ECameraViewMode
+{
+    enum class Type : uint8
+    {
+        Front,
+        Back,
+        Top,
+        Bottom,
+        Left,
+        Right,
+        Perspective
+    };
+}
+
 class ACamera : public AActor
 {
 
@@ -37,13 +51,14 @@ public:
     
     // 투영 타입 - Perspective, Orthographic
     ECameraProjectionMode::Type ProjectionMode;
+    ECameraViewMode::Type ViewMode;
     // float AspectRatio;	// 카메라 비율 (이번 프로젝트에서는 사용 안할듯) 
 
     void SetFieldOfView(float Fov);
     void SetFar(float Far);
     void SetNear(float Near);
     void SetCameraSensitivity(float sensitivity);
-    
+    void SetCameraViewMode(ECameraViewMode::Type cameraViewMode);
     float GetFieldOfView() const;
     float GetNear() const;
     float GetFar() const;

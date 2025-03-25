@@ -77,12 +77,30 @@ void UWorld::Render(float DeltaTime)
 		return;
 	}
 
-	
-	ACamera* cam = FEditorManager::Get().GetCamera();
-	Renderer->UpdateViewMatrix(cam->GetActorRelativeTransform());
-	Renderer->UpdateProjectionMatrix(cam);
-	
-	RenderMainTexture(*Renderer, DeltaTime);
+
+	//float initialHeight = UEngine::Get().GetScreenHeight();
+	//float initialWidth = UEngine::Get().GetScreenWidth();
+	TMap<EViewport::Position, FViewport*> activeViewport = Renderer->GetActiveViewport();
+
+	if (Renderer->activeFullViewport)
+	{
+		Renderer->activeFullViewport->SetViewportRendering();
+		Renderer->PrepareShader();
+		RenderMainTexture(*Renderer, DeltaTime);
+	}
+	else
+	{
+		for (auto& pair : activeViewport)
+		{
+			pair.Value->SetViewportRendering();
+			Renderer->PrepareShader();
+			RenderMainTexture(*Renderer, DeltaTime);
+		}
+
+	}
+	//UEngine::Get().SetScreenHeight(initialHeight);
+	//UEngine::Get().SetScreenWidth(initialWidth);
+
 }
 
 void UWorld::RenderPickingTexture(URenderer& Renderer)

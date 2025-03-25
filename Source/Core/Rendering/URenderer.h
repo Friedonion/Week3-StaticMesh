@@ -17,12 +17,22 @@
 #include "Particle/Particle.h"
 #include "Particle/ParticleShader.h"
 #include "Texture/TextureRenderer.h"
+#include "../FViewport.h"
 #include "Static/Enum.h"
 
 struct FVertexPNCT;
 struct FVector4;
 class UPrimitiveComponent;
 class ACamera;
+namespace EViewport
+{
+	enum class Position : uint8{
+		LT,
+		RT,
+		LB,
+		RB
+	};
+}
 
 enum class EPixelShaderType : uint32
 {
@@ -242,6 +252,14 @@ public:
 
 	void RenderTexture(const FVector& InPos);
 
+	FVector2 GetSwapChainSize();
+
+	void SetViewportRendering(D3D11_VIEWPORT _viewport);
+	void ReleaseMultiViewport();
+	const TMap<EViewport::Position, FViewport*>& GetActiveViewport();
+	void ChangeViewportCameraType(EViewport::Position viewportPos, ECameraViewMode::Type cameraType);
+	FViewport* activeFullViewport = nullptr;
+	FViewport* GetMultiViewport(EViewport::Position viewportPos);
 protected:
     /** Direct3D Device 및 SwapChain을 생성합니다. */
     void CreateDeviceAndSwapChain(HWND hWindow);
@@ -274,6 +292,10 @@ protected:
 
     void InitMatrix();
 
+	void CreateMultipleViewports();
+
+	SWindow* CreateViewportWithWindow(const FRect& _rect, ECameraViewMode::Type cameraType, EViewport::Position viewportPos);
+	
 protected:
     // Direct3D 11 장치(Device)와 장치 컨텍스트(Device Context) 및 스왑 체인(Swap Chain)을 관리하기 위한 포인터들
     ID3D11Device* Device = nullptr;                         // GPU와 통신하기 위한 Direct3D 장치
@@ -290,6 +312,7 @@ protected:
 	
     FLOAT ClearColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f }; // 화면을 초기화(clear)할 때 사용할 색상 (RGBA)
     D3D11_VIEWPORT ViewportInfo = {};                       // 렌더링 영역을 정의하는 뷰포트 정보
+	TMap<EViewport::Position,FViewport*> MultiFViewports;
 
     // Shader를 렌더링할 때 사용되는 변수들
     ID3D11VertexShader* SimpleVertexShader = nullptr;       // Vertex 데이터를 처리하는 Vertex 셰이더

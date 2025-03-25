@@ -173,6 +173,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FSlateApplication.cpp" />
+    <ClCompile Include="FViewport.cpp" />
+    <ClCompile Include="ISlateViewport.cpp" />
+    <ClCompile Include="Source\Core\Math\FRect.cpp" />
     <ClCompile Include="Source\Data\MtlLoader.cpp" />
     <ClCompile Include="Source\Data\ObjManager.cpp" />
     <ClCompile Include="Source\Object\Actor\Custom.cpp" />
@@ -236,8 +240,14 @@
     <ClCompile Include="Source\Object\World\World.cpp" />
     <ClCompile Include="Source\Object\Actor\Sphere.cpp" />
     <ClCompile Include="Source\Object\Actor\Spotlight.cpp" />
+    <ClCompile Include="SSplitter.cpp" />
+    <ClCompile Include="SWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FSlateApplication.h" />
+    <ClInclude Include="FViewport.h" />
+    <ClInclude Include="ISlateViewport.h" />
+    <ClInclude Include="Source\Core\Math\FRect.h" />
     <ClInclude Include="Source\Data\MaterialData.h" />
     <ClInclude Include="Source\Data\MtlLoader.h" />
     <ClInclude Include="Source\Data\ObjManager.h" />
@@ -255,6 +265,8 @@
     <ClInclude Include="Source\Core\Rendering\Text\FontShader.h" />
     <ClInclude Include="Source\Core\Rendering\Text\Text.h" />
     <ClInclude Include="Source\Object\Actor\Spotlight.h" />
+    <ClInclude Include="SSplitter.h" />
+    <ClInclude Include="SWindow.h" />
     <ClInclude Include="Source\Object\ObjectMacros.h" />
     <ClInclude Include="Source\Object\PrimitiveComponent\StaticMeshComponent.h" />
     <ClInclude Include="Source\Object\PrimitiveComponent\TextureComponent.h" />
