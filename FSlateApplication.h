@@ -15,6 +15,7 @@ public:
 	FViewport* SNEW(FRect _rect);
 	void Add(SWindow* _window);
 	void ResizeScreen(float resizeWidthRatio, float resizeHeightRatio);
+	void SaveSWindowToJSON();
 private:
 	void ProcessMouseButtonDownEvent();
 	void ProcessKeyDownEvent();

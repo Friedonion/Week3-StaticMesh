@@ -226,6 +226,7 @@ void UEngine::Run()
 
 void UEngine::Shutdown()
 {
+    FSlateApplication::Get().ShutDown();
     Renderer->Release();
     
     ConfigManager::Get().SaveAllConfigs();
@@ -235,7 +236,6 @@ void UEngine::Shutdown()
 #else
     World->SaveWorld(*World->DefaultSceneName)
 #endif
-    FSlateApplication::Get().ShutDown();
         UResourceManager::Get().Shutdown();
     ShutdownWindow();
 }

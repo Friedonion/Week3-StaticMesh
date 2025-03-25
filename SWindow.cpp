@@ -80,6 +80,12 @@ json::JSON SWindow::ToJSON()
 	j["MinY"] = Rect.Min.Y;
 	j["MaxX"] = Rect.Max.X;
 	j["MaxY"] = Rect.Max.Y;
+	
+	if (viewport)
+	{
+		j["CameraType"] = static_cast<int>(viewport->GetCameraViewMode());
+		j["ViewportPos"] = static_cast<int>(viewport->GetViewportPos());
+	}
 	j["type"] = "SWindow";
 	return j;
 }
