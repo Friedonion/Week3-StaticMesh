@@ -14,4 +14,5 @@ struct FMaterialData {
     std::string Name;
     std::string DiffuseTexturePath;
     FVector DiffuseColor = { 1.0f, 1.0f, 1.0f };
+    uint32_t GUID; //자기 GUID
 };

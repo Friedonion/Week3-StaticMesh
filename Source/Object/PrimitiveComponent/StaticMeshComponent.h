@@ -12,6 +12,7 @@ struct FStaticMesh {
     TArray<FVertexPNCT> Vertices;
     TArray<uint32_t> Indices;
     const FMaterialData* Material;
+    uint32_t GUID;
 };
 
 class UStaticMeshComponent : public UPrimitiveComponent
@@ -34,8 +35,10 @@ public:
 
     void LoadFromObj(const std::string& path);
   
-    const TArray<FStaticMesh>& GetRenderUnits() const { return RenderUnits; }
+    TArray<FStaticMesh>& GetRenderUnits() { return RenderUnits; }
 
+    void SetRenderUnits(const TArray<FStaticMesh>& newRenderUnits) { RenderUnits = newRenderUnits; }
+    
 private:
     TArray<FStaticMesh> RenderUnits;
 };

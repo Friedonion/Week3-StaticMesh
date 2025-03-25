@@ -28,7 +28,6 @@ void FEditorManager::SelectComponent(UPrimitiveComponent* NewComponent)
 			SetPickState(PickState::Actor);
 			break;
 		case PickState::Actor:
-			GizmoHandle->SetActive(true);
 			if (SelectedActor == NewActor)
 			{
 				SetPickState(PickState::Component);

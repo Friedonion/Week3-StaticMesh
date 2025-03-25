@@ -27,6 +27,8 @@
 #include "Object/PrimitiveComponent/TextureComponent.h"
 #include "Static/Enum.h"
 #include "Core//Input/PlayerInput.h"
+#include "Object/TObjectIterator.h"
+#include "Static/ResourceManager.h"
 
 void UI::Initialize(HWND hWnd, URenderer& Renderer, UINT ScreenWidth, UINT ScreenHeight)
 {
@@ -396,55 +398,73 @@ void UI::RenderPropertyWindow()
 {
     SetWindowLayout(0.3f, 0.4f, 0.f, 0.6f);
     ImGui::Begin("Properties");
-    AActor* selectedActor = FEditorManager::Get().GetSelectedActor();
-    if (selectedActor != nullptr)
+
+    PickState CurrentPickState = FEditorManager::Get().GetPickState();
+
+    if (CurrentPickState == PickState::Actor)
     {
-        ImGui::Text("Selected : [%4d]%s", selectedActor->GetUUID(), *selectedActor->Name.GetString());
-        FTransform selectedTransform = selectedActor->GetActorRelativeTransform();
-        float position[] = { selectedTransform.GetPosition().X, selectedTransform.GetPosition().Y, selectedTransform.GetPosition().Z };
-        float scale[] = { selectedTransform.GetScale().X, selectedTransform.GetScale().Y, selectedTransform.GetScale().Z };
+        AActor* selectedActor = FEditorManager::Get().GetSelectedActor();
+        if (selectedActor != nullptr)
+        {
+            ImGui::Text("Selected : [%4d]%s", selectedActor->GetUUID(), *selectedActor->Name.GetString());
+            FTransform selectedTransform = selectedActor->GetActorRelativeTransform();
+            float position[] = { selectedTransform.GetPosition().X, selectedTransform.GetPosition().Y, selectedTransform.GetPosition().Z };
+            float scale[] = { selectedTransform.GetScale().X, selectedTransform.GetScale().Y, selectedTransform.GetScale().Z };
 
-        if (ImGui::DragFloat3("Translation", position, 0.1f))
-        {
-            selectedTransform.SetPosition(position[0], position[1], position[2]);
-            selectedActor->SetActorRelativeTransform(selectedTransform);
-        }
-
-        FVector PrevEulerAngle = selectedTransform.GetRotation().GetEuler();
-        FVector UIEulerAngle = PrevEulerAngle;
-        if (ImGui::DragFloat3("Rotation", reinterpret_cast<float*>(&UIEulerAngle), 0.1f))
-        {
-            FVector DeltaEulerAngle = UIEulerAngle - PrevEulerAngle;
-
-            selectedTransform.Rotate(DeltaEulerAngle);
-            //UE_LOG("Rotation: %.2f, %.2f, %.2f", DeltaEulerAngle.X, DeltaEulerAngle.Y, DeltaEulerAngle.Z);
-            selectedActor->SetActorRelativeTransform(selectedTransform);
-        }
-        if (ImGui::DragFloat3("Scale", scale, 0.1f))
-        {
-            selectedTransform.SetScale(scale[0], scale[1], scale[2]);
-            selectedActor->SetActorRelativeTransform(selectedTransform);
-        }
-        if (FEditorManager::Get().GetGizmoHandle() != nullptr)
-        {
-            AGizmoHandle* Gizmo = FEditorManager::Get().GetGizmoHandle();
-            if (Gizmo->GetGizmoType() == EGizmoType::Translate)
+            if (ImGui::DragFloat3("Translation", position, 0.1f))
             {
-                ImGui::Text("GizmoType: Translate");
+                selectedTransform.SetPosition(position[0], position[1], position[2]);
+                selectedActor->SetActorRelativeTransform(selectedTransform);
             }
-            else if (Gizmo->GetGizmoType() == EGizmoType::Rotate)
+
+            FVector PrevEulerAngle = selectedTransform.GetRotation().GetEuler();
+            FVector UIEulerAngle = PrevEulerAngle;
+            if (ImGui::DragFloat3("Rotation", reinterpret_cast<float*>(&UIEulerAngle), 0.1f))
             {
-                ImGui::Text("GizmoType: Rotate");
+                FVector DeltaEulerAngle = UIEulerAngle - PrevEulerAngle;
+
+                selectedTransform.Rotate(DeltaEulerAngle);
+                //UE_LOG("Rotation: %.2f, %.2f, %.2f", DeltaEulerAngle.X, DeltaEulerAngle.Y, DeltaEulerAngle.Z);
+                selectedActor->SetActorRelativeTransform(selectedTransform);
             }
-            else if (Gizmo->GetGizmoType() == EGizmoType::Scale)
+            if (ImGui::DragFloat3("Scale", scale, 0.1f))
             {
-                ImGui::Text("GizmoType: Scale");
+                selectedTransform.SetScale(scale[0], scale[1], scale[2]);
+                selectedActor->SetActorRelativeTransform(selectedTransform);
             }
         }
-
+    }else if (CurrentPickState == PickState::Component)
+    {
         UPrimitiveComponent* selectedComponent = FEditorManager::Get().GetSelectedComponent();
-        if (selectedComponent != nullptr)
+
+        if (selectedComponent)
         {
+            ImGui::Text("Selected : [%4d]%s", selectedComponent->GetUUID(), *selectedComponent->Name.GetString());
+            FTransform selectedTransform = selectedComponent->GetRelativeTransform();
+            float position[] = { selectedTransform.GetPosition().X, selectedTransform.GetPosition().Y, selectedTransform.GetPosition().Z };
+            float scale[] = { selectedTransform.GetScale().X, selectedTransform.GetScale().Y, selectedTransform.GetScale().Z };
+
+            if (ImGui::DragFloat3("Translation", position, 0.1f))
+            {
+                selectedTransform.SetPosition(position[0], position[1], position[2]);
+                selectedComponent->SetRelativeTransform(selectedTransform);
+            }
+
+            FVector PrevEulerAngle = selectedTransform.GetRotation().GetEuler();
+            FVector UIEulerAngle = PrevEulerAngle;
+            if (ImGui::DragFloat3("Rotation", reinterpret_cast<float*>(&UIEulerAngle), 0.1f))
+            {
+                FVector DeltaEulerAngle = UIEulerAngle - PrevEulerAngle;
+
+                selectedTransform.Rotate(DeltaEulerAngle);
+                selectedComponent->SetRelativeTransform(selectedTransform);
+            }
+            if (ImGui::DragFloat3("Scale", scale, 0.1f))
+            {
+                selectedTransform.SetScale(scale[0], scale[1], scale[2]);
+                selectedComponent->SetRelativeTransform(selectedTransform);
+            }
+            
             FVector4 ActorColor = selectedComponent->GetColor();
             float* ColorArray = reinterpret_cast<float*>(&ActorColor);
             if (ImGui::ColorEdit4("Color", ColorArray))
@@ -456,24 +476,68 @@ void UI::RenderPropertyWindow()
             {
                 selectedComponent->SetIsDefaultRendered(bRender);
             }
-        }
 
-        /*if (selectedComponent->IsA(UTextureComponent::StaticClass()))
-        {
-            UTextureComponent* TextureComponent = dynamic_cast<UTextureComponent*>(selectedComponent);
-            const char* TextureItems[] = {"cat", "earth", "Custom"};
-            TMap<uint32_t, ETextureResource> Textures = {
-                {0, ECat},
-                {1, EEarth},
-                {2, ECustom},
-            };
-            
-            if (ImGui::Combo("Texture", reinterpret_cast<int*>(&CurrentTextureItem), TextureItems, ARRAYSIZE(TextureItems)))
+            if (selectedComponent->IsA(UStaticMeshComponent::StaticClass()))
             {
-                TextureComponent->SetTextureResource(Textures[CurrentTextureItem]);
+                //이터레이터 돌면서 각 서브메쉬에 해당하는 머테리얼 변경할 수 있게 드랍박스로 제공
+                UStaticMeshComponent* StaticMeshComponent = dynamic_cast<UStaticMeshComponent*>(selectedComponent);
+                TArray<FStaticMesh> StaticMeshInfos = StaticMeshComponent->GetRenderUnits();
+                
+                TMap<std::string, FMaterialData>& MaterialInfos = UResourceManager::Get().GetMaterials();
+                TMap<uint32_t, std::string> MaterialItems; //GUID, Path
+
+                if (CurrentMeshItems.Num() < StaticMeshInfos.Num()) //CurrentMeshItem 크기할당
+                {
+                    CurrentMeshItems.Resize(StaticMeshInfos.Num()+1);
+                }
+                
+                for (auto& [Key, Item] : MaterialInfos) //GUID로 기존인덱스 설정
+                {
+                    MaterialItems.Add(Item.GUID, Key);
+                }
+                
+                int SubMeshIndex = 0;
+                for (auto& StaticMeshInfo : StaticMeshInfos)
+                {
+                    char SubMeshName[32];
+                    snprintf(SubMeshName, sizeof(SubMeshName), "SubMesh%d", SubMeshIndex++);
+                    if (ImGui::BeginCombo(SubMeshName, MaterialItems[StaticMeshInfo.GUID].c_str()))
+                    {
+                        for (auto& [Key, Item] : MaterialItems)
+                        {
+                            bool isSelected = (StaticMeshInfo.Material->GUID == Key);
+                            if (ImGui::Selectable(MaterialItems[Key].c_str(), isSelected)) {
+                                StaticMeshInfo.GUID = Key; // 선택된 항목 업데이트
+                            }
+                            if (isSelected) {
+                                ImGui::SetItemDefaultFocus(); // 기본 포커스 설정
+                            }
+                        }
+                        ImGui::EndCombo();
+                    }
+                    StaticMeshInfo.Material = &MaterialInfos[MaterialItems[StaticMeshInfo.GUID]];
+                }
+                StaticMeshComponent->SetRenderUnits(StaticMeshInfos);
             }
-        }*/
+        }
     }
+    if (FEditorManager::Get().GetGizmoHandle() != nullptr)
+    {
+        AGizmoHandle* Gizmo = FEditorManager::Get().GetGizmoHandle();
+        if (Gizmo->GetGizmoType() == EGizmoType::Translate)
+        {
+            ImGui::Text("GizmoType: Translate");
+        }
+        else if (Gizmo->GetGizmoType() == EGizmoType::Rotate)
+        {
+            ImGui::Text("GizmoType: Rotate");
+        }
+        else if (Gizmo->GetGizmoType() == EGizmoType::Scale)
+        {
+            ImGui::Text("GizmoType: Scale");
+        }
+    }
+    
     ImGui::End();
 }
 
