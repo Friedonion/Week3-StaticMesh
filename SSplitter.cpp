@@ -31,6 +31,11 @@ void SSplitter::ScreenResize(float resizeWidthRatio, float resizeHeightRatio)
 {
 }
 
+json::JSON SSplitter::ToJSON()
+{
+    return json::JSON();
+}
+
 
 bool SSplitter2x2::isHover(FVector2 coord) const
 {
@@ -124,4 +129,20 @@ void SSplitter2x2::ScreenResize(float resizeWidthRatio, float resizeHeightRatio)
 {
     horitionalHandle.ResizeRatio(resizeWidthRatio, resizeHeightRatio);
     verticalHandle.ResizeRatio(resizeWidthRatio, resizeHeightRatio);
+}
+
+json::JSON SSplitter2x2::ToJSON()
+{
+    json::JSON j;
+    j["VMinX"] = verticalHandle.Min.X;
+    j["VMinY"] = verticalHandle.Min.Y;
+    j["VMaxX"] = verticalHandle.Max.X;
+    j["VMaxY"] = verticalHandle.Max.Y;
+
+    j["HMinX"] = horitionalHandle.Min.X;
+    j["HMinY"] = horitionalHandle.Min.Y;
+    j["HMaxX"] = horitionalHandle.Max.X;
+    j["HMaxY"] = horitionalHandle.Max.Y;
+    j["type"] = "SSplitter2*2";
+    return j;
 }

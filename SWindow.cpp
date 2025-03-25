@@ -73,6 +73,17 @@ void SWindow::ScreenResize(float resizeWidthRatio, float resizeHeightRatio)
 	if(viewport) viewport->Resize(Rect);
 }
 
+json::JSON SWindow::ToJSON()
+{
+	json::JSON j;
+	j["MinX"] = Rect.Min.X;
+	j["MinY"] = Rect.Min.Y;
+	j["MaxX"] = Rect.Max.X;
+	j["MaxY"] = Rect.Max.Y;
+	j["type"] = "SWindow";
+	return j;
+}
+
 void SWindow::SetActiveFullViewport()
 {
 	if(viewport) viewport->SetActiveFullViewport();

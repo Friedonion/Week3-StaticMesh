@@ -55,7 +55,11 @@ void ACamera::SetCameraViewMode(ECameraViewMode::Type cameraViewMode)
         Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 1, 0), 90);
         break;
     case ECameraViewMode::Type::Bottom:
+    {
         Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 1, 0), -90);
+        FQuat RotationLocal = FQuat::AxisAngleToQuaternion(FVector(1, 0, 0), 180);
+        Rotation = FQuat::MultiplyQuaternions(Rotation, RotationLocal);
+    }
         break;
     case ECameraViewMode::Type::Left:
         Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 0, 1), 90);

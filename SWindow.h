@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Source\Core\Math\FRect.h"
-
+#include "SimpleJSON/Json.hpp"
 class ISlateViewport;
 
 class SWindow
@@ -19,6 +19,7 @@ public:
 	virtual bool OnMouseUp();
 	virtual void Resize(const FRect& _rect);
 	virtual void ScreenResize(float resizeWidthRatio, float resizeHeightRatio);
+	virtual json::JSON ToJSON();
 	void SetActiveFullViewport();
 	void RestorePrevSize();
 	void ChangeMainCamera();

@@ -19,6 +19,16 @@ void FSlateApplication::Tick()
 
 void FSlateApplication::ShutDown()
 {
+	json::JSON jsonArray = json::Array();
+	for (int i = 0; i < windows.Num(); i++)
+	{
+		jsonArray.append(windows[i]->ToJSON());
+
+	}
+	std::ofstream outFile("engine.ini");
+	outFile << jsonArray.dump(4); // pretty print
+	outFile.close();
+
 	for (int i=0;i<windows.Num();i++)
 	{
 		SWindow* window = windows[i];
