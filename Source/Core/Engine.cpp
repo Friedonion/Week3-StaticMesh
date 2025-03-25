@@ -202,6 +202,8 @@ void UEngine::Run()
         FSlateApplication::Get().Tick();
         APlayerController::Get().ProcessPlayerInput(DeltaTime);
         
+        if (!IsRunning)
+            break;
 		// ui Update
         ui.Update();
 
@@ -384,13 +386,15 @@ void UEngine::InitWorld()
 
 void UEngine::ShutdownWindow()
 {
-    DestroyWindow(WindowHandle);
-    WindowHandle = nullptr;
-
+    ui.Shutdown();
+    if (WindowHandle != nullptr)
+    {
+        DestroyWindow(WindowHandle);   
+        WindowHandle = nullptr;
+    }
     UnregisterClassW(WindowClassName, WindowInstance);
     WindowInstance = nullptr;
-
-	ui.Shutdown();
+    ui.bIsInitialized = false;
 }
 
 void UEngine::UpdateWindowSize(UINT InScreenWidth, UINT InScreenHeight)
