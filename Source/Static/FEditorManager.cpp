@@ -53,14 +53,14 @@ void FEditorManager::SelectComponent(UPrimitiveComponent* NewComponent)
 			ReleasePick();
 			return;
 		case PickState::Actor:
-			GizmoHandle->SetActive(true);
+			//GizmoHandle->SetActive(true);
 			SelectedActor = NewActor;
 			NewActor->Pick();
-
+			GizmoHandle->SetActive(true);
 			if (SelectedComponent)
 			{
-				SelectedComponent->Pick(false);
-				SelectedComponent = nullptr;
+				SelectedComponent->Pick(true);
+				SelectedComponent = NewComponent;
 			}
 			break;
 		case PickState::Component:
@@ -106,7 +106,6 @@ void FEditorManager::SelectActor(AActor* NewActor)
 		ReleasePick();
 		return;
 	}
-	
 	GizmoHandle->SetActive(true);
 	SelectedActor = NewActor;
 	SelectedActor->Pick();
@@ -183,3 +182,5 @@ void FEditorManager::MoveOrthoCamera(ECameraViewMode::Type cameraType, FVector d
 	camera->SetActorRelativeTransform(cameraTransform);
 
 }
+
+
