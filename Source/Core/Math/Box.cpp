@@ -130,7 +130,7 @@ FBox::FBox(const TArray<FStaticMesh>& RenderUnits, const FMatrix& TransformMatri
 	Min = FVector(FLT_MAX, FLT_MAX, FLT_MAX);
 	for (const FStaticMesh& RenderUnit : RenderUnits)
 	{
-		for (const FVertexPNCT& Vertex : RenderUnit.Vertices)
+		for (const FVertexPNCT& Vertex : *RenderUnit.Vertices)
 		{
 			FVector4 Vertex4 = FVector4(Vertex.X, Vertex.Y, Vertex.Z, 1.f);
 			Vertex4 = Vertex4 * TransformMatrix;

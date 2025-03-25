@@ -549,8 +549,8 @@ void URenderer::RenderPrimitive(UPrimitiveComponent* Component)
             }
 
             // 정점 버퍼 직접 생성 (전역 저장 X)
-            TArray<FVertexPNCT> Vertices = Unit.Vertices;
-            TArray<uint32_t> Indices = Unit.Indices;
+            TArray<FVertexPNCT> Vertices = *Unit.Vertices;
+            TArray<uint32_t> Indices = *Unit.Indices;
             if (Vertices.Num() == 0 || Indices.Num() == 0)
                 continue;
 
