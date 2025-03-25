@@ -637,7 +637,7 @@ void UI::RenderViewOption()
         const FRect& rectLB = viewportLB->GetRect();
         ImGui::SetNextWindowPos(ImVec2(rectLB.Max.X-width + offset.x, rectLB.Min.Y + offset.y), ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(width, height), ImGuiCond_Always);
-        SetViewOption("LB", current_itemLB, EViewport::Position::LT);
+        SetViewOption("LB", current_itemLB, EViewport::Position::LB);
     }
 
     // RB
@@ -647,7 +647,7 @@ void UI::RenderViewOption()
         const FRect& rectRB = viewportRB->GetRect();
         ImGui::SetNextWindowPos(ImVec2(rectRB.Min.X + offset.x, rectRB.Min.Y + offset.y), ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(width, height), ImGuiCond_Always);
-        SetViewOption("RB", current_itemRB, EViewport::Position::RT);
+        SetViewOption("RB", current_itemRB, EViewport::Position::RB);
     }
 }
 
