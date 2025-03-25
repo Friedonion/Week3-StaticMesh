@@ -4,17 +4,34 @@
 #include "ImGui/imgui.h"
 #include "Core/Container/Set.h"
 #include "Core/Container/Name.h"
+#include "Static/Enum.h"
 
 namespace EViewport{ enum class Position : uint8 ;}
 
 class FName;
 class AActor;
 class URenderer;
+
+enum SpawnType
+{
+	ESpawnSphere,
+	ESpawnCube,
+	ESpawnCylinder,
+	ESpawnCone,
+	ESpawnSpotlight,
+	ESpawnTexture,
+	ESpawnCustom,
+};
+
 class UI
 {
+    bool bShowUI = true; 
+
 public:
-    int currentItem = 0;
-    int NumOfSpawn = 0;
+    SpawnType CurrentPrimitiveItem = ESpawnCustom;
+	std::string CurrentTextureItem = "Textures/cat.png";
+	
+    int NumOfSpawn = 1;
 	bool bIsInitialized = false;
     
     void Initialize(HWND hWnd, URenderer& Renderer, UINT ScreenWidth, UINT ScreenHeight);
@@ -44,7 +61,7 @@ private:
 	URenderer* Renderer;
     float windowWidth;
 	float windowHeight;
-	
+
     void SetWindowLayout(float widthRatio, float heightRatio, float posXRatio, float posYRatio);
     TArray<FName> Unselectables;
     void SetViewOption(const char* name, int &current_item,

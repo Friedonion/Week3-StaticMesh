@@ -6,6 +6,10 @@
 #include "Static/FEditorManager.h"
 #include "Object/PrimitiveComponent/TextComponent.h"
 #include "Object/PrimitiveComponent/BillBoardComponent.h"
+#include "Object/Cast.h"
+#include "Object/UObjectArray.h"
+
+// TMap<uint32, std::shared_ptr<UObject>> GObjects;
 
 AActor::AActor() : Depth{ 0 }
 {
@@ -70,11 +74,11 @@ void AActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 				World->RemoveZIgnoreComponent(PrimitiveComp);
 			}
 			
-			if (UTextComponent* TextComp = dynamic_cast<UTextComponent*>(PrimitiveComp)) {
+			if (const auto TextComp = Cast<UTextComponent>(PrimitiveComp)) {
 				World->RemoveTextComponent(PrimitiveComp);
 			}
 
-			if (UBillBoardComponent* BillComp = dynamic_cast<UBillBoardComponent*>(PrimitiveComp)) {
+			if (const auto BillComp = Cast<UBillBoardComponent>(PrimitiveComp)) {
 				World->RemoveTextComponent(PrimitiveComp);
 			}
 
@@ -84,7 +88,7 @@ void AActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		{
 			FEditorManager::Get().SelectPrimitive(nullptr);
 		}
-		UEngine::Get().GObjects.Remove(Component->GetUUID());
+		GObjects.Remove(Component->GetUUID());
 	}
 	Components.Empty();
 }
@@ -135,7 +139,7 @@ FMatrix AActor::GetActorRelativeTransformMatrix() const
 }
 
 // actor의 root component는 actor의 (아직은) 월드상 좌표입니다.
-void AActor::SetActorRelatvieTransform(const FTransform& InTransform)
+void AActor::SetActorRelativeTransform(const FTransform& InTransform)
 {
 	// InTransform은 월드 기준임
 	if (RootComponent)

@@ -18,8 +18,9 @@
 #include "Particle/ParticleShader.h"
 #include "Texture/TextureRenderer.h"
 #include "../FViewport.h"
+#include "Static/Enum.h"
 
-struct FVertexSimple;
+struct FVertexPNCT;
 struct FVector4;
 class UPrimitiveComponent;
 class ACamera;
@@ -33,11 +34,30 @@ namespace EViewport
 	};
 }
 
+enum class EPixelShaderType : uint32
+{
+	Default,
+	// Texture,
+};
+
+
+enum class EAlphaBlendingState : uint32
+{
+	Normal,
+	Particle,
+};
+
+enum class EConstantType : uint32
+{
+	Vertex,
+	Pixel,
+};
+
 struct VertexBufferInfo
 {
 public:
 	VertexBufferInfo() = default;
-	VertexBufferInfo(ID3D11Buffer* InVertexBuffer, ID3D11Buffer* InIndexBuffer, D3D_PRIMITIVE_TOPOLOGY InTopology, TArray<FVertexSimple>& InVertices, TArray<uint32_t>& InIndices)
+	VertexBufferInfo(ID3D11Buffer* InVertexBuffer, ID3D11Buffer* InIndexBuffer, D3D_PRIMITIVE_TOPOLOGY InTopology, TArray<FVertexPNCT>& InVertices, TArray<uint32_t>& InIndices)
 	{
 		VertexBuffer = InVertexBuffer;
 		IndexBuffer = InIndexBuffer;
@@ -53,7 +73,7 @@ public:
 		PreVertexCount = VertexCount;
 	}
 
-	VertexBufferInfo(D3D_PRIMITIVE_TOPOLOGY InTopology, TArray<FVertexSimple>& InVertices, TArray<uint32_t>& InIndices)
+	VertexBufferInfo(D3D_PRIMITIVE_TOPOLOGY InTopology, TArray<FVertexPNCT>& InVertices, TArray<uint32_t>& InIndices)
 	{
 		// InstanceBuffer = InInstanceBuffer;
 		VertexCount = InVertices.Num();
@@ -75,16 +95,16 @@ public:
 	uint32_t GetIndexCount() const{return IndexCount;}
 	
 	D3D_PRIMITIVE_TOPOLOGY GetTopology() const { return Topology; }
-	TArray<FVertexSimple> GetVertices() const { return Vertices; }
+	TArray<FVertexPNCT> GetVertices() const { return Vertices; }
 	TArray<uint32_t> GetIndices() const { return Indices; }
 	uint32_t GetVertexPreCount() const { return PreVertexCount; }
 
-	void AddVertices(TArray<FVertexSimple> InVertices, TArray<uint32_t> InIndices);
+	void AddVertices(TArray<FVertexPNCT> InVertices, TArray<uint32_t> InIndices);
 	void ClearVertices();
 	
 private:
 	ID3D11Buffer* VertexBuffer;
-	TArray<FVertexSimple> Vertices;
+	TArray<FVertexPNCT> Vertices;
 	uint32_t VertexCount;
 	uint32_t PreVertexCount;
 
@@ -95,29 +115,14 @@ private:
 	D3D_PRIMITIVE_TOPOLOGY Topology;
 };
 
-enum class EViewModeIndex : uint32
-{
-    VMI_Lit,
-    VMI_Unlit,
-    VMI_Wireframe,
-};
-
-enum class EAlphaBlendingState : uint32
-{
-	Normal,
-	Particle,
-};
-
 class URenderer
 {
 private:
     struct alignas(16) FConstants
     {
-        FMatrix M;
-    	FMatrix V;
-    	FMatrix P;
+        FMatrix MVP;
         FVector4 Color;
-        int bUseCustomColor;
+        EPixelType PixelType; //0 기본색 1 커스텀 색 2텍스처
     };
 	
 	struct alignas(16) FPickingConstants
@@ -152,6 +157,9 @@ public:
 
     void CreateShader();
 
+	void CreateSampleState();
+    void ReleaseSampleState();
+
     void ReleaseShader();
 
     void CreateConstantBuffer();
@@ -166,25 +174,35 @@ public:
 
     /** 셰이더를 준비 합니다. */
     void PrepareShader() const;
-    void RenderBatch();
 
-    void CreateVertexBuffer(EPrimitiveType VertexType, VertexBufferInfo BufferInfo);
+	void CreateVertexBuffer(uint32_t VertexType, VertexBufferInfo BufferInfo);
+
+
+
+#pragma region batch
+    void RenderBatch();
     void CreateBatchVertexBuffer(D3D11_PRIMITIVE_TOPOLOGY Topology, VertexBufferInfo BufferInfo);
     void ClearBatchVertex();
 	void AddBatchVertices(UPrimitiveComponent* Component);
     VertexBufferInfo ResizeBatchVertexBuffer(D3D11_PRIMITIVE_TOPOLOGY Topology);
     void UpdateBatchVertexBuffer();
     TMap<D3D11_PRIMITIVE_TOPOLOGY, bool> CheckChangedVertexCount();
-
 	VertexBufferInfo GetBatchVertexBufferInfo(D3D11_PRIMITIVE_TOPOLOGY Topology) { return BatchVertexBuffers[Topology];}
 	void SetBatchVertexBufferInfo(D3D11_PRIMITIVE_TOPOLOGY Topology, VertexBufferInfo BufferInfo)
 	{
 		if (BatchVertexBuffers.Contains(Topology)){ BatchVertexBuffers[Topology] = BufferInfo;}
 		else							{    BatchVertexBuffers.Add(Topology, BufferInfo);}
 	}
+#pragma endregion
 
-	VertexBufferInfo GetVertexBufferInfo(EPrimitiveType VertexType) { return VertexBuffers[VertexType];}
-	void SetVertexBufferInfo(EPrimitiveType VertexType, VertexBufferInfo BufferInfo)
+#pragma region Texture
+	//텍스쳐 리소스
+    void PrepareTextureResource(std::string path);
+
+#pragma endregion
+	
+	VertexBufferInfo GetVertexBufferInfo(uint32_t VertexType) { return VertexBuffers[VertexType];}
+	void SetVertexBufferInfo(uint32_t VertexType, VertexBufferInfo BufferInfo)
 	{
 		if (VertexBuffers.Contains(VertexType)){ VertexBuffers[VertexType] = BufferInfo; }
 		else									{ VertexBuffers.Add(VertexType, BufferInfo); }
@@ -192,7 +210,7 @@ public:
 	
     /** Buffer를 해제합니다. */
 	void ReleaseVertexBuffer(D3D11_PRIMITIVE_TOPOLOGY Topology);
-    void RenderPrimtivie(UPrimitiveComponent* Component);
+    void RenderPrimtive(UPrimitiveComponent* Component);
     void ReleaseAllVertexBuffer();
     /** Constant Data를 업데이트 합니다. */
     void UpdateConstant(USceneComponent* Component) const;
@@ -290,7 +308,7 @@ protected:
     ID3D11RasterizerState* RasterizerState = nullptr;       // 래스터라이저 상태(컬링, 채우기 모드 등 정의)
     ID3D11Buffer* ConstantBuffer = nullptr;                 // 쉐이더에 데이터를 전달하기 위한 상수 버퍼
 	TMap<D3D11_PRIMITIVE_TOPOLOGY, VertexBufferInfo> BatchVertexBuffers;
-	TMap<EPrimitiveType, VertexBufferInfo> VertexBuffers;
+	TMap<uint32_t, VertexBufferInfo> VertexBuffers;
 	
     FLOAT ClearColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f }; // 화면을 초기화(clear)할 때 사용할 색상 (RGBA)
     D3D11_VIEWPORT ViewportInfo = {};                       // 렌더링 영역을 정의하는 뷰포트 정보
@@ -298,8 +316,9 @@ protected:
 
     // Shader를 렌더링할 때 사용되는 변수들
     ID3D11VertexShader* SimpleVertexShader = nullptr;       // Vertex 데이터를 처리하는 Vertex 셰이더
-    ID3D11PixelShader* SimplePixelShader = nullptr;         // Pixel의 색상을 결정하는 Pixel 셰이더
-
+	TMap<EPixelShaderType, ID3D11PixelShader*> PixelShaders;
+	ID3D11ShaderResourceView* Tempsrc;
+	
     ID3D11InputLayout* SimpleInputLayout = nullptr;         // Vertex 셰이더 입력 레이아웃 정의
     unsigned int Stride = 0;                                // Vertex 버퍼의 각 요소 크기
 
@@ -308,7 +327,9 @@ protected:
 	ID3D11DepthStencilView* DepthStencilView = nullptr;     // DepthStencil버퍼를 렌더 타겟으로 사용하는 뷰
 	ID3D11DepthStencilState* DepthStencilState = nullptr;   // DepthStencil 상태(깊이 테스트, 스텐실 테스트 등 정의)
     ID3D11DepthStencilState* GizmoDepthStencilState = nullptr; // 기즈모용 스텐실 스테이트. Z버퍼 테스트 하지않고 항상 앞에렌더
-	
+
+	ID3D11SamplerState* samplerState;
+
 	// Buffer Cache
 
 	// std::unique_ptr<FBufferCache> BufferCache;
@@ -318,14 +339,12 @@ protected:
 	FMatrix ProjectionMatrix;
 	
 	D3D11_PRIMITIVE_TOPOLOGY CurrentTopology = D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED; // 같은 토폴로지 세팅인데 또 하면 낭비니까 체크
-
-
+	
 	// Alpha Blending
 	ID3D11BlendState* AlphaEnableBlendingState = nullptr;
     ID3D11BlendState* ParticleAlphaEnableBlendingState = nullptr;
 	ID3D11BlendState* AlphaDisableBlendingState = nullptr;
-
-
+	
     // 텍스트 클래스
     UText* Text = nullptr;
 
@@ -337,7 +356,7 @@ protected:
     D3D11_FILL_MODE CurrentFillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 
 	// 텍스쳐 클래스
-	UTexture* Texture = nullptr;
+	LegacyTexture* Texture = nullptr;
 	UTextureRenderer* TextureRenderer = nullptr;
 
 #pragma region picking
@@ -347,7 +366,6 @@ protected:
 	ID3D11RenderTargetView* PickingFrameBufferRTV = nullptr;       // 텍스처를 렌더 타겟으로 사용하는 뷰
 	ID3D11Buffer* ConstantPickingBuffer = nullptr;                 // 뷰 상수 버퍼
 	FLOAT PickingClearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f }; //
-	ID3D11PixelShader* PickingPixelShader = nullptr;         // Pixel의 색상을 결정하는 Pixel 셰이더
 	ID3D11Buffer* ConstantsDepthBuffer = nullptr;
 
 	ID3D11DepthStencilState* IgnoreDepthStencilState = nullptr;   // DepthStencil 상태(깊이 테스트, 스텐실 테스트 등 정의)
@@ -357,8 +375,8 @@ public:
     void ReleasePickingFrameBuffer();
     void CreatePickingTexture(HWND hWnd);
     void PrepareZIgnore();
-    void PreparePicking();
-	void PreparePickingShader() const;
+ //    void PreparePicking();
+	// void PreparePickingShader() const;
 	void UpdateConstantPicking(FVector4 UUIDColor) const;
     void UpdateConstantDepth(int Depth) const;
 
@@ -371,5 +389,5 @@ public:
 
     FMatrix GetProjectionMatrix() const { return ProjectionMatrix; }
 
-#pragma endregion picking
+#pragma endregion
 };

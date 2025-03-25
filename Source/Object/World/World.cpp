@@ -11,10 +11,16 @@
 #include "Object/Actor/Cube.h"
 #include "Object/Actor/Cylinder.h"
 #include "Object/Actor/Sphere.h"
-#include "Object/PrimitiveComponent/UPrimitiveComponent.h"
 #include "Static/FEditorManager.h"
 #include "Object/PrimitiveComponent/TextComponent.h"
 #include <Object/PrimitiveComponent/BillBoardComponent.h>
+
+#include "Object/Actor/Texture.h"
+#include "Object/Cast.h"
+#include "Debug/DebugConsole.h"
+#include "Object/TObjectIterator.h"
+#include "Object/PrimitiveComponent/StaticMeshComponent.h"
+#include "Object/PrimitiveComponent/TextureComponent.h"
 
 void UWorld::BeginPlay()
 {
@@ -57,7 +63,7 @@ void UWorld::LateTick(float DeltaTime)
 	for (const auto& PendingActor : PendingDestroyActors)
 	{
 		// Engine에서 제거
-		UEngine::Get().GObjects.Remove(PendingActor->GetUUID());
+		GObjects.Remove(PendingActor->GetUUID());
 	}
 	PendingDestroyActors.Empty();
 }
@@ -71,41 +77,11 @@ void UWorld::Render(float DeltaTime)
 		return;
 	}
 
-	//MultiViewport 이전 코드
-	//ACamera* cam = FEditorManager::Get().GetCamera();
-	//Renderer->UpdateViewMatrix(cam->GetActorRelativeTransform());
-	//Renderer->UpdateProjectionMatrix(cam);
 
-	// Renderer->UpdateConstant(TODO);
-	// if (APlayerInput::Get().GetMouseDown(false))
-	// {
-	// 	RenderPickingTexture(*Renderer);
-	// }
-	
-	/*
-	for (int i = 0; i < 4; i++)
-	{
-		Renderer->SetMultiViewport(i);
-		FEditorManager::Get().SetCameraIndex(i);
-		ACamera* cam = FEditorManager::Get().GetCamera();
-		Renderer->UpdateViewMatrix(cam->GetActorRelativeTransform());
-		Renderer->UpdateProjectionMatrix(cam);
-
-		Renderer->PrepareShader();
-		RenderMainTexture(*Renderer, DeltaTime);
-	}
-	*/
 	float initialHeight = UEngine::Get().GetScreenHeight();
 	float initialWidth = UEngine::Get().GetScreenWidth();
 	TMap<EViewport::Position, FViewport*> activeViewport = Renderer->GetActiveViewport();
-	/*
-	for (int i = 0; i < activeViewport.Num(); i++)
-	{
-		activeViewport[i]->SetViewportRendering();
-		Renderer->PrepareShader();
-		RenderMainTexture(*Renderer, DeltaTime);
-	}
-	*/
+
 	if (Renderer->activeFullViewport)
 	{
 		Renderer->activeFullViewport->SetViewportRendering();
@@ -125,13 +101,12 @@ void UWorld::Render(float DeltaTime)
 	UEngine::Get().SetScreenHeight(initialHeight);
 	UEngine::Get().SetScreenWidth(initialWidth);
 
-
 }
 
 void UWorld::RenderPickingTexture(URenderer& Renderer)
 {
-	Renderer.PreparePicking();
-	Renderer.PreparePickingShader();
+	// Renderer.PreparePicking();
+	// Renderer.PreparePickingShader();
 
 	
 	// for (auto& RenderComponent : RenderComponents)
@@ -158,10 +133,13 @@ void UWorld::RenderPickingTexture(URenderer& Renderer)
 void UWorld::RenderMainTexture(URenderer& Renderer, float DeltaTime)
 {
 	Renderer.PrepareMain();
-	Renderer.PrepareMainShader();
 
 	Renderer.RenderBatch();
 
+//prepare texture하고 loadtexture 하고 텍스쳐렌더 돌면서
+
+	Renderer.PrepareMainShader();
+	
 	for (auto& RenderComponent : RenderComponents)
 	{
 		if (!FEditorManager::Get().IsShowFlagSet((EEngineShowFlags::SF_Primitives)))
@@ -169,6 +147,15 @@ void UWorld::RenderMainTexture(URenderer& Renderer, float DeltaTime)
 			if (RenderComponent->IsCanPick()) continue;
 		}
 		{
+			//분기해주고 로드텍스쳐까지
+			if (RenderComponent->IsA(UTextureComponent::StaticClass()))
+			{
+				Renderer.PrepareTextureResource(RenderComponent->GetTextureResource());
+			}
+			if (RenderComponent->IsA(UStaticMeshComponent::StaticClass()))
+			{
+				Renderer.PrepareTextureResource(RenderComponent->GetTextureResource());
+			}
 			RenderComponent->Render();
 		}
 	}
@@ -222,7 +209,7 @@ void UWorld::ClearWorld()
 	ACamera* Camera = FEditorManager::Get().GetCamera();
 	if (Camera)
 	{
-		Camera->SetActorRelatvieTransform(Camera->GetSpawnTransform());
+		Camera->SetActorRelativeTransform(Camera->GetSpawnTransform());
 	}
 
 	UE_LOG("Clear World");
@@ -280,6 +267,19 @@ void UWorld::LoadWorld(const char* SceneName)
 	if (SceneName == nullptr || strcmp(SceneName, "") == 0){
 		return;
 	}
+
+	if (ActorFactoryMap.empty())
+	{
+		ActorFactoryMap = {
+			{ "AActor",    [this]() { return SpawnActor<AActor>(); } },
+			{ "ASphere",   [this]() { return SpawnActor<ASphere>(); } },
+			{ "ACube",     [this]() { return SpawnActor<ACube>(); } },
+			{ "AArrow",    [this]() { return SpawnActor<AArrow>(); } },
+			{ "ACylinder", [this]() { return SpawnActor<ACylinder>(); } },
+			{ "ACone",     [this]() { return SpawnActor<ACone>(); } },
+			{ "ATexture",  [this]() { return SpawnActor<ATexture>(); } }
+		};
+	}
 	
 	UWorldInfo* WorldInfo = JsonSaveHelper::LoadScene(SceneName);
 	if (WorldInfo == nullptr) return;
@@ -297,12 +297,8 @@ void UWorld::LoadWorld(const char* SceneName)
 		FTransform Transform = FTransform(ObjectInfo->Location, ObjectInfo->Rotation, ObjectInfo->Scale);
 
 		AActor* Actor = nullptr;
-		
-		if (ObjectInfo->ObjectType == "AActor")
-		{
-			Actor = SpawnActor<AActor>();
-		}
-		else if (ObjectInfo->ObjectType == "ACamera")
+
+		if (ObjectInfo->ObjectType == "ACamera")
 		{
 			ACamera* Camera = FEditorManager::Get().GetCamera();
 			if (Camera == nullptr) //지금 없으면 스폰 있으면 스폰할필요 없음
@@ -311,29 +307,17 @@ void UWorld::LoadWorld(const char* SceneName)
 				FEditorManager::Get().SetCamera(Camera);
 			}
 			Actor = Camera;
-		}
-		else if (ObjectInfo->ObjectType == "ASphere")
+		}else
 		{
-			Actor = SpawnActor<ASphere>();
+			if (ActorFactoryMap.contains(ObjectInfo->ObjectType))
+			{
+				static_cast<void*>(ActorFactoryMap[ObjectInfo->ObjectType]());
+			}
 		}
-		else if (ObjectInfo->ObjectType == "ACube")
+		if (Actor)
 		{
-			Actor = SpawnActor<ACube>();
+			Actor->SetActorRelativeTransform(Transform);
 		}
-		else if (ObjectInfo->ObjectType == "AArrow")
-		{
-			Actor = SpawnActor<AArrow>();
-		}
-		else if (ObjectInfo->ObjectType == "ACylinder")
-		{
-			Actor = SpawnActor<ACylinder>();
-		}
-		else if (ObjectInfo->ObjectType == "ACone")
-		{
-			Actor = SpawnActor<ACone>();
-		}
-		
-		Actor->SetActorRelatvieTransform(Transform);
 	}
 }
 
@@ -345,11 +329,15 @@ UWorldInfo UWorld::GetWorldInfo() const
 	WorldInfo.SceneName = *SceneName;
 	WorldInfo.Version = 1;
 	uint32 i = 0;
-	for (auto& actor : Actors)
+	for (auto& Actor : Actors)
 	{
-		if (Cast<ACamera>(actor) == nullptr) //카메라빼고 전부
+		/*UE_LOG("Actor TypeName = %s | ClassName = %s",
+			Actor->GetTypeName(),
+			Actor->GetClass() ? *(Actor->GetClass()->GetName().GetString()) : "nullptr");*/
+		//if (Cast<ACamera>(Actor) == nullptr) //카메라빼고 전부
+		if (!Actor->IsA(ACamera::StaticClass())) //카메라빼고 전부
 		{
-			if (actor->IsDontDestroy())
+			if (Actor->IsDontDestroy())
 			{
 				WorldInfo.ActorCount--;
 				continue;
@@ -357,13 +345,13 @@ UWorldInfo UWorld::GetWorldInfo() const
 		}
 		
 		WorldInfo.ObjctInfos[i] = new UObjectInfo();
-		const FTransform& Transform = actor->GetActorRelativeTransform();
+		const FTransform& Transform = Actor->GetActorRelativeTransform();
 		WorldInfo.ObjctInfos[i]->Location = Transform.GetPosition();
 		WorldInfo.ObjctInfos[i]->Rotation = Transform.GetRotation();
 		WorldInfo.ObjctInfos[i]->Scale = Transform.GetScale();
-		WorldInfo.ObjctInfos[i]->ObjectType = actor->GetTypeName();
+		WorldInfo.ObjctInfos[i]->ObjectType = Actor->GetClass() ? *(Actor->GetClass()->GetName().GetString()) : "nullptr";
 
-		WorldInfo.ObjctInfos[i]->UUID = actor->GetUUID();
+		WorldInfo.ObjctInfos[i]->UUID = Actor->GetUUID();
 		i++;
 	}
 	return WorldInfo;

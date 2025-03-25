@@ -8,6 +8,8 @@
 #include "AbstractClass/Singleton.h"
 #include "Container/Map.h"
 #include "Core/Container/Array.h"
+#include "Data/ObjManager.h"
+#include "Object/UObjectArray.h"
 
 class UObject;
 class UWorld;
@@ -24,6 +26,7 @@ class UEngine : public TSingleton<UEngine>
 public:
     // 각종 윈도우 관련 메시지(이벤트)를 처리하는 함수
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    void InitTextures();
 
     /**
      * Application을 초기화 합니다.
@@ -50,7 +53,8 @@ public:
      */
     void Shutdown();
 
-	class URenderer* GetRenderer() const { return Renderer.get(); }
+	URenderer* GetRenderer() const { return Renderer.get(); }
+    FObjManager* GetObjLoader() const {return ObjLoader.get();}
 	float GetScreenRatio() const { return static_cast<float>(ScreenWidth) / ScreenHeight; }
     int GetScreenWidth() const { return ScreenWidth; }
     int GetScreenHeight() const { return ScreenHeight; }
@@ -92,6 +96,13 @@ private:
 
 private:
 	std::unique_ptr<URenderer> Renderer;
+    std::unique_ptr<FObjManager> ObjLoader;
+    
+    std::vector<std::pair<ETextureResource, std::string>> TexturesToLoad = {
+    {ECat, "Textures/cat.png"},
+    {EEarth, "Textures/earth.png"},
+    {ECustom, "Textures/pirate.png"},
+    };
 
 private:
 	UI ui;
@@ -101,7 +112,6 @@ private:
 
 public:
     // TArray<std::shared_ptr<UObject>> GObjects;
-    TMap<uint32, std::shared_ptr<UObject>> GObjects;
 };
 
 template <typename ObjectType> requires std::derived_from<ObjectType, UObject>

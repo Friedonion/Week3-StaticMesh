@@ -2,13 +2,17 @@
 #include <d3dcompiler.h>
 #include "Core/Math/Transform.h"
 #include <Object/Actor/Camera.h>
-
+#include "Static/ResourceManager.h"
 #include "Object/Actor/WorldGrid.h"
 #include "Object/PrimitiveComponent/UPrimitiveComponent.h"
 #include "Static/FEditorManager.h"
 #include "../FSlateApplication.h"
+#include "directxtk/WICTextureLoader.h"
+#include "Static/ResourceManager.h"
+#include "Object/PrimitiveComponent/StaticMeshComponent.h"
+#include "Data/MaterialData.h"
 
-void VertexBufferInfo::AddVertices(TArray<FVertexSimple> InVertices, TArray<uint32_t> InIndices)
+void VertexBufferInfo::AddVertices(TArray<FVertexPNCT> InVertices, TArray<uint32_t> InIndices)
 {
 	Vertices.Insert(Vertices.end(), InVertices.begin(), InVertices.end());
 	VertexCount = Vertices.Num();
@@ -40,6 +44,7 @@ void URenderer::Create(HWND hWindow)
 	// CreateBufferCache();
 	CreateDepthStencilBuffer();
 	CreateDepthStencilState();
+  CreateSampleState();
 	CreatePickingTexture(hWindow);
 
 	FVertexSimple::CreateOriginVertices();
@@ -63,6 +68,7 @@ void URenderer::Release()
 	ReleaseFrameBuffer();
 	ReleaseDepthStencilBuffer();
 	ReleaseDeviceAndSwapChain();
+  ReleaseSampleState();
 	ReleaseAllVertexBuffer();
 	ReleaseAlphaBlendingState();
 	ReleaseMultiViewport();
@@ -70,63 +76,75 @@ void URenderer::Release()
 
 void URenderer::CreateShader()
 {
-	/**
-		 * 컴파일된 셰이더의 바이트코드를 저장할 변수 (ID3DBlob)
-		 *
-		 * 범용 메모리 버퍼를 나타내는 형식
-		 *   - 여기서는 shader object bytecode를 담기위해 쓰임
-		 * 다음 두 메서드를 제공한다.
-		 *   - LPVOID GetBufferPointer
-		 *     - 버퍼를 가리키는 void* 포인터를 돌려준다.
-		 *   - SIZE_T GetBufferSize
-		 *     - 버퍼의 크기(바이트 갯수)를 돌려준다
-		 */
-	ID3DBlob* VertexShaderCSO;
-	ID3DBlob* PixelShaderCSO;
-
-	ID3DBlob* PickingShaderCSO;
-
+    /**
+         * 컴파일된 셰이더의 바이트코드를 저장할 변수 (ID3DBlob)
+         *
+         * 범용 메모리 버퍼를 나타내는 형식
+         *   - 여기서는 shader object bytecode를 담기위해 쓰임
+         * 다음 두 메서드를 제공한다.
+         *   - LPVOID GetBufferPointer
+         *     - 버퍼를 가리키는 void* 포인터를 돌려준다.
+         *   - SIZE_T GetBufferSize
+         *     - 버퍼의 크기(바이트 갯수)를 돌려준다
+         */
+    ID3DBlob* VertexShaderCSO = nullptr;
+    ID3DBlob* PixelShaderCSO = nullptr;
+    
+    ID3DBlob* TexShaderCSO = nullptr;
+    
 	ID3DBlob* ErrorMsg = nullptr;
-	// 셰이더 컴파일 및 생성
-	D3DCompileFromFile(L"Shaders/ShaderW0.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &VertexShaderCSO, &ErrorMsg);
+    // 셰이더 컴파일 및 생성
+    D3DCompileFromFile(L"Shaders/ShaderW0.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &VertexShaderCSO, &ErrorMsg);
+    Device->CreateVertexShader(VertexShaderCSO->GetBufferPointer(), VertexShaderCSO->GetBufferSize(), nullptr, &SimpleVertexShader);
 
-	Device->CreateVertexShader(VertexShaderCSO->GetBufferPointer(), VertexShaderCSO->GetBufferSize(), nullptr, &SimpleVertexShader);
+    D3DCompileFromFile(L"Shaders/ShaderW0.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &PixelShaderCSO, &ErrorMsg);
+    Device->CreatePixelShader(PixelShaderCSO->GetBufferPointer(), PixelShaderCSO->GetBufferSize(), nullptr, &PixelShaders[EPixelShaderType::Default]);
 
-	D3DCompileFromFile(L"Shaders/ShaderW0.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &PixelShaderCSO, &ErrorMsg);
-	Device->CreatePixelShader(PixelShaderCSO->GetBufferPointer(), PixelShaderCSO->GetBufferSize(), nullptr, &SimplePixelShader);
+    if (ErrorMsg)
+    {
+        std::cout << (char*)ErrorMsg->GetBufferPointer() << std::endl;
+    }
+    
 
-	D3DCompileFromFile(L"Shaders/ShaderW0.hlsl", nullptr, nullptr, "PickingPS", "ps_5_0", 0, 0, &PickingShaderCSO, nullptr);
-	Device->CreatePixelShader(PickingShaderCSO->GetBufferPointer(), PickingShaderCSO->GetBufferSize(), nullptr, &PickingPixelShader);
+    // 입력 레이아웃 정의 및 생성
+    D3D11_INPUT_ELEMENT_DESC Layout[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	    {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	    {"UV", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
-	if (ErrorMsg)
-	{
-		std::cout << (char*)ErrorMsg->GetBufferPointer() << std::endl;
-		ErrorMsg->Release();
-	}
+	    // 인스턴스 데이터 (Per-Instance)
+        // { "WORLD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+        // { "WORLD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+        // { "WORLD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+        // { "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+    };
 
-	// 입력 레이아웃 정의 및 생성
-	D3D11_INPUT_ELEMENT_DESC Layout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{"UV", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    Device->CreateInputLayout(Layout, ARRAYSIZE(Layout), VertexShaderCSO->GetBufferPointer(), VertexShaderCSO->GetBufferSize(), &SimpleInputLayout);
 
-		// 인스턴스 데이터 (Per-Instance)
-		// { "WORLD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		// { "WORLD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		// { "WORLD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		// { "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-	};
+    VertexShaderCSO->Release();
+    PixelShaderCSO->Release();
+    
+    // 정점 하나의 크기를 설정 (바이트 단위)
+    Stride = sizeof(FVertexPNCT);
+}
 
-	Device->CreateInputLayout(Layout, ARRAYSIZE(Layout), VertexShaderCSO->GetBufferPointer(), VertexShaderCSO->GetBufferSize(), &SimpleInputLayout);
+void URenderer::CreateSampleState()
+{
+    D3D11_SAMPLER_DESC samplerDesc = {};
+    samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 
-	VertexShaderCSO->Release();
-	PixelShaderCSO->Release();
-	PickingShaderCSO->Release();
+    Device->CreateSamplerState(&samplerDesc, &samplerState);
+}
 
-	// 정점 하나의 크기를 설정 (바이트 단위)
-	Stride = sizeof(FVertexSimple);
+void URenderer::ReleaseSampleState()
+{
+    samplerState->Release();
+    samplerState = nullptr;
 }
 
 void URenderer::ReleaseShader()
@@ -137,17 +155,19 @@ void URenderer::ReleaseShader()
 		SimpleInputLayout = nullptr;
 	}
 
-	if (SimplePixelShader)
-	{
-		SimplePixelShader->Release();
-		SimplePixelShader = nullptr;
-	}
 
-	if (SimpleVertexShader)
-	{
-		SimpleVertexShader->Release();
-		SimpleVertexShader = nullptr;
-	}
+    if (SimpleVertexShader)
+    {
+        SimpleVertexShader->Release();
+        SimpleVertexShader = nullptr;
+    }
+
+    for (auto& [Key, PS] : PixelShaders)
+    {
+        PS->Release();
+    }
+
+    PixelShaders.Empty();
 }
 
 void URenderer::CreateConstantBuffer()
@@ -204,40 +224,41 @@ void URenderer::SwapBuffer() const
 }
 
 void URenderer::Prepare()
-{
-	// 화면 지우기
-	DeviceContext->ClearRenderTargetView(FrameBufferRTV, ClearColor);
-	DeviceContext->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	// DeviceContext->
+{    
+    // 화면 지우기
+    DeviceContext->ClearRenderTargetView(FrameBufferRTV, ClearColor);
+    DeviceContext->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+    // DeviceContext->
+    
+    // InputAssembler의 Vertex 해석 방식을 설정
+    // DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); //왜인진 모르겠는데 매프레임 해줘야하나봄.
 
-	// InputAssembler의 Vertex 해석 방식을 설정
-	// DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); //왜인진 모르겠는데 매프레임 해줘야하나봄.
+    // Rasterization할 Viewport를 설정 
+    DeviceContext->RSSetViewports(1, &ViewportInfo);
+    DeviceContext->RSSetState(RasterizerState);
 
-	// Rasterization할 Viewport를 설정 
-	DeviceContext->RSSetViewports(1, &ViewportInfo);
-
-	DeviceContext->RSSetState(RasterizerState);
-
-	/**
-	 * OutputMerger 설정
-	 * 렌더링 파이프라인의 최종 단계로써, 어디에 그릴지(렌더 타겟)와 어떻게 그릴지(블렌딩)를 지정
-	 */
+    DeviceContext->PSSetSamplers(0, 1, &samplerState);
+    /**
+     * OutputMerger 설정
+     * 렌더링 파이프라인의 최종 단계로써, 어디에 그릴지(렌더 타겟)와 어떻게 그릴지(블렌딩)를 지정
+     */
 	DeviceContext->OMSetRenderTargets(1, &FrameBufferRTV, DepthStencilView);    // DepthStencil 뷰 설정
 	DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 }
 
 void URenderer::PrepareShader() const
 {
-	// 기본 셰이더랑 InputLayout을 설정
-	DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
-	DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
-	DeviceContext->IASetInputLayout(SimpleInputLayout);
+    // 기본 셰이더랑 InputLayout을 설정
+    DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
+    DeviceContext->PSSetShader(PixelShaders[EPixelShaderType::Default], nullptr, 0);
+    DeviceContext->IASetInputLayout(SimpleInputLayout);
 
-	// 버텍스 쉐이더에 상수 버퍼를 설정
-	if (ConstantBuffer)
-	{
-		DeviceContext->VSSetConstantBuffers(0, 1, &ConstantBuffer);
-	}
+    // 버텍스 쉐이더에 상수 버퍼를 설정
+    if (ConstantBuffer)
+    {
+        DeviceContext->VSSetConstantBuffers(0, 1, &ConstantBuffer);
+        DeviceContext->PSSetConstantBuffers(0, 1, &ConstantBuffer);
+    }
 }
 
 TMap<D3D11_PRIMITIVE_TOPOLOGY, bool> URenderer::CheckChangedVertexCount()
@@ -303,116 +324,116 @@ void URenderer::RenderBatch()
 	}
 }
 
-void URenderer::CreateVertexBuffer(EPrimitiveType VertexType, VertexBufferInfo BufferInfo)
+void URenderer::CreateVertexBuffer(uint32_t VertexType, VertexBufferInfo BufferInfo)
 {
-	if (VertexBuffers.Contains(VertexType))
-	{
-		return;
-	}
+    if (VertexBuffers.Contains(VertexType))
+    {
+        return;
+    }
+    
+    TArray<FVertexPNCT> Vertices = BufferInfo.GetVertices();
+    FVertexPNCT* RawVertices = Vertices.GetData();
+    // D3D11_PRIMITIVE_TOPOLOGY Topology = BufferInfo.GetTopology();
+    D3D11_PRIMITIVE_TOPOLOGY Topology = UPrimitiveComponent::GetTopology(static_cast<EPrimitiveType>(VertexType));
+    uint32_t VertexByteWidth = BufferInfo.GetVertexCount() * sizeof(FVertexPNCT);
 
-	TArray<FVertexSimple> Vertices = BufferInfo.GetVertices();
-	FVertexSimple* RawVertices = Vertices.GetData();
-	// D3D11_PRIMITIVE_TOPOLOGY Topology = BufferInfo.GetTopology();
-	D3D11_PRIMITIVE_TOPOLOGY Topology = UPrimitiveComponent::GetTopology(VertexType);
-	uint32_t VertexByteWidth = BufferInfo.GetVertexCount() * sizeof(FVertexSimple);
+    if (VertexByteWidth == 0)
+    {
+        return;
+    }
+    
+    D3D11_BUFFER_DESC VertexBufferDesc = {};
+    VertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    VertexBufferDesc.ByteWidth = VertexByteWidth;
+    VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    VertexBufferDesc.CPUAccessFlags = 0;
+    
+    D3D11_SUBRESOURCE_DATA VertexBufferSRD = {};
+    VertexBufferSRD.pSysMem = RawVertices;
 
-	if (VertexByteWidth == 0)
-	{
-		return;
-	}
+    ID3D11Buffer* VertexBuffer;
+    Device->CreateBuffer(&VertexBufferDesc, &VertexBufferSRD, &VertexBuffer);
+    
+    TArray<uint32_t> Indices = BufferInfo.GetIndices();
+    uint32_t* RawIndices = Indices.GetData();
 
-	D3D11_BUFFER_DESC VertexBufferDesc = {};
-	VertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	VertexBufferDesc.ByteWidth = VertexByteWidth;
-	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.CPUAccessFlags = 0;
+    uint32_t IndexByteWidth = BufferInfo.GetIndexCount() * sizeof(uint32_t);
+    
+    if (IndexByteWidth == 0)
+    {
+        return;
+    }
+    
+    D3D11_BUFFER_DESC IndexBufferDesc = {};
+    IndexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    IndexBufferDesc.ByteWidth = IndexByteWidth;
+    IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    IndexBufferDesc.CPUAccessFlags = 0;
 
-	D3D11_SUBRESOURCE_DATA VertexBufferSRD = {};
-	VertexBufferSRD.pSysMem = RawVertices;
+    D3D11_SUBRESOURCE_DATA indexData = {};
+    indexData.pSysMem = RawIndices;
 
-	//UUID받으면 설정이 빈 버퍼 만들어주기
-	ID3D11Buffer* VertexBuffer;
-	Device->CreateBuffer(&VertexBufferDesc, &VertexBufferSRD, &VertexBuffer);
-
-
-	TArray<uint32_t> Indices = BufferInfo.GetIndices();
-	uint32_t* RawIndices = Indices.GetData();
-
-	uint32_t IndexByteWidth = BufferInfo.GetIndexCount() * sizeof(uint32_t);
-
-	if (IndexByteWidth == 0)
-	{
-		return;
-	}
-
-	D3D11_BUFFER_DESC IndexBufferDesc = {};
-	IndexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	IndexBufferDesc.ByteWidth = IndexByteWidth;
-	IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	IndexBufferDesc.CPUAccessFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA indexData = {};
-	indexData.pSysMem = RawIndices;
-
-	ID3D11Buffer* IndexBuffer;
-	Device->CreateBuffer(&IndexBufferDesc, &indexData, &IndexBuffer);
-
-	VertexBufferInfo NewBufferInfo = { VertexBuffer, IndexBuffer, Topology, Vertices, Indices };
-	SetVertexBufferInfo(VertexType, NewBufferInfo);
+    ID3D11Buffer* IndexBuffer;
+    Device->CreateBuffer(&IndexBufferDesc, &indexData, &IndexBuffer);
+    
+    VertexBufferInfo NewBufferInfo = {VertexBuffer, IndexBuffer, Topology, Vertices, Indices};
+    SetVertexBufferInfo(VertexType, NewBufferInfo);
 }
+
+
 
 void URenderer::CreateBatchVertexBuffer(D3D11_PRIMITIVE_TOPOLOGY Topology, VertexBufferInfo BufferInfo)
 {
-	TArray<FVertexSimple> Vertices = BufferInfo.GetVertices();
-	FVertexSimple* RawVertices = Vertices.GetData();
-	// D3D11_PRIMITIVE_TOPOLOGY Topology = BufferInfo.GetTopology();
+    TArray<FVertexPNCT> Vertices = BufferInfo.GetVertices();
+    FVertexPNCT* RawVertices = Vertices.GetData();
+    // D3D11_PRIMITIVE_TOPOLOGY Topology = BufferInfo.GetTopology();
 
-	uint32_t VertexByteWidth = BufferInfo.GetVertexCount() * sizeof(FVertexSimple);
+    uint32_t VertexByteWidth = BufferInfo.GetVertexCount() * sizeof(FVertexPNCT);
 
-	if (VertexByteWidth == 0)
-	{
-		return;
-	}
+    if (VertexByteWidth == 0)
+    {
+        return;
+    }
+    
+    D3D11_BUFFER_DESC VertexBufferDesc = {};
+    VertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    VertexBufferDesc.ByteWidth = VertexByteWidth;
+    VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    VertexBufferDesc.CPUAccessFlags = 0;
+    
+    D3D11_SUBRESOURCE_DATA VertexBufferSRD = {};
+    VertexBufferSRD.pSysMem = RawVertices;
 
-	D3D11_BUFFER_DESC VertexBufferDesc = {};
-	VertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	VertexBufferDesc.ByteWidth = VertexByteWidth;
-	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.CPUAccessFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA VertexBufferSRD = {};
-	VertexBufferSRD.pSysMem = RawVertices;
-
-	//UUID받으면 설정이 빈 버퍼 만들어주기
-	ID3D11Buffer* VertexBuffer;
-	Device->CreateBuffer(&VertexBufferDesc, &VertexBufferSRD, &VertexBuffer);
+    //UUID받으면 설정이 빈 버퍼 만들어주기
+    ID3D11Buffer* VertexBuffer;
+    Device->CreateBuffer(&VertexBufferDesc, &VertexBufferSRD, &VertexBuffer);
 
 
-	TArray<uint32_t> Indices = BufferInfo.GetIndices();
-	uint32_t* RawIndices = Indices.GetData();
+    TArray<uint32_t> Indices = BufferInfo.GetIndices();
+    uint32_t* RawIndices = Indices.GetData();
 
-	uint32_t IndexByteWidth = BufferInfo.GetIndexCount() * sizeof(uint32_t);
+    uint32_t IndexByteWidth = BufferInfo.GetIndexCount() * sizeof(uint32_t);
+    
+    if (IndexByteWidth == 0)
+    {
+        return;
+    }
+    
+    D3D11_BUFFER_DESC IndexBufferDesc = {};
+    IndexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    IndexBufferDesc.ByteWidth = IndexByteWidth;
+    IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    IndexBufferDesc.CPUAccessFlags = 0;
 
-	if (IndexByteWidth == 0)
-	{
-		return;
-	}
+    D3D11_SUBRESOURCE_DATA indexData = {};
+    indexData.pSysMem = RawIndices;
 
-	D3D11_BUFFER_DESC IndexBufferDesc = {};
-	IndexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	IndexBufferDesc.ByteWidth = IndexByteWidth;
-	IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	IndexBufferDesc.CPUAccessFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA indexData = {};
-	indexData.pSysMem = RawIndices;
-
-	ID3D11Buffer* IndexBuffer;
-	Device->CreateBuffer(&IndexBufferDesc, &indexData, &IndexBuffer);
-
-	VertexBufferInfo NewBufferInfo = { VertexBuffer, IndexBuffer, Topology, Vertices, Indices };
-	SetBatchVertexBufferInfo(Topology, NewBufferInfo);
-}
+    ID3D11Buffer* IndexBuffer;
+    Device->CreateBuffer(&IndexBufferDesc, &indexData, &IndexBuffer);
+    
+    VertexBufferInfo NewBufferInfo = {VertexBuffer, IndexBuffer, Topology, Vertices, Indices};
+    SetBatchVertexBufferInfo(Topology, NewBufferInfo);
+ }
 
 void URenderer::ClearBatchVertex()
 {
@@ -429,38 +450,39 @@ void URenderer::ClearBatchVertex()
 
 void URenderer::AddBatchVertices(UPrimitiveComponent* Component)
 {
-	//자기 컴포넌트 매트릭스 곱해서 버텍스 ADD하기
-	//월드매트릭스만 해주고 V, P는 Constant로 넘기기 (Primitivie별로 곱해줄 필요없으니까)
-	// FMatrix WorldMatrix = Component->GetComponentTransformMatrix();
 
-	//월드매트릭스만 해주고 V, P는 Constant로 넘기기 (Primitivie별로 곱해줄 필요없으니까
+    //자기 컴포넌트 매트릭스 곱해서 버텍스 ADD하기
+    //월드매트릭스만 해주고 V, P는 Constant로 넘기기 (Primitivie별로 곱해줄 필요없으니까)
+    // FMatrix WorldMatrix = Component->GetComponentTransformMatrix();
+    
+    //월드매트릭스만 해주고 V, P는 Constant로 넘기기 (Primitivie별로 곱해줄 필요없으니까
+    
+    D3D11_PRIMITIVE_TOPOLOGY Topology = Component->GetTopology(Component->GetType());
+    
+    // uint32_t UUID = Component->GetOwner()->GetUUID();
+    TArray<FVertexPNCT> Vertices = OriginVertices[Component->GetType()];
+    TArray<uint32_t> Indices = OriginIndices[Component->GetType()];
 
-	D3D11_PRIMITIVE_TOPOLOGY Topology = Component->GetTopology(Component->GetType());
+    FMatrix ComponentWorldMatrix = Component->GetComponentTransformMatrix();
+    
+    for (FVertexPNCT& Vertex : Vertices)
+    {
+        Vertex.SetPos(ComponentWorldMatrix);
+        if (Component->GetPixelType())
+        {
+            FVector4 Color = Component->GetColor();
+            Vertex.SetVertexColor(Color);
+        }
+    }
 
-	// uint32_t UUID = Component->GetOwner()->GetUUID();
-	TArray<FVertexSimple> Vertices = OriginVertices[Component->GetType()];
-	TArray<uint32_t> Indices = OriginIndices[Component->GetType()];
-
-	FMatrix ComponentWorldMatrix = Component->GetComponentTransformMatrix();
-
-	for (FVertexSimple& Vertex : Vertices)
-	{
-		Vertex.SetPos(ComponentWorldMatrix);
-		if (Component->bCustomColor)
-		{
-			FVector4 Color = Component->GetColor();
-			Vertex.SetColor(Color);
-		}
-	}
-
-	VertexBufferInfo& BufferInfo = BatchVertexBuffers[Topology];
-	uint32_t IndexOffset = BufferInfo.GetVertexCount();
-	for (uint32_t& Index : Indices)
-	{
-		Index += IndexOffset;
-	}
-
-	BufferInfo.AddVertices(Vertices, Indices);
+    VertexBufferInfo& BufferInfo = BatchVertexBuffers[Topology];
+    uint32_t IndexOffset = BufferInfo.GetVertexCount();
+    for (uint32_t& Index : Indices)
+    {
+        Index += IndexOffset;
+    }
+    
+    BufferInfo.AddVertices(Vertices, Indices);
 }
 
 VertexBufferInfo URenderer::ResizeBatchVertexBuffer(D3D11_PRIMITIVE_TOPOLOGY Topology)
@@ -505,37 +527,104 @@ void URenderer::ReleaseVertexBuffer(D3D11_PRIMITIVE_TOPOLOGY Topology)
 	}
 }
 
-void URenderer::RenderPrimtivie(UPrimitiveComponent* Component)
+void URenderer::RenderPrimtive(UPrimitiveComponent* Component)
 {
-	if (VertexBuffers.Contains(Component->GetType()) == false)
-	{
-		return;
-	}
+    if (Component->IsA(UStaticMeshComponent::StaticClass()))
+    {
+        UStaticMeshComponent* Custom = static_cast<UStaticMeshComponent*>(Component);
 
-	VertexBufferInfo Info = VertexBuffers[Component->GetType()];
+        for (const auto& Unit : Custom->GetRenderUnits())
+        {
+            if (!Unit.Material) continue;
 
-	if (Info.GetVertexBuffer() == nullptr)
-	{
-		return;
-	}
+            // 텍스처 바인딩 
+            if (!Unit.Material->DiffuseTexturePath.empty())
+            {
+                UResourceManager::Get().LoadTexture(Unit.Material->DiffuseTexturePath);
+                ID3D11ShaderResourceView* SRV = UResourceManager::Get().GetTexture(Unit.Material->DiffuseTexturePath);
+                if (SRV)
+                {
+                    DeviceContext->PSSetShaderResources(0, 1, &SRV);
+                }
+            }
 
-	if (CurrentTopology != Info.GetTopology())
-	{
-		DeviceContext->IASetPrimitiveTopology(Info.GetTopology());
-		CurrentTopology = Info.GetTopology();
-	}
+            // 정점 버퍼 직접 생성 (전역 저장 X)
+            TArray<FVertexPNCT> Vertices = Unit.Vertices;
+            TArray<uint32_t> Indices = Unit.Indices;
+            if (Vertices.Num() == 0 || Indices.Num() == 0)
+                continue;
 
-	UpdateConstant(Component);
+            ID3D11Buffer* VB = nullptr;
+            ID3D11Buffer* IB = nullptr;
 
-	ID3D11Buffer* VertexBuffer = Info.GetVertexBuffer();
-	ID3D11Buffer* IndexBuffer = Info.GetIndexBuffer();
-	uint32_t IndexCount = Info.GetIndexCount();
+            // Vertex Buffer 생성
+            {
+                D3D11_BUFFER_DESC vbDesc = {};
+                vbDesc.Usage = D3D11_USAGE_DEFAULT;
+                vbDesc.ByteWidth = sizeof(FVertexPNCT) * Vertices.Num();
+                vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+                D3D11_SUBRESOURCE_DATA vbData = {};
+                vbData.pSysMem = Vertices.GetData();
+                Device->CreateBuffer(&vbDesc, &vbData, &VB);
+            }
 
-	UINT Offset = 0;
-	DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &Offset);
-	DeviceContext->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+            // Index Buffer 생성
+            {
+                D3D11_BUFFER_DESC ibDesc = {};
+                ibDesc.Usage = D3D11_USAGE_DEFAULT;
+                ibDesc.ByteWidth = sizeof(uint32_t) * Indices.Num();
+                ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+                D3D11_SUBRESOURCE_DATA ibData = {};
+                ibData.pSysMem = Indices.GetData();
+                Device->CreateBuffer(&ibDesc, &ibData, &IB);
+            }
 
-	DeviceContext->DrawIndexed(IndexCount, 0, 0);
+            // 셰이더 상수 업데이트
+            UpdateConstant(Component);
+
+            // Topology 설정
+            if (CurrentTopology != D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST)
+            {
+                DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+                CurrentTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+            }
+
+            // 버퍼 바인딩
+            UINT Offset = 0;
+            DeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &Offset);
+            DeviceContext->IASetIndexBuffer(IB, DXGI_FORMAT_R32_UINT, 0);
+
+            // 렌더링
+            DeviceContext->DrawIndexed(Indices.Num(), 0, 0);
+
+            // 해제
+            if (VB) VB->Release();
+            if (IB) IB->Release();
+        }
+
+        return;
+    }
+
+    // 기본 컴포넌트 처리
+    if (!VertexBuffers.Contains(Component->GetType())) return;
+
+    VertexBufferInfo Info = VertexBuffers[Component->GetType()];
+    if (!Info.GetVertexBuffer()) return;
+
+    if (CurrentTopology != Info.GetTopology())
+    {
+        DeviceContext->IASetPrimitiveTopology(Info.GetTopology());
+        CurrentTopology = Info.GetTopology();
+    }
+
+    UpdateConstant(Component);
+    ID3D11Buffer* VB = Info.GetVertexBuffer();
+    ID3D11Buffer* IB = Info.GetIndexBuffer();
+    UINT Offset = 0;
+
+    DeviceContext->IASetVertexBuffers(0, 1, &VB, &Stride, &Offset);
+    DeviceContext->IASetIndexBuffer(IB, DXGI_FORMAT_R32_UINT, 0);
+    DeviceContext->DrawIndexed(Info.GetIndexCount(), 0, 0);
 }
 
 void URenderer::ReleaseAllVertexBuffer()
@@ -562,22 +651,32 @@ void URenderer::UpdateConstant(USceneComponent* Component) const
 
 	D3D11_MAPPED_SUBRESOURCE ConstantBufferMSR;
 
-	FMatrix M = FMatrix::Transpose(Component->GetComponentTransformMatrix());
-	FMatrix V = FMatrix::Transpose(ViewMatrix);
-	FMatrix P = FMatrix::Transpose(ProjectionMatrix);
 
-	// D3D11_MAP_WRITE_DISCARD는 이전 내용을 무시하고 새로운 데이터로 덮어쓰기 위해 사용
-	DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &ConstantBufferMSR);
-	{
-		// 매핑된 메모리를 FConstants 구조체로 캐스팅
-		FConstants* Constants = static_cast<FConstants*>(ConstantBufferMSR.pData);
-		Constants->M = M;
-		Constants->V = V;
-		Constants->P = P;
-		Constants->Color = Component->GetColor();
-		Constants->bUseCustomColor = Component->bCustomColor;
-	}
-	DeviceContext->Unmap(ConstantBuffer, 0);
+    FMatrix MVP =
+        FMatrix::Transpose(ProjectionMatrix)
+        * FMatrix::Transpose(ViewMatrix)
+        * FMatrix::Transpose(Component->GetComponentTransformMatrix());
+
+    FVector4 Color = FVector4();
+    EPixelType PixelType = EDefalutColor;
+
+    if (Component->IsA(UPrimitiveComponent::StaticClass()))
+    {
+        UPrimitiveComponent* PrimitiveComp = dynamic_cast<UPrimitiveComponent*>(Component);
+        Color = PrimitiveComp->GetColor();
+        PixelType = PrimitiveComp->GetPixelType();
+    }
+    
+    // D3D11_MAP_WRITE_DISCARD는 이전 내용을 무시하고 새로운 데이터로 덮어쓰기 위해 사용
+    DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &ConstantBufferMSR);
+    {
+        // 매핑된 메모리를 FConstants 구조체로 캐스팅
+        FConstants* Constants = static_cast<FConstants*>(ConstantBufferMSR.pData);
+        Constants->MVP = MVP;
+		Constants->Color = Color;
+        Constants->PixelType = PixelType;
+    }
+    DeviceContext->Unmap(ConstantBuffer, 0);
 }
 
 
@@ -956,6 +1055,15 @@ void URenderer::ReleaseMultiViewport()
 
 
 
+void URenderer::PrepareTextureResource(std::string path)
+{
+    ID3D11ShaderResourceView* SRV = UResourceManager::Get().GetTexture(path);
+    if (SRV)
+    {
+        DeviceContext->PSSetShaderResources(0, 1, &SRV);
+    }
+}
+
 
 void URenderer::ReleasePickingFrameBuffer()
 {
@@ -1003,25 +1111,26 @@ void URenderer::PrepareZIgnore()
 	DeviceContext->OMSetDepthStencilState(IgnoreDepthStencilState, 0);
 }
 
-void URenderer::PreparePicking()
-{
-	// 렌더 타겟 바인딩
-	DeviceContext->OMSetRenderTargets(1, &PickingFrameBufferRTV, nullptr);
-	DeviceContext->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
-	DeviceContext->OMSetDepthStencilState(DepthStencilState, 0);                // DepthStencil 상태 설정. StencilRef: 스텐실 테스트 결과의 레퍼런스
 
-	DeviceContext->ClearRenderTargetView(PickingFrameBufferRTV, PickingClearColor);
-}
+// void URenderer::PreparePicking()
+// {
+//     // 렌더 타겟 바인딩
+//     DeviceContext->OMSetRenderTargets(1, &PickingFrameBufferRTV, nullptr);
+//     DeviceContext->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
+//     DeviceContext->OMSetDepthStencilState(DepthStencilState, 0);                // DepthStencil 상태 설정. StencilRef: 스텐실 테스트 결과의 레퍼런스
+//
+//     DeviceContext->ClearRenderTargetView(PickingFrameBufferRTV, PickingClearColor);
+// }
 
-void URenderer::PreparePickingShader() const
-{
-	DeviceContext->PSSetShader(PickingPixelShader, nullptr, 0);
-
-	if (ConstantPickingBuffer)
-	{
-		DeviceContext->PSSetConstantBuffers(1, 1, &ConstantPickingBuffer);
-	}
-}
+// void URenderer::PreparePickingShader() const
+// {
+//     DeviceContext->PSSetShader(PickingPixelShader, nullptr, 0);
+//
+//     if (ConstantPickingBuffer)
+//     {
+//         DeviceContext->PSSetConstantBuffers(1, 1, &ConstantPickingBuffer);
+//     }
+// }
 
 void URenderer::UpdateConstantPicking(FVector4 UUIDColor) const
 {
@@ -1066,9 +1175,9 @@ void URenderer::PrepareMain()
 
 void URenderer::PrepareMainShader()
 {
-	DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
-	DeviceContext->PSSetShader(SimplePixelShader, nullptr, 0);
-	DeviceContext->IASetInputLayout(SimpleInputLayout);
+    DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
+    DeviceContext->PSSetShader(PixelShaders[EPixelShaderType::Default], nullptr, 0);
+    DeviceContext->IASetInputLayout(SimpleInputLayout);
 }
 
 FVector4 URenderer::GetPixel(FVector MPos)
@@ -1355,9 +1464,9 @@ void URenderer::RenderParticle(float DeltaTime)
 
 void URenderer::CreateTexture(HWND hWindow)
 {
-	Texture = new UTexture();
-	TextureRenderer = new UTextureRenderer();
-	TextureRenderer->Create(Device, hWindow);
+	Texture = new LegacyTexture();
+    TextureRenderer = new UTextureRenderer();
+    TextureRenderer->Create(Device, hWindow);
 	Texture->Create(Device, L"light_bulb_texture.tga");
 }
 

@@ -11,10 +11,10 @@ struct SubUV
 	FVector2 V;
 };
 
-class UTexture {
+class LegacyTexture {
 public:
-	UTexture();
-	~UTexture();
+	LegacyTexture();
+	~LegacyTexture();
 	static SubUV GetSubUV(int CharacterIndex, int AtlasWidth, int AtlasHeight, int CharWidth, int CharHeight);
 	bool Create(ID3D11Device* Device, const wchar_t* TextureFileName);
 	void Release();
@@ -23,7 +23,7 @@ public:
 
 private:
 	ID3D11ShaderResourceView* Texture = nullptr;
-	TArray<FVertexSimple> Vertices;
+	TArray<FVertexPNCT> Vertices;
 	TArray<uint32> Indices;
 	ID3D11Buffer* VertexBuffer, * IndexBuffer;
 };

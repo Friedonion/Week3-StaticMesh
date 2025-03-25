@@ -4,7 +4,7 @@
 #include "Object/USceneComponent.h"
 #include "Primitive/PrimitiveVertices.h"
 #include "Core/Math/Plane.h"
-
+#include "Object/ObjectMacros.h"
 
 class UPrimitiveComponent : public USceneComponent
 {
@@ -49,13 +49,26 @@ public:
 protected:
 	bool bCanPick = false;
 	bool bIsDefaultRendered = false;
-	bool bUseVertexColor = true;
 	bool bIsOrthoGraphic = false;
 	FVector4 CustomColor = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
 
 public:
 	// UScenecomponent중에 PrimitiveComponent만 추출
 	static TSet<UPrimitiveComponent*> FilterPrimitiveComponents(TSet<UActorComponent*>& Components);
+	
+	void SetColor(FVector4 Color);
+	FVector4 GetColor() const { return Color; }
+
+	void SetTextureResource(std::string ER);
+	std::string GetTextureResource() const { return TextureResource; }
+
+	EPixelType GetPixelType() const { return PixelType; }
+	void SetPixelType(EPixelType type) { PixelType = type; }
+
+private:
+	FVector4 Color = FVector4::One();
+	EPixelType PixelType = EDefalutColor;
+	std::string TextureResource = "Textures/cat.png";
 };
 
 class UCubeComp : public UPrimitiveComponent

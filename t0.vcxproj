@@ -81,6 +81,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\Build\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\</OutDir>
@@ -135,7 +136,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(ProjectDir)Source\ThirdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(ProjectDir)Source\ThirdParty;%(AdditionalIncludeDirectories);"$(ProjectDir)inlude"</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -176,6 +177,10 @@
     <ClCompile Include="FViewport.cpp" />
     <ClCompile Include="ISlateViewport.cpp" />
     <ClCompile Include="Source\Core\Math\FRect.cpp" />
+    <ClCompile Include="Source\Data\MtlLoader.cpp" />
+    <ClCompile Include="Source\Data\ObjManager.cpp" />
+    <ClCompile Include="Source\Object\Actor\Custom.cpp" />
+    <ClCompile Include="Source\Object\Actor\Texture.cpp" />
     <ClCompile Include="Source\Object\Class\Class.cpp" />
     <ClCompile Include="Source\Core\Math\Box.cpp" />
     <ClCompile Include="Source\Core\Container\Name.cpp" />
@@ -184,7 +189,7 @@
     <ClCompile Include="Source\Core\Rendering\Particle\ParticleShader.cpp" />
     <ClCompile Include="Source\Core\Rendering\Texture\TextureRenderer.cpp" />
     <ClCompile Include="Source\Object\Actor\WorldGrid.cpp" />
-    <ClCompile Include="Source\Core\Rendering\Texture.cpp" />
+    <ClCompile Include="Source\Core\Rendering\LegacyTexture.cpp" />
     <ClCompile Include="Source\Core\Rendering\Text\Font.cpp" />
     <ClCompile Include="Source\Core\Rendering\Text\FontShader.cpp" />
     <ClCompile Include="Source\Core\Rendering\Text\Text.cpp" />
@@ -213,8 +218,13 @@
     <ClCompile Include="Source\Core\Math\Vector.cpp" />
     <ClCompile Include="Source\Object\ObjectFactory.cpp" />
     <ClCompile Include="Source\Object\PrimitiveComponent\BillBoardComponent.cpp" />
+    <ClCompile Include="Source\Object\PrimitiveComponent\StaticMeshComponent.cpp" />
     <ClCompile Include="Source\Object\PrimitiveComponent\TextComponent.cpp" />
+    <ClCompile Include="Source\Object\PrimitiveComponent\TextureComponent.cpp" />
     <ClCompile Include="Source\Object\PrimitiveComponent\UBoundingBox.cpp" />
+    <ClCompile Include="Source\Object\TObjectIterator.cpp" />
+    <ClCompile Include="Source\Object\UObjectArray.cpp" />
+    <ClCompile Include="Source\Static\ResourceManager.cpp" />
     <ClCompile Include="Source\ThirdParty\ImGui\imgui.cpp" />
     <ClCompile Include="Source\ThirdParty\ImGui\imgui_demo.cpp" />
     <ClCompile Include="Source\ThirdParty\ImGui\imgui_draw.cpp" />
@@ -222,7 +232,9 @@
     <ClCompile Include="Source\ThirdParty\ImGui\imgui_impl_win32.cpp" />
     <ClCompile Include="Source\ThirdParty\ImGui\imgui_tables.cpp" />
     <ClCompile Include="Source\ThirdParty\ImGui\imgui_widgets.cpp" />
-    <ClCompile Include="Source\Object\UObject.cpp" />
+    <ClCompile Include="Source\Object\UObject.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Source\Object\USceneComponent.cpp" />
     <ClCompile Include="Source\Object\PrimitiveComponent\UPrimitiveComponent.cpp" />
     <ClCompile Include="Source\Object\World\World.cpp" />
@@ -236,12 +248,18 @@
     <ClInclude Include="FViewport.h" />
     <ClInclude Include="ISlateViewport.h" />
     <ClInclude Include="Source\Core\Math\FRect.h" />
+    <ClInclude Include="Source\Data\MaterialData.h" />
+    <ClInclude Include="Source\Data\MtlLoader.h" />
+    <ClInclude Include="Source\Data\ObjManager.h" />
+    <ClInclude Include="Source\Object\Actor\Custom.h" />
+    <ClInclude Include="Source\Object\Actor\Texture.h" />
+    <ClInclude Include="Source\Object\Cast.h" />
     <ClInclude Include="Source\Object\Class\Class.h" />
     <ClInclude Include="Source\Core\Math\Box.h" />
     <ClInclude Include="Source\Core\Container\Name.h" />
     <ClInclude Include="Source\Core\Rendering\Particle\Particle.h" />
     <ClInclude Include="Source\Core\Rendering\Particle\ParticleShader.h" />
-    <ClInclude Include="Source\Core\Rendering\Texture.h" />
+    <ClInclude Include="Source\Core\Rendering\LegacyTexture.h" />
     <ClInclude Include="Source\Core\Rendering\Texture\TextureRenderer.h" />
     <ClInclude Include="Source\Core\Rendering\Text\Font.h" />
     <ClInclude Include="Source\Core\Rendering\Text\FontShader.h" />
@@ -249,6 +267,13 @@
     <ClInclude Include="Source\Object\Actor\Spotlight.h" />
     <ClInclude Include="SSplitter.h" />
     <ClInclude Include="SWindow.h" />
+    <ClInclude Include="Source\Object\ObjectMacros.h" />
+    <ClInclude Include="Source\Object\PrimitiveComponent\StaticMeshComponent.h" />
+    <ClInclude Include="Source\Object\PrimitiveComponent\TextureComponent.h" />
+    <ClInclude Include="Source\Object\TObjectIterator.h" />
+    <ClInclude Include="Source\Object\UObjectArray.h" />
+    <ClInclude Include="Source\Static\Enum.h" />
+    <ClInclude Include="Source\Static\ResourceManager.h" />
     <ClInclude Include="Unsupported.h" />
   </ItemGroup>
   <ItemGroup>

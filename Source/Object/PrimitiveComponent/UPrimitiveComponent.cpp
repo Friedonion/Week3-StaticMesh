@@ -1,7 +1,7 @@
 ﻿#include "UPrimitiveComponent.h"
 #include "Object/World/World.h"
 #include "Object/Actor/Actor.h"
-
+#include"Object/Cast.h"
 
 void UPrimitiveComponent::BeginPlay()
 {
@@ -30,19 +30,7 @@ void UPrimitiveComponent::Render()
 	{
 		return;
 	}
-	// if (GetOwner()->IsCanPick() == false)
-	// {
-	// 	if (bIsPicked)
-	// 	{
-	// 		/*bUseVertexColor = false;
-	// 		SetCustomColor(FVector4(1.0f, 0.647f, 0.0f, 1.0f));*/
-	// 	}
-	// 	else
-	// 	{
-	// 		bUseVertexColor = true;
-	// 	}
-	// }
-	Renderer->RenderPrimtivie(this);
+	Renderer->RenderPrimtive(this);
 }
 
 void UPrimitiveComponent::RegisterComponentWithWorld(UWorld* World)
@@ -64,7 +52,7 @@ void UPrimitiveComponent::RegisterComponentWithWorld(UWorld* World)
 
 	EPrimitiveType ComponentType = GetType();
 
-	TArray<FVertexSimple> Vertices = OriginVertices[ComponentType];
+	TArray<FVertexPNCT> Vertices = OriginVertices[ComponentType];
 
 	TArray<uint32_t> Indices = OriginIndices[ComponentType];
 	
@@ -83,4 +71,16 @@ TSet<UPrimitiveComponent*> UPrimitiveComponent::FilterPrimitiveComponents(TSet<U
 			NewSet.Add(Prim);
 	}
 	return NewSet;
+}
+
+void UPrimitiveComponent::SetColor(FVector4 Color)
+{
+	this->Color = Color;
+	PixelType = ECustomColor;
+}
+
+void UPrimitiveComponent::SetTextureResource(std::string ER)
+{
+	this->TextureResource = ER;
+	PixelType = ETexture;
 }

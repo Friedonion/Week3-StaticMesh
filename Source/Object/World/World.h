@@ -11,7 +11,7 @@
 #include "Object/Actor/Arrow.h"
 #include "Object/Actor/Picker.h"
 #include "Object/PrimitiveComponent/UPrimitiveComponent.h"
-
+#include "Object/ObjectMacros.h"
 class AActor;
 class UPrimitiveComponent;
 
@@ -77,6 +77,8 @@ protected:
 	TArray<AActor*> ActorsToSpawn;
 	TArray<AActor*> PendingDestroyActors; // TODO: 추후에 TQueue로 변경
 	TSet<UPrimitiveComponent*> RenderComponents;
+
+	std::unordered_map<std::string, std::function<AActor*()>> ActorFactoryMap;
 };
 
 template <typename T>

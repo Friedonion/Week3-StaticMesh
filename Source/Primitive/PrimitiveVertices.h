@@ -5,14 +5,14 @@
 #include "Core/Math/Vector.h"
 #include "Core/Math/Matrix.h"
 
-struct FVertexSimple
+struct FVertexPNCT
 {
 	float X, Y, Z;    // Position
-	float R, G, B, A; // Color
 	float NX, NY, NZ;
+	float R, G, B, A; // Color
 	float U, V;
 	
-	void SetPos(const FMatrix WorldMatrix)
+	void SetPos(const FMatrix& WorldMatrix)
 	{
 		FVector4 Position(X, Y, Z, 1.0f);
 		Position = Position * WorldMatrix;
@@ -21,7 +21,14 @@ struct FVertexSimple
 		Z = Position.Z / Position.W;
 	}
 
-	void SetColor(const FVector4 Color)
+	void SetPos(const FVector& Position)
+	{
+		X = Position.X;
+		Y = Position.Y;
+		Z = Position.Z;
+	}
+	
+	void SetVertexColor(const FVector4& Color)
 	{
 		R = Color.X;
 		G = Color.Y;
@@ -29,14 +36,14 @@ struct FVertexSimple
 		A = Color.W;
 	}
 
-	void SetNormal(const FVector4 Normal)
+	void SetNormal(const FVector& Normal)
 	{
 		NX = Normal.X;
 		NY = Normal.Y;
 		NZ = Normal.Z;
 	}
 
-	void SetUV(const FVector4 UV)
+	void SetUV(const FVector2 UV)
 	{
 		U = UV.X;
 		V = UV.Y;
@@ -56,7 +63,7 @@ public:
 	static void CreateSpotlightVertices();
 };
 
-enum class EPrimitiveType : uint8
+enum EPrimitiveType : uint8
 {
 	EPT_None, //EPTNone은 항상 처음
 	EPT_Triangle,
@@ -69,8 +76,9 @@ enum class EPrimitiveType : uint8
 	EPT_BoundingBox,
 	EPT_Ring,
 	EPT_Spotlight,
-	EPT_Max, //EPTMAX는 항상 마지막
+
+	EPT_Custom = 100,
 };
 
-extern TMap<EPrimitiveType, TArray<FVertexSimple>> OriginVertices;
+extern TMap<EPrimitiveType, TArray<FVertexPNCT>> OriginVertices;
 extern TMap<EPrimitiveType, TArray<uint32_t>> OriginIndices;

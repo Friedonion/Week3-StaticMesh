@@ -10,6 +10,8 @@
 
 #include "Object/Actor/Camera.h"
 #include "../FSlateApplication.h"
+#include "Object/Cast.h"
+
 APicker::APicker()
 {
     DontDestroy();
@@ -325,7 +327,7 @@ TMap<UPrimitiveComponent*, float> APicker::PickActorByRay()
         //정점데이터에 월드매트릭스 곱해서 x,y,z minX minY minZ maxX maxY maxZ 구하기
         FMatrix CompWorldMatrix = Component->GetComponentTransformMatrix(); //GetWorldMatrix 부모들 다 적용시키는 걸로 바꿔줘야함
 
-        TArray<FVertexSimple> Vertices = OriginVertices[Component->GetType()];
+        TArray<FVertexPNCT> Vertices = OriginVertices[Component->GetType()];
         int Size = Vertices.Num();
         
         for (int i=0; i<Size; i++)
@@ -360,7 +362,7 @@ TMap<UPrimitiveComponent*, float> APicker::PickActorByRay()
         //정점데이터에 월드매트릭스 곱해서 x,y,z minX minY minZ maxX maxY maxZ 구하기
         FMatrix CompWorldMatrix = Component->GetComponentTransformMatrix(); //GetWorldMatrix 부모들 다 적용시키는 걸로 바꿔줘야함
 
-        TArray<FVertexSimple> Vertices = OriginVertices[Component->GetType()];
+        TArray<FVertexPNCT> Vertices = OriginVertices[Component->GetType()];
         int Size = Vertices.Num();
         
         for (int i=0; i<Size; i++)
