@@ -2,6 +2,13 @@
 #include "Object/Actor/Actor.h"
 #include "Data/FEngineShowFlags.h"
 
+enum class PickState
+{
+    None,
+    Actor,
+    Component,
+};
+
 class AGizmoHandle;
 class AWorldGrid;
 
@@ -16,7 +23,8 @@ public:
     inline UPrimitiveComponent* GetSelectedComponent() const {if (SelectedComponent)    {return SelectedComponent;}
                                                             else                        {return nullptr;}}
     
-    void SelectPrimitive(UPrimitiveComponent* NewPrimitive);
+    void SelectComponent(UPrimitiveComponent* NewComponent);
+    void ReleasePick();
     void SelectActor(AActor* NewActor);
 
     inline ACamera* GetCamera() const {return Camera;}
@@ -28,9 +36,13 @@ public:
 
     AGizmoHandle* GetGizmoHandle() const {return GizmoHandle;}
 
-    void SetWorldGrid(AWorldGrid* NewWorldGrid) { WorldGrid = NewWorldGrid; };
+    void SetWorldGrid(AWorldGrid* NewWorldGrid) { WorldGrid = NewWorldGrid; }
 
-    AWorldGrid* GetWorldGrid() const {return WorldGrid;};
+    AWorldGrid* GetWorldGrid() const {return WorldGrid;}
+
+    void SetPickState(PickState NewPickState){CurrentPickState = NewPickState;}
+
+    PickState GetPickState() const {return CurrentPickState;}
     
     bool IsShowFlagSet(EEngineShowFlags Flag) const { return EngineShowFlags.IsSet(Flag);}
     void SetShowFlag(EEngineShowFlags Flag, bool bEnabled) { EngineShowFlags.Set(Flag, bEnabled);}
@@ -42,6 +54,7 @@ public:
 private:
     AActor* SelectedActor = nullptr;
     UPrimitiveComponent* SelectedComponent = nullptr;
+    PickState CurrentPickState = PickState::None;
     
     ACamera* Camera = nullptr;
     TMap<ECameraViewMode::Type,ACamera*> OrthogonalCamera;
