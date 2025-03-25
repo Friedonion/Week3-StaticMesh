@@ -28,9 +28,6 @@ class UI
     bool bShowUI = true; 
 
 public:
-    SpawnType CurrentPrimitiveItem = ESpawnCustom;
-	std::string CurrentTextureItem = "Textures/cat.png";
-	
     int NumOfSpawn = 1;
 	bool bIsInitialized = false;
     
@@ -62,6 +59,11 @@ private:
     float windowWidth;
 	float windowHeight;
 
+	SpawnType CurrentPrimitiveItem = ESpawnCustom;
+	std::string CurrentTextureItem = "Textures/cat.png";
+
+	TArray<int> CurrentMeshItems;
+	
     void SetWindowLayout(float widthRatio, float heightRatio, float posXRatio, float posYRatio);
     TArray<FName> Unselectables;
     void SetViewOption(const char* name, int &current_item,

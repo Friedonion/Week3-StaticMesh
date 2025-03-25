@@ -19,6 +19,7 @@ void UStaticMeshComponent::LoadFromObj(const std::string& path)
         unit.Vertices = sub.Vertices;
         unit.Indices = sub.Indices;
         unit.Material = UResourceManager::Get().GetMaterial(sub.MaterialName);
+        unit.GUID = unit.Material->GUID;
         RenderUnits.Add(unit);
     }
 }

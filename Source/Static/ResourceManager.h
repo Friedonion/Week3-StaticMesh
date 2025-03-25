@@ -17,6 +17,8 @@ public:
     UResourceManager() = default;
     ~UResourceManager() = default;
 
+    static uint32_t GUID;
+    
     void Initialize(ID3D11Device* InDevice, ID3D11DeviceContext* InContext);
     void Shutdown();
 
@@ -25,9 +27,9 @@ public:
     void ReleaseAllTextures();
 
     const FMaterialData* GetMaterial(const std::string& name) const;
-    void SetMaterial(const std::string& name, const FMaterialData& materialData);
+    void SetMaterial(const std::string& name, FMaterialData& materialData);
 
-
+    TMap<std::string, FMaterialData>& GetMaterials();
 
 private:
     ID3D11Device* Device = nullptr;

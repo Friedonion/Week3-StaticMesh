@@ -527,7 +527,7 @@ void URenderer::ReleaseVertexBuffer(D3D11_PRIMITIVE_TOPOLOGY Topology)
 	}
 }
 
-void URenderer::RenderPrimtive(UPrimitiveComponent* Component)
+void URenderer::RenderPrimitive(UPrimitiveComponent* Component)
 {
     if (Component->IsA(UStaticMeshComponent::StaticClass()))
     {

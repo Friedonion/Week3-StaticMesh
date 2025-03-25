@@ -30,7 +30,7 @@ void UPrimitiveComponent::Render()
 	{
 		return;
 	}
-	Renderer->RenderPrimtive(this);
+	Renderer->RenderPrimitive(this);
 }
 
 void UPrimitiveComponent::RegisterComponentWithWorld(UWorld* World)

@@ -2,7 +2,7 @@
 #include "ResourceManager.h"
 #include "directxtk/WICTextureLoader.h"
 
-
+unsigned int UResourceManager::GUID = 0;
 
 void UResourceManager::Initialize(ID3D11Device* InDevice, ID3D11DeviceContext* InContext)
 {
@@ -51,25 +51,30 @@ void UResourceManager::ReleaseAllTextures()
     TextureMap.Empty();
 }
 
+TMap<std::string, FMaterialData>& UResourceManager::GetMaterials()
+{
+    return Materials;
+}
 
 const FMaterialData* UResourceManager::GetMaterial(const std::string& name) const {
     return Materials.Find(name);
 }
 
-void UResourceManager::SetMaterial(const std::string& name, const FMaterialData& materialData)
+void UResourceManager::SetMaterial(const std::string& name, FMaterialData& materialData)
 {
-    Materials[name] = materialData;
+    if (Materials.Contains(name))
+    {
+        Materials[name] = materialData;
+    }else
+    {
+        materialData.GUID = GUID++;
+        Materials.Add(name, materialData);
+    }
 }
-
 
 void UResourceManager::SetMeshData(const std::string& path, const TArray<FSubMeshData>& meshData)
 {
     Meshes[path] = meshData;
-    // for (auto& md : meshData)
-    // {
-    //     Meshes[path].Add(md);
-    // }
-    // Meshes["pirate"] = meshData;
 }
 
 const TArray<FSubMeshData>* UResourceManager::GetMeshData(const std::string& path) const

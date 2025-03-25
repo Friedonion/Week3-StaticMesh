@@ -210,7 +210,7 @@ public:
 	
     /** Buffer를 해제합니다. */
 	void ReleaseVertexBuffer(D3D11_PRIMITIVE_TOPOLOGY Topology);
-    void RenderPrimtive(UPrimitiveComponent* Component);
+    void RenderPrimitive(UPrimitiveComponent* Component);
     void ReleaseAllVertexBuffer();
     /** Constant Data를 업데이트 합니다. */
     void UpdateConstant(USceneComponent* Component) const;
