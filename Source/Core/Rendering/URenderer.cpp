@@ -47,7 +47,7 @@ void URenderer::Create(HWND hWindow)
   CreateSampleState();
 	CreatePickingTexture(hWindow);
 
-	FVertexSimple::CreateOriginVertices();
+	FVertexPNCT::CreateOriginVertices();
 
 	CreateText(hWindow);
 	CreateAlphaBlendingState();

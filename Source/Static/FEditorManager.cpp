@@ -153,6 +153,6 @@ void FEditorManager::MoveOrthoCamera(ECameraViewMode::Type cameraType, FVector d
 	ACamera* camera = OrthogonalCamera[cameraType];
 	FTransform cameraTransform = camera->GetActorRelativeTransform();
 	cameraTransform.Translate(deltaMove);
-	camera->SetActorRelatvieTransform(cameraTransform);
+	camera->SetActorRelativeTransform(cameraTransform);
 
 }

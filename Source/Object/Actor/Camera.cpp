@@ -70,7 +70,7 @@ void ACamera::SetCameraViewMode(ECameraViewMode::Type cameraViewMode)
     }        
     FTransform frontTransform = GetActorRelativeTransform();
     frontTransform.SetRotation(Rotation);
-    SetActorRelatvieTransform(frontTransform);
+    SetActorRelativeTransform(frontTransform);
 }
 
 float ACamera::GetFieldOfView() const
