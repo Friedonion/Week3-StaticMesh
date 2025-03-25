@@ -207,7 +207,6 @@ void AGizmoHandle::SetActive(bool bActive)
 					{
 						if (SelectedActorPrimitive->IsA(UBillBoardComponent::StaticClass())) continue;
 						auto BoundingBox = AddComponent<UBoundingBoxComponent>();
-						SelectedActorBoundingBox.Add(BoundingBox);
 						BoundingBox->SetupAttachment(this->RootComponent);
 						BoundingBox->SetTargetPrimitive(SelectedActorPrimitive);
 
