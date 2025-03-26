@@ -61,8 +61,6 @@ private:
 
 	SpawnType CurrentPrimitiveItem = ESpawnCustom;
 	std::string CurrentTextureItem = "Textures/cat.png";
-
-	TArray<int> CurrentMeshItems;
 	
     void SetWindowLayout(float widthRatio, float heightRatio, float posXRatio, float posYRatio);
     TArray<FName> Unselectables;

@@ -13,6 +13,7 @@ struct FStaticMesh {
     const TArray<uint32_t>* Indices = nullptr;
     const FMaterialData* Material = nullptr;
     uint32_t GUID = 0;
+    std::string ObjName;
 };
 
 class UStaticMeshComponent : public UPrimitiveComponent
@@ -33,12 +34,15 @@ public:
         return EPrimitiveType::EPT_Custom;
     }
 
-    void LoadFromObj(const std::string& path);
+    void LoadFromObj(const std::string& ObjName);
+
+    std::string& GetObjName(){return CurrentObjName;}
   
     TArray<FStaticMesh>& GetRenderUnits() { return RenderUnits; }
 
-    void SetRenderUnits(const TArray<FStaticMesh>& newRenderUnits) { RenderUnits = newRenderUnits; }
+    void SetRenderUnits(const TArray<FStaticMesh>& newRenderUnits) { RenderUnits = newRenderUnits; } //지금은 머테리얼만 바꾸는데 사용
     
 private:
     TArray<FStaticMesh> RenderUnits;
+    std::string CurrentObjName;
 };

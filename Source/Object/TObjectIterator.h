@@ -13,7 +13,8 @@ public:
         --Index;
         CheckObject();
     }
-
+    //이거랑 Actors랑 가져오는게 다름 확인하고 고치기
+    
     /** Iterator가 계속 유효한지 확인하는 연산자 */
     FORCEINLINE explicit operator bool() const
     {

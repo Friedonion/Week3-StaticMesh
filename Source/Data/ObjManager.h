@@ -13,8 +13,6 @@ public:
     ~FObjManager() = default;
     void CheckExistAllDirectory();
     bool LoadFromFile(const std::string& Filename);
-    size_t Hash(std::string Str);
-    TArray<std::string> Split(const std::string& str, char delim);
     bool SaveToBinary(TArray<FSubMeshData>& SubMeshes, TArray<std::string>& Materials, const std::string& Filename);
     bool LoadFromBinary(TArray<FSubMeshData>& OutSubMeshes, TArray<std::string>& OutMaterials, const std::string& Filename);
 

@@ -28,7 +28,7 @@ public:
 
     const FMaterialData* GetMaterial(const std::string& name) const;
     void SetMaterial(const std::string& name, FMaterialData& materialData);
-
+    TMap<std::string, TArray<FSubMeshData>>& GetMeshDatas();
     TMap<std::string, FMaterialData>& GetMaterials();
 
 private:
