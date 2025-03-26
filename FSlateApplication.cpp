@@ -73,6 +73,11 @@ void FSlateApplication::SaveSWindowToJSON()
 	}
 }
 
+SWindow* FSlateApplication::GetClickedWindow()
+{
+	return clickedWindow;
+}
+
 void FSlateApplication::ProcessMouseButtonDownEvent()
 {
 	POINT pt;
@@ -105,7 +110,7 @@ void FSlateApplication::ProcessMouseButtonDownEvent()
 	
 	if (Input.IsPressedMouse(false))
 	{
-		if (clickedWindow)
+		if (clickedWindow&&DeltaPos.X!=0&&DeltaPos.Y!=0)
 		{
 			clickedWindow->OnMouseDrag(DeltaPos2D);
 		}

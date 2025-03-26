@@ -1,6 +1,7 @@
 ﻿#include "SWindow.h"
 #include "Source\Debug\DebugConsole.h"
 #include "ISlateViewport.h"
+#include "Object/Actor/Camera.h"
 SWindow::SWindow()
 {
 }
@@ -64,6 +65,8 @@ void SWindow::Resize(const FRect& _rect)
 	prevRect = Rect;
 	Rect = _rect;
 	if(viewport) viewport->Resize(_rect);
+	UE_LOG("Resize Min (%f %f), Max (%f %f)",
+		Rect.Min.X, Rect.Min.Y, Rect.Max.X, Rect.Max.Y);
 }
 
 void SWindow::ScreenResize(float resizeWidthRatio, float resizeHeightRatio)
@@ -106,4 +109,10 @@ void SWindow::RestorePrevSize()
 void SWindow::ChangeMainCamera()
 {
 	if(viewport!=nullptr) viewport->ChangeMainCamera();
+}
+
+ECameraViewMode::Type SWindow::GetCameraViewMode()
+{
+	if (viewport) return viewport->GetCameraViewMode();
+	else return ECameraViewMode::Type::None;
 }

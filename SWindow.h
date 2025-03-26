@@ -3,6 +3,8 @@
 #include "SimpleJSON/Json.hpp"
 class ISlateViewport;
 
+namespace ECameraViewMode { enum class Type : uint8; }
+
 class SWindow
 {
 public:
@@ -23,10 +25,14 @@ public:
 	void SetActiveFullViewport();
 	void RestorePrevSize();
 	void ChangeMainCamera();
+	virtual ECameraViewMode::Type GetCameraViewMode();
 private:
 	bool bisHover = false;
 	bool bisClicked = false;
 	ISlateViewport* viewport;
 	FRect prevRect;
+
+	const float minWidth=300.0f;
+	const float maxWidth=300.0f;
 };
 

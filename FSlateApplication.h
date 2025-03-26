@@ -16,6 +16,7 @@ public:
 	void Add(SWindow* _window);
 	void ResizeScreen(float resizeWidthRatio, float resizeHeightRatio);
 	void SaveSWindowToJSON();
+	SWindow* GetClickedWindow();
 private:
 	void ProcessMouseButtonDownEvent();
 	void ProcessKeyDownEvent();

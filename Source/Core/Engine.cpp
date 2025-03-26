@@ -399,10 +399,11 @@ void UEngine::ShutdownWindow()
 
 void UEngine::UpdateWindowSize(UINT InScreenWidth, UINT InScreenHeight)
 {
+    //화면 최소화 반응 안하기
+    if (InScreenHeight == 0 || InScreenWidth == 0)return;
     float resizeWidthRatio = float(InScreenWidth) / ScreenWidth;
     float resizeHeightRatio = float(InScreenHeight) / ScreenHeight;
     FSlateApplication::Get().ResizeScreen(resizeWidthRatio, resizeHeightRatio);
-    UE_LOG("ResizeRatio %f %f", resizeWidthRatio, resizeHeightRatio);
 	ScreenWidth = InScreenWidth;
 	ScreenHeight = InScreenHeight;
 

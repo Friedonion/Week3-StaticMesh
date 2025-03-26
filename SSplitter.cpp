@@ -1,5 +1,6 @@
 ﻿#include "SSplitter.h"
 #include "Source\Debug\DebugConsole.h"
+#include "Object/Actor/Camera.h"
 
 bool SSplitter::isHover(FVector2 coord) const
 {
@@ -145,4 +146,9 @@ json::JSON SSplitter2x2::ToJSON()
     j["HMaxY"] = horitionalHandle.Max.Y;
     j["type"] = "SSplitter2*2";
     return j;
+}
+
+ECameraViewMode::Type SSplitter2x2::GetCameraViewMode()
+{
+    return ECameraViewMode::Type::None;
 }

@@ -244,6 +244,12 @@ void APicker::UpdateRayInfo()
     RayOrigin = {PosX, PosY, 0.0f, 1.0f};
     RayEnd = {PosX, PosY, 1.0f, 1.0f};
 
+    //SWindow* clickedWindow = FSlateApplication::Get().GetClickedWindow();
+    //if (clickedWindow == nullptr) return;
+    //ECameraViewMode::Type cameraViewMode = clickedWindow->GetCameraViewMode();
+    //if (cameraViewMode == ECameraViewMode::Type::None) return;
+    ////UE_LOG("CameraViewMode %d", static_cast<int>(cameraViewMode));
+    //ACamera* cam = FEditorManager::Get().GetCameraByViewMode(cameraViewMode);
     ACamera* cam = FEditorManager::Get().GetCamera();
     if (cam->ViewMode == ECameraViewMode::Type::Perspective)
     {
