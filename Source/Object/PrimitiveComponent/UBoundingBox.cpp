@@ -67,7 +67,10 @@ void UBoundingBoxComponent::UpdateMinMax()
 		{
 			UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(Component);
 			if (!Primitive || Primitive->IsA(UBoundingBoxComponent::StaticClass())) continue;
-
+			if (Primitive->IsA(UTextComponent::StaticClass()))
+			{
+				continue;
+			}
 			FBox TempBox;
 			if (UStaticMeshComponent* Mesh = Cast<UStaticMeshComponent>(Primitive))
 			{
