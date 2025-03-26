@@ -274,78 +274,73 @@ void APicker::UpdateRayInfo()
 TMap<UPrimitiveComponent*, float> APicker::PickActorByRay()
 {
     TSet<UPrimitiveComponent*> PrimitiveComponents = GetWorld()->GetRenderComponents();
-    TMap<UPrimitiveComponent*, float> PickedPrimitive; //PriorityQueue 구현
-    
+    TMap<UPrimitiveComponent*, float> PickedPrimitive;
+
     for (UPrimitiveComponent* Component : PrimitiveComponents)
     {
-        FVector MinBound(FLT_MAX), MaxBound(FLT_MIN);
+        float ClosestDistance = FLT_MAX;
+        bool bHit = false;
 
-        //정점데이터에 월드매트릭스 곱해서 x,y,z minX minY minZ maxX maxY maxZ 구하기
-        FMatrix CompWorldMatrix = Component->GetComponentTransformMatrix(); //GetWorldMatrix 부모들 다 적용시키는 걸로 바꿔줘야함
-
-        TArray<FVertexPNCT> Vertices = OriginVertices[Component->GetType()];
-        int Size = Vertices.Num();
-        
-        for (int i=0; i<Size; i++)
+        if (UStaticMeshComponent* StaticMesh = Cast<UStaticMeshComponent>(Component))
         {
-            FVector4 CompVertex = FVector4(Vertices[i].X, Vertices[i].Y, Vertices[i].Z, 1.0f);
-            FVector4 WorldVertexLocation = CompVertex * CompWorldMatrix;
-            
-            //최소값과 최대값 구하기
-            MinBound.X = min(MinBound.X, WorldVertexLocation.X);
-            MinBound.Y = min(MinBound.Y, WorldVertexLocation.Y);
-            MinBound.Z = min(MinBound.Z, WorldVertexLocation.Z);
-            MaxBound.X = max(MaxBound.X, WorldVertexLocation.X);
-            MaxBound.Y = max(MaxBound.Y, WorldVertexLocation.Y);
-            MaxBound.Z = max(MaxBound.Z, WorldVertexLocation.Z);
-        }
+            FMatrix WorldMatrix = StaticMesh->GetComponentTransformMatrix();
 
-        //Priority Queue 구현해서 Add하기
-        float Distance = FVector::Distance(RayOrigin, Component->GetComponentTransform().GetPosition());
-        if (IntersectsRay(RayOrigin, RayDir, Distance, MinBound, MaxBound))
+            for (const FStaticMesh& SubMesh : StaticMesh->GetRenderUnits())
+            {
+                FVector MinBound(FLT_MAX), MaxBound(-FLT_MAX);
+
+                for (const FVertexPNCT& V : *SubMesh.Vertices)
+                {
+                    FVector4 WorldV = FVector4(V.X, V.Y, V.Z, 1.0f) * WorldMatrix;
+                    MinBound.X = FMath::Min(MinBound.X, WorldV.X);
+                    MinBound.Y = FMath::Min(MinBound.Y, WorldV.Y);
+                    MinBound.Z = FMath::Min(MinBound.Z, WorldV.Z);
+                    MaxBound.X = FMath::Max(MaxBound.X, WorldV.X);
+                    MaxBound.Y = FMath::Max(MaxBound.Y, WorldV.Y);
+                    MaxBound.Z = FMath::Max(MaxBound.Z, WorldV.Z);
+                }
+
+                float Distance = FVector::Distance(RayOrigin, StaticMesh->GetComponentTransform().GetPosition());
+                if (IntersectsRay(RayOrigin, RayDir, Distance, MinBound, MaxBound))
+                {
+                    ClosestDistance = FMath::Min(ClosestDistance, Distance);
+                    bHit = true;
+                }
+            }
+            if (bHit)
+            {
+                PickedPrimitive.Add(StaticMesh, ClosestDistance);
+            }
+        }
+        else
         {
-            PickedPrimitive.Add(Component, Distance); //Priority Queue 구현
+            // 기존 방식
+            FVector MinBound(FLT_MAX), MaxBound(-FLT_MAX);
+            FMatrix WorldMatrix = Component->GetComponentTransformMatrix();
+            TArray<FVertexPNCT> Vertices = OriginVertices[Component->GetType()];
+
+            for (const FVertexPNCT& V : Vertices)
+            {
+                FVector4 WorldV = FVector4(V.X, V.Y, V.Z, 1.0f) * WorldMatrix;
+                MinBound.X = FMath::Min(MinBound.X, WorldV.X);
+                MinBound.Y = FMath::Min(MinBound.Y, WorldV.Y);
+                MinBound.Z = FMath::Min(MinBound.Z, WorldV.Z);
+                MaxBound.X = FMath::Max(MaxBound.X, WorldV.X);
+                MaxBound.Y = FMath::Max(MaxBound.Y, WorldV.Y);
+                MaxBound.Z = FMath::Max(MaxBound.Z, WorldV.Z);
+            }
+
+            float Distance = FVector::Distance(RayOrigin, Component->GetComponentTransform().GetPosition());
+            if (IntersectsRay(RayOrigin, RayDir, Distance, MinBound, MaxBound))
+            {
+                PickedPrimitive.Add(Component, Distance);
+            }
         }
-        
-    }
-
-    TArray<UPrimitiveComponent*> BillboardComponents = GetWorld()->GetBillBoardRenderComponents();
-    
-    for (UPrimitiveComponent* Component : BillboardComponents)
-    {
-        FVector MinBound(FLT_MAX), MaxBound(FLT_MIN);
-
-        //정점데이터에 월드매트릭스 곱해서 x,y,z minX minY minZ maxX maxY maxZ 구하기
-        FMatrix CompWorldMatrix = Component->GetComponentTransformMatrix(); //GetWorldMatrix 부모들 다 적용시키는 걸로 바꿔줘야함
-
-        TArray<FVertexPNCT> Vertices = OriginVertices[Component->GetType()];
-        int Size = Vertices.Num();
-        
-        for (int i=0; i<Size; i++)
-        {
-            FVector4 CompVertex = FVector4(Vertices[i].X, Vertices[i].Y, Vertices[i].Z, 1.0f);
-            FVector4 WorldVertexLocation = CompVertex * CompWorldMatrix;
-            
-            //최소값과 최대값 구하기
-            MinBound.X = min(MinBound.X, WorldVertexLocation.X);
-            MinBound.Y = min(MinBound.Y, WorldVertexLocation.Y);
-            MinBound.Z = min(MinBound.Z, WorldVertexLocation.Z);
-            MaxBound.X = max(MaxBound.X, WorldVertexLocation.X);
-            MaxBound.Y = max(MaxBound.Y, WorldVertexLocation.Y);
-            MaxBound.Z = max(MaxBound.Z, WorldVertexLocation.Z);
-        }
-
-        //Priority Queue 구현해서 Add하기
-        float Distance = FVector::Distance(RayOrigin, Component->GetComponentTransform().GetPosition());
-        if (IntersectsRay(RayOrigin, RayDir, Distance, MinBound, MaxBound))
-        {
-            PickedPrimitive.Add(Component, Distance); //Priority Queue 구현
-        }
-        
     }
 
     return PickedPrimitive;
 }
+
 
 AActor* APicker::PickActorByPixel(FVector MousePos)
 {
