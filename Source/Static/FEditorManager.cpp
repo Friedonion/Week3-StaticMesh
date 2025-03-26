@@ -106,9 +106,12 @@ void FEditorManager::SelectActor(AActor* NewActor)
 		ReleasePick();
 		return;
 	}
-	GizmoHandle->SetActive(true);
+
+	SetPickState(PickState::Actor);
+
 	SelectedActor = NewActor;
-	SelectedActor->Pick();
+	NewActor->Pick();
+	GizmoHandle->SetActive(true);
 }
 
 void FEditorManager::SetCamera(ACamera* NewCamera)
