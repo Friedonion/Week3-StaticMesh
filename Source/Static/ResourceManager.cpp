@@ -72,6 +72,11 @@ void UResourceManager::SetMaterial(const std::string& name, FMaterialData& mater
     }
 }
 
+TMap<std::string, TArray<FSubMeshData>>& UResourceManager::GetMeshDatas()
+{
+    return Meshes;
+}
+
 void UResourceManager::SetMeshData(const std::string& path, const TArray<FSubMeshData>& meshData)
 {
     Meshes[path] = meshData;

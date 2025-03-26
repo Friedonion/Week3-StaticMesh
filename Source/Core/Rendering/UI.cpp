@@ -29,6 +29,7 @@
 #include "Core//Input/PlayerInput.h"
 #include "Object/TObjectIterator.h"
 #include "Static/ResourceManager.h"
+#include "Static/Util.h"
 
 void UI::Initialize(HWND hWnd, URenderer& Renderer, UINT ScreenWidth, UINT ScreenHeight)
 {
@@ -435,9 +436,35 @@ void UI::RenderPropertyWindow()
                 selectedTransform.SetScale(scale[0], scale[1], scale[2]);
                 selectedActor->SetActorRelativeTransform(selectedTransform);
             }
+
+            if (selectedActor->IsA(AStaticMesh::StaticClass()))
+            {
+                //StaticMeshComponent 가져와서 현재 풀에 있는 오브젝트 목록 띄워주고 바꿀수있게 해주기
+                UStaticMeshComponent* StaticMeshComponent = selectedActor->GetComponentByClass<UStaticMeshComponent>();
+                TMap<std::string, TArray<FSubMeshData>>& ObjInfos = UResourceManager::Get().GetMeshDatas();
+                //FStaticMesh에 지금 현재 오브젝트 이름이 있다.
+                std::string& StaticMeshObjName = StaticMeshComponent->GetObjName();
+
+                if (ImGui::BeginCombo("Object", StaticMeshObjName.c_str()))
+                {
+                    for (auto& [Key, Item] : ObjInfos)
+                    {
+                        bool isSelected = Hash(StaticMeshObjName) == Hash(Key);
+                        if (ImGui::Selectable(Key.c_str(), isSelected)) {
+                            StaticMeshObjName = Key; // 선택된 항목 업데이트
+                        }
+                        if (isSelected) {
+                            ImGui::SetItemDefaultFocus(); // 기본 포커스 설정
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+                
+                StaticMeshComponent->LoadFromObj(StaticMeshObjName);
+            }
         }
     }else if (CurrentPickState == PickState::Component)
-    {
+        {
         UPrimitiveComponent* selectedComponent = FEditorManager::Get().GetSelectedComponent();
 
         if (selectedComponent)
@@ -479,7 +506,6 @@ void UI::RenderPropertyWindow()
             {
                 selectedComponent->SetIsDefaultRendered(bRender);
             }
-
             if (selectedComponent->IsA(UStaticMeshComponent::StaticClass()))
             {
                 //이터레이터 돌면서 각 서브메쉬에 해당하는 머테리얼 변경할 수 있게 드랍박스로 제공
@@ -488,11 +514,6 @@ void UI::RenderPropertyWindow()
                 
                 TMap<std::string, FMaterialData>& MaterialInfos = UResourceManager::Get().GetMaterials();
                 TMap<uint32_t, std::string> MaterialItems; //GUID, Path
-
-                if (CurrentMeshItems.Num() < StaticMeshInfos.Num()) //CurrentMeshItem 크기할당
-                {
-                    CurrentMeshItems.Resize(StaticMeshInfos.Num()+1);
-                }
                 
                 for (auto& [Key, Item] : MaterialInfos) //GUID로 기존인덱스 설정
                 {

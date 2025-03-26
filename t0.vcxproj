@@ -265,6 +265,7 @@
     <ClInclude Include="Source\Core\Rendering\Text\FontShader.h" />
     <ClInclude Include="Source\Core\Rendering\Text\Text.h" />
     <ClInclude Include="Source\Object\Actor\Spotlight.h" />
+    <ClInclude Include="Source\Static\Util.h" />
     <ClInclude Include="SSplitter.h" />
     <ClInclude Include="SWindow.h" />
     <ClInclude Include="Source\Object\ObjectMacros.h" />

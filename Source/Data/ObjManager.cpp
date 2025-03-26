@@ -10,6 +10,7 @@
 #include "Core/Container/Array.h"
 #include "Primitive/PrimitiveVertices.h"
 #include "Static/ResourceManager.h"
+#include "Static/Util.h"
 
 struct Face
 {
@@ -236,28 +237,7 @@ bool FObjManager::LoadFromFile(const std::string& Filename)
     return true;
 }
 
-size_t FObjManager::Hash(std::string Str)
-{
-    size_t Hash = 0;
-    for (size_t i = 0; i < Str.length(); i++)
-    {
-        Hash = 65599 * Hash + Str[i];
-    }
-    return Hash ^ (Hash >> 16);
-}
 
-TArray<std::string> FObjManager::Split(const std::string& str, char delim) {
-    std::istringstream iss(str);
-    TArray<std::string> result;
-    std::string token;
-    while (std::getline(iss, token, delim)) {
-        if (token.empty())
-            result.Add("1");
-        else
-            result.Add(token);
-    }
-    return result;
-}
 
 bool FObjManager::SaveToBinary(TArray<FSubMeshData>& SubMeshes, TArray<std::string>& Materials, const std::string& Filename)
 {
