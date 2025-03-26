@@ -39,4 +39,10 @@ public:
 private:
     bool bisHoriClicked = false;
     bool bisVertiClicked = false;
+
+    const float minWidth = 300;
+    const float minHeight = 300;
+
+    bool ClampVertical(FVector2 mouseDelta);
+    bool ClampHorizontal(FVector2 mouseDleta);
 };
