@@ -7,6 +7,20 @@ cbuffer constants : register(b0)
     matrix MVP;
     float4 CustomColor;
     int PixelType;
+    float3 CameraPos;
+}
+
+cbuffer materialConstants : register(b1)
+{
+    float3 AmbientColor;
+    float3 DiffuseColor;
+    float3 SpecularColor;
+    float3 EmissiveColor;
+
+    float Shininess;
+    float OpticalDensity;
+    float Transparency;
+    float IlluminationModel;
 }
 
 struct VS_INPUT
@@ -15,7 +29,6 @@ struct VS_INPUT
     float3 normal : NORMAL;
     float4 color : COLOR;       // Input color from vertex buffer
     float2 uv : UV;
-    // matrix MVP;
 };
 
 struct PS_INPUT
@@ -41,31 +54,48 @@ PS_INPUT mainVS(VS_INPUT input)
     output.position = mul(input.position, MVP);
     output.normal = input.normal;
     output.uv = input.uv;
-
     
     return output;
 }
 
 float4 mainPS(PS_INPUT input) : SV_TARGET
 {
-    float4 color;
-
-    color = input.color;
-    
+    float3 FinalColor = input.color;
     
     switch (PixelType)
     {
     case 1: //CustomColor
-        color = CustomColor;
+        FinalColor = CustomColor.rgb;
         break;
     case 2: //Texture
-        color = texDiffuse.Sample(samLinear, input.uv);
-        float avg = (color.r + color.g + color.b) / 3.0f;
-        clip(color.a < 0.01f ? -1 : 1);
+        float3 lightDir = normalize(float3(-1, -1, -1));
+        float3 normal = normalize(input.normal);
+        float3 viewDir = normalize(CameraPos - input.position);
+
+        float diff = max(dot(normal, lightDir), 0.0);
+        float3 diffuse = diff * DiffuseColor;
+
+        float3 reflectDir = reflect(-lightDir, normal);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), Shininess);
+        float3 specular = spec * SpecularColor;
+
+        float3 ambient = AmbientColor;
+        
+        FinalColor = saturate(diffuse + specular + ambient);
+
+        float4 texColor = texDiffuse.Sample(samLinear, input.uv);
+        // FinalColor += EmissiveColor.rgb;
+        FinalColor *= texColor.rgb;
+
+        // 방출광 추가
         break;
     default:
         break;
     }
     
-    return color;
+    // 투명도 적용 (Transparency가 1에 가까울수록 투명)
+    // Direct3D는 반대라는데
+    float alpha = 1.0f - Transparency;
+
+    return float4(FinalColor, alpha);
 }

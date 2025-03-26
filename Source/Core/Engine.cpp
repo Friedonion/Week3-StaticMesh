@@ -340,7 +340,6 @@ void UEngine::InitWorld()
     ACamera* leftCamera = World->SpawnActor<ACamera>();
     leftCamera->SetCameraViewMode(ECameraViewMode::Type::Left);
     
-    FEditorManager::Get().SetWorldGrid(World->SpawnActor<AWorldGrid>());
 
 #ifdef _DEBUG
     World->LoadWorld(*World->DebugDefaultSceneName);
@@ -349,10 +348,11 @@ void UEngine::InitWorld()
 #endif
     
     ConfigManager::Get().LoadAllConfigs();
-    
+
+    FEditorManager::Get().SetWorldGrid(World->SpawnActor<AWorldGrid>());
     World->SpawnActor<AAxis>();
     World->SpawnActor<APicker>();
-   // World->SpawnActor<AArrow>();
+    
 	World->BeginPlay();
 }
 

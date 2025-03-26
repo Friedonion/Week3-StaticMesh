@@ -351,6 +351,11 @@ FVector FMatrix::GetRotation() const
 	return Euler;
 }
 
+FVector FMatrix::GetOrigin() const
+{
+	return FVector(M[3][0], M[3][1], M[3][2]);
+}
+
 FVector4 FMatrix::TransformVector4(const FVector4& Vector) const
 {
 	return {

@@ -15,7 +15,7 @@ void APlayerController::HandleCameraMovement(float DeltaTime) {
     FVector NewVelocity(0, 0, 0);
 
     float CameraSensitivySpeed = 10.f;
-    float CameraMovementSpeed = 10.f;
+    float CameraMovementSpeed = 3.f;
     
     if (APlayerInput::Get().IsPressedMouse(true) == false)
     {
