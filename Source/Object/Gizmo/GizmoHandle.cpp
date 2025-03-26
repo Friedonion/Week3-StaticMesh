@@ -150,10 +150,6 @@ void AGizmoHandle::Tick(float DeltaTime)
 		type = (type + 1) % static_cast<int>(EGizmoType::Max);
 		GizmoType = static_cast<EGizmoType>(type);
 	}
-
-
-	
-
 }
 
 void AGizmoHandle::SetActive(bool bActive)
@@ -172,7 +168,6 @@ void AGizmoHandle::SetActive(bool bActive)
 	for (auto BoundingBox : SelectedActorBoundingBox)
 	{
 		BoundingBox->DetachFromComponent();
-		delete BoundingBox;
 		GetWorld()->RemoveRenderComponent(BoundingBox);
 		RemoveComponent(BoundingBox);
 		GObjects.Remove(BoundingBox->GetUUID());
