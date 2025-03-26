@@ -16,8 +16,6 @@ class UResourceManager : public TSingleton<UResourceManager>
 public:
     UResourceManager() = default;
     ~UResourceManager() = default;
-
-    static uint32_t GUID;
     
     void Initialize(ID3D11Device* InDevice, ID3D11DeviceContext* InContext);
     void Shutdown();

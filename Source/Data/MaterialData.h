@@ -29,6 +29,4 @@ struct FMaterialData {
 
     std::string BumpMap = "";
     std::string AlphaMap = "";
-    
-    uint32_t GUID; //자기 GUID
 };

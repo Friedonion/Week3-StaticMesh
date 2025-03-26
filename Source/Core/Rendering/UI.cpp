@@ -443,7 +443,7 @@ void UI::RenderPropertyWindow()
                 UStaticMeshComponent* StaticMeshComponent = selectedActor->GetComponentByClass<UStaticMeshComponent>();
                 TMap<std::string, TArray<FSubMeshData>>& ObjInfos = UResourceManager::Get().GetMeshDatas();
                 //FStaticMesh에 지금 현재 오브젝트 이름이 있다.
-                std::string& StaticMeshObjName = StaticMeshComponent->GetObjName();
+                std::string StaticMeshObjName = StaticMeshComponent->GetObjName();
 
                 if (ImGui::BeginCombo("Object", StaticMeshObjName.c_str()))
                 {
@@ -459,8 +459,11 @@ void UI::RenderPropertyWindow()
                     }
                     ImGui::EndCombo();
                 }
-                
-                StaticMeshComponent->LoadFromObj(StaticMeshObjName);
+
+                if (Hash(StaticMeshComponent->GetObjName()) != Hash(StaticMeshObjName))
+                {
+                    StaticMeshComponent->LoadFromObj(StaticMeshObjName);
+                }
             }
         }
     }else if (CurrentPickState == PickState::Component)
@@ -513,25 +516,20 @@ void UI::RenderPropertyWindow()
                 TArray<FStaticMesh> StaticMeshInfos = StaticMeshComponent->GetRenderUnits();
                 
                 TMap<std::string, FMaterialData>& MaterialInfos = UResourceManager::Get().GetMaterials();
-                TMap<uint32_t, std::string> MaterialItems; //GUID, Path
-                
-                for (auto& [Key, Item] : MaterialInfos) //GUID로 기존인덱스 설정
-                {
-                    MaterialItems.Add(Item.GUID, Key);
-                }
                 
                 int SubMeshIndex = 0;
                 for (auto& StaticMeshInfo : StaticMeshInfos)
                 {
+                    std::string MaterialName = StaticMeshInfo.Material->Name;
                     char SubMeshName[32];
                     snprintf(SubMeshName, sizeof(SubMeshName), "SubMesh%d", SubMeshIndex++);
-                    if (ImGui::BeginCombo(SubMeshName, MaterialItems[StaticMeshInfo.GUID].c_str()))
+                    if (ImGui::BeginCombo(SubMeshName, MaterialName.c_str()))
                     {
-                        for (auto& [Key, Item] : MaterialItems)
+                        for (auto& [Key, Item] : MaterialInfos)
                         {
-                            bool isSelected = (StaticMeshInfo.Material->GUID == Key);
-                            if (ImGui::Selectable(MaterialItems[Key].c_str(), isSelected)) {
-                                StaticMeshInfo.GUID = Key; // 선택된 항목 업데이트
+                            bool isSelected = Hash(MaterialName) == Hash(Key);
+                            if (ImGui::Selectable(Key.c_str(), isSelected)) {
+                                MaterialName = Key; // 선택된 항목 업데이트
                             }
                             if (isSelected) {
                                 ImGui::SetItemDefaultFocus(); // 기본 포커스 설정
@@ -539,7 +537,7 @@ void UI::RenderPropertyWindow()
                         }
                         ImGui::EndCombo();
                     }
-                    StaticMeshInfo.Material = &MaterialInfos[MaterialItems[StaticMeshInfo.GUID]];
+                    StaticMeshInfo.Material = &MaterialInfos[MaterialName];
                 }
                 StaticMeshComponent->SetRenderUnits(StaticMeshInfos);
             }

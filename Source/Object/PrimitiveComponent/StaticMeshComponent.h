@@ -12,7 +12,6 @@ struct FStaticMesh {
     const TArray<FVertexPNCT>* Vertices = nullptr;
     const TArray<uint32_t>* Indices = nullptr;
     const FMaterialData* Material = nullptr;
-    uint32_t GUID = 0;
     std::string ObjName;
 };
 

@@ -2,8 +2,6 @@
 #include "ResourceManager.h"
 #include "directxtk/WICTextureLoader.h"
 
-unsigned int UResourceManager::GUID = 0;
-
 void UResourceManager::Initialize(ID3D11Device* InDevice, ID3D11DeviceContext* InContext)
 {
     Device = InDevice;
@@ -67,7 +65,6 @@ void UResourceManager::SetMaterial(const std::string& name, FMaterialData& mater
         Materials[name] = materialData;
     }else
     {
-        materialData.GUID = GUID++;
         Materials.Add(name, materialData);
     }
 }
