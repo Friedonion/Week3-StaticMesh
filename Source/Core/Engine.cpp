@@ -234,6 +234,7 @@ void UEngine::Run()
 
 void UEngine::Shutdown()
 {
+    FEditorManager::Get().SavePerspectiveCamera();
     FSlateApplication::Get().ShutDown();
     Renderer->Release();
     
@@ -341,7 +342,7 @@ void UEngine::InitWorld()
     leftCamera->SetCameraViewMode(ECameraViewMode::Type::Left);
     
     FEditorManager::Get().SetWorldGrid(World->SpawnActor<AWorldGrid>());
-
+    FEditorManager::Get().LoadPerspectiveCamera();
 #ifdef _DEBUG
     World->LoadWorld(*World->DebugDefaultSceneName);
 #else

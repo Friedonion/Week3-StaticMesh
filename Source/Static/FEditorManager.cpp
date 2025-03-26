@@ -190,3 +190,85 @@ ACamera* FEditorManager::GetCameraByViewMode(ECameraViewMode::Type cameraType)
 {
 	return OrthogonalCamera[cameraType];
 }
+
+void FEditorManager::SavePerspectiveCamera()
+{
+	ACamera* perspectiveCam = OrthogonalCamera[ECameraViewMode::Type::Perspective];
+
+	json::JSON jsonArray = json::Array();
+
+	json::JSON j;
+	j["Near"] = perspectiveCam->GetNear();
+	j["Far"] = perspectiveCam->GetFar();
+	j["FOV"] = perspectiveCam->GetFieldOfView();
+	j["Sensitivity"] = perspectiveCam->GetCameraSensitivity();
+
+	FTransform transform = perspectiveCam->GetActorRelativeTransform();
+	j["LocX"] = transform.GetPosition().X;
+	j["LocY"] = transform.GetPosition().Y;
+	j["LocZ"] = transform.GetPosition().Z;
+
+	j["RotX"] = transform.GetRotation().X;
+	j["RotY"] = transform.GetRotation().Y;
+	j["RotZ"] = transform.GetRotation().Z;
+
+
+	jsonArray.append(j);
+
+	std::ofstream file("CameraSettings.ini");
+	if (file.is_open())
+	{
+		file << jsonArray.dump(4); // 또는 file << jsonStr;
+		file.close();
+	}
+
+}
+
+void FEditorManager::LoadPerspectiveCamera()
+{
+	ACamera* perspectiveCam = OrthogonalCamera[ECameraViewMode::Type::Perspective];
+	
+	std::ifstream inFile("CameraSettings.ini");
+	std::stringstream ss;
+	ss << inFile.rdbuf();
+	json::JSON layout = json::JSON::Load(ss.str());
+
+	float Near;
+	float Far;
+	float FOV;
+	float CamSens;
+
+	float LocX;
+	float LocY;
+	float LocZ;
+
+	float RotX;
+	float RotY;
+	float RotZ;
+
+	for (const auto& item : layout.ArrayRange())
+	{
+		Near = item.at("Near").ToFloat();
+		Far = item.at("Far").ToFloat();
+		FOV = item.at("FOV").ToFloat();
+		CamSens = item.at("Sensitivity").ToFloat();
+
+		LocX = item.at("LocX").ToFloat();
+		LocY = item.at("LocY").ToFloat();
+		LocZ = item.at("LocZ").ToFloat();
+
+		RotX = item.at("RotX").ToFloat();
+		RotY = item.at("RotY").ToFloat();
+		RotZ = item.at("RotZ").ToFloat();
+	}
+
+	perspectiveCam->SetNear(Near);
+	perspectiveCam->SetFar(Far);
+	perspectiveCam->SetFieldOfView(FOV);
+	perspectiveCam->SetCameraSensitivity(CamSens);
+
+	FTransform transform;
+	transform.SetPosition(LocX, LocY, LocZ);
+	transform.SetRotation(RotX, RotY, RotZ);
+	perspectiveCam->SetActorRelativeTransform(transform);
+}
