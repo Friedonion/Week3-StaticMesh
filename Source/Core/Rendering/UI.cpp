@@ -22,7 +22,7 @@
 #include "Object/World/World.h"
 #include "Object/Gizmo/GizmoHandle.h"
 #include "Core/Rendering/Particle/Particle.h"
-#include "Object/Actor/Custom.h"
+#include "Object/Actor/StaticMesh.h"
 #include "Object/Gizmo/Axis.h"
 #include "Object/PrimitiveComponent/TextureComponent.h"
 #include "Static/Enum.h"
@@ -228,8 +228,11 @@ void UI::RenderPrimitiveSelection()
                 World->SpawnActor<ATexture>();
                     break;
             case ESpawnCustom:
-                World->SpawnActor<ACustom>();
-                break;
+                {
+                    AStaticMesh* StaticMeshActor = World->SpawnActor<AStaticMesh>();
+                    StaticMeshActor->SetObjName("pirate");
+                    break;
+                }
             default:
                 break;
             }

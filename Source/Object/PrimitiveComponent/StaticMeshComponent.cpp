@@ -5,6 +5,7 @@
 
 void UStaticMeshComponent::LoadFromObj(const std::string& path)
 {
+    // Obj 파일 로드
     UEngine::Get().GetObjLoader()->LoadFromFile(path);
     const TArray<FSubMeshData>* meshData = UResourceManager::Get().GetMeshData(path);
     if (!meshData) return;

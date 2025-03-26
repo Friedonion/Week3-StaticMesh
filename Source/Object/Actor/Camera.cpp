@@ -2,7 +2,7 @@
 
 #include "Core/Rendering/URenderer.h"
 #include "Object/PrimitiveComponent/UPrimitiveComponent.h"
-
+#include "Static/FEditorManager.h"
 
 ACamera::ACamera()
 {
@@ -38,43 +38,76 @@ void ACamera::SetCameraSensitivity(float sensitivity)
     this->CameraSensitivity = clampedSensitivity;
 }
 
-void ACamera::SetCameraViewMode(ECameraViewMode::Type cameraViewMode)
+void ACamera::SetCameraViewMode(ECameraViewMode::Type CameraViewMode)
 {
-    ViewMode = cameraViewMode;
-    FVector Position = GetActorRelativeTransform().GetPosition();
+    ViewMode = CameraViewMode;
     FQuat Rotation;
-    switch (cameraViewMode)
+    FTransform CameraTransform = GetActorRelativeTransform();
+
+    float d = 10.f;
+    switch (CameraViewMode)
     {
     case ECameraViewMode::Type::Front:
-        Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 0, 1), 180);
-        break;
+        {
+            Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 0, 1), 180);
+            ProjectionMode = ECameraProjectionMode::Type::Orthographic;
+            CameraTransform.SetPosition(FVector(d,0,0));
+            break;
+        }
     case ECameraViewMode::Type::Back:
-        Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 0, 1), 0);
-        break;
+        {
+            Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 0, 1), 0);
+            ProjectionMode = ECameraProjectionMode::Type::Orthographic;
+            CameraTransform.SetPosition(FVector(-d, 0, 0));
+            break;
+        }
     case ECameraViewMode::Type::Top:
-        Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 1, 0), 90);
-        break;
+        {
+            Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 1, 0), 90);
+            ProjectionMode = ECameraProjectionMode::Type::Orthographic;
+            CameraTransform.SetPosition(FVector(0, 0, d));
+            break;
+        }
     case ECameraViewMode::Type::Bottom:
-    {
-        Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 1, 0), -90);
-        FQuat RotationLocal = FQuat::AxisAngleToQuaternion(FVector(1, 0, 0), 180);
-        Rotation = FQuat::MultiplyQuaternions(Rotation, RotationLocal);
-    }
-        break;
+        {
+            Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 1, 0), -90);
+            ProjectionMode = ECameraProjectionMode::Type::Orthographic;
+            FQuat RotationLocal = FQuat::AxisAngleToQuaternion(FVector(1, 0, 0), 180);
+            Rotation = FQuat::MultiplyQuaternions(Rotation, RotationLocal);
+            CameraTransform.SetPosition(FVector(0, 0, -d));
+            break;
+        }
     case ECameraViewMode::Type::Left:
-        Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 0, 1), 90);
-        break;
+        {
+            Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 0, 1), 90);
+            ProjectionMode = ECameraProjectionMode::Type::Orthographic;
+            CameraTransform.SetPosition(FVector(0, -d, 0));
+            break;
+        }
     case ECameraViewMode::Type::Right:
-        Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 0, 1), -90);
-        break;
+        {
+            Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 0, 1), -90);
+            ProjectionMode = ECameraProjectionMode::Type::Orthographic;
+            CameraTransform.SetPosition(FVector(0, d, 0));
+            break;
+        }
     case ECameraViewMode::Type::Perspective:
-        break;
+        {
+            ProjectionMode = ECameraProjectionMode::Type::Perspective;
+            break;
+        }
     default:
         break;
-    }        
-    FTransform frontTransform = GetActorRelativeTransform();
-    frontTransform.SetRotation(Rotation);
-    SetActorRelativeTransform(frontTransform);
+    }
+
+    ACamera* Cam = FEditorManager::Get().GetViewCamera(CameraViewMode);
+    if (Cam == nullptr)
+    {
+        FEditorManager::Get().AddOrthoCamera(CameraViewMode, this);
+    }
+    
+    CameraTransform.SetRotation(Rotation);
+    SetActorRelativeTransform(CameraTransform);
 }
 
 float ACamera::GetFieldOfView() const

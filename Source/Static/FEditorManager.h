@@ -29,6 +29,16 @@ public:
 
     inline ACamera* GetCamera() const {return Camera;}
 
+    ACamera* GetViewCamera(ECameraViewMode::Type ViewType)
+    {
+        return OrthogonalCamera[ViewType];
+    }
+
+    void SetViewCamera(ECameraViewMode::Type ViewType, ACamera* NewCamera)
+    {
+        OrthogonalCamera[ViewType] = NewCamera;
+    }
+    
     void SetCamera(ACamera* NewCamera);
     void SetOrthoCamera(ECameraViewMode::Type type);
 

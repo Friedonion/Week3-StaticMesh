@@ -179,7 +179,7 @@
     <ClCompile Include="Source\Core\Math\FRect.cpp" />
     <ClCompile Include="Source\Data\MtlLoader.cpp" />
     <ClCompile Include="Source\Data\ObjManager.cpp" />
-    <ClCompile Include="Source\Object\Actor\Custom.cpp" />
+    <ClCompile Include="Source\Object\Actor\StaticMesh.cpp" />
     <ClCompile Include="Source\Object\Actor\Texture.cpp" />
     <ClCompile Include="Source\Object\Class\Class.cpp" />
     <ClCompile Include="Source\Core\Math\Box.cpp" />
@@ -251,7 +251,7 @@
     <ClInclude Include="Source\Data\MaterialData.h" />
     <ClInclude Include="Source\Data\MtlLoader.h" />
     <ClInclude Include="Source\Data\ObjManager.h" />
-    <ClInclude Include="Source\Object\Actor\Custom.h" />
+    <ClInclude Include="Source\Object\Actor\StaticMesh.h" />
     <ClInclude Include="Source\Object\Actor\Texture.h" />
     <ClInclude Include="Source\Object\Cast.h" />
     <ClInclude Include="Source\Object\Class\Class.h" />
