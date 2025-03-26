@@ -38,7 +38,8 @@ void FViewport::SetViewportRendering()
 	UEngine::Get().SetScreenWidth(viewportWidth);
 	UEngine::Get().SetScreenHeight(viewportHeight);
 
-	ACamera* cam = FEditorManager::Get().GetOrthoCamera(cameraType);
+	FEditorManager::Get().SetMainCameraByType(cameraType);
+	ACamera* cam = FEditorManager::Get().GetCamera();
 	renderer->UpdateViewMatrix(cam->GetActorRelativeTransform());
 	renderer->UpdateProjectionMatrix(cam);
 }
