@@ -2,11 +2,16 @@
 #include "StaticMeshComponent.h"
 #include "core/Engine.h"
 #include "Static/ResourceManager.h"
+#include <filesystem>
 
-void UStaticMeshComponent::LoadFromObj(const std::string& ObjName)
+void UStaticMeshComponent::LoadFromObj(const std::string& path)
 {
     // Obj 파일 로드
-    UEngine::Get().GetObjLoader()->LoadFromFile(ObjName);
+
+    namespace fs = std::filesystem;
+    std::string ObjName = fs::path(path).stem().string();
+    UEngine::Get().GetObjLoader()->LoadFromFile(path);
+
     const TArray<FSubMeshData>* meshData = UResourceManager::Get().GetMeshData(ObjName);
     if (!meshData) return;
 

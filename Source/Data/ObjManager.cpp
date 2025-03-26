@@ -65,7 +65,7 @@ bool FObjManager::LoadFromFile(const std::string& Filename)
 
     bool bIsAbsolutePath = fs::path(Filename).is_absolute();
     std::string ObjPath = bIsAbsolutePath ? Filename : ObjFileDir + Filename + ObjFileExt;
-    std::string ObjName = fs::path(ObjPath).stem().string();
+    std::string ObjName = fs::path(Filename).stem().string();
   
 
     if (UResourceManager::Get().HasMeshData(ObjName))
