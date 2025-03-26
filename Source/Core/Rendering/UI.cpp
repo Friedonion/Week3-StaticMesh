@@ -700,6 +700,7 @@ void UI::RenderViewOption()
     // LT
     {
         FViewport* viewportLT = renderer->GetMultiViewport(EViewport::Position::LT);
+        if (!viewportLT) return;
         static int current_itemLT = static_cast<int>(viewportLT->GetCameraType());
         const FRect& rectLT = viewportLT->GetRect();
         ImGui::SetNextWindowPos(ImVec2(rectLT.Max.X - width + offset.x, rectLT.Min.Y + offset.y), ImGuiCond_Always);
@@ -747,7 +748,7 @@ void UI::SetViewOption(const char* name, int& current_item, EViewport::Position 
         ImGuiWindowFlags_NoCollapse;
 
     ImGui::Begin(name, nullptr, flags);
-
+    
     const char* items[] = { "Front", "Back", "Top", "Bottom", "Left", "Right", "Perspective" };
 
     if (ImGui::Combo(name, &current_item, items, IM_ARRAYSIZE(items))) {

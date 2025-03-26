@@ -28,6 +28,7 @@ public:
     virtual bool OnMouseUp()  override;
     virtual void ScreenResize(float resizeWidthRatio, float resizeHeightRatio) override;
     virtual json::JSON ToJSON() override;
+    virtual json::JSON ToJSONRatio() override;
     virtual ECameraViewMode::Type GetCameraViewMode() override;
     SWindow* SideLT;
     SWindow* SideLB;

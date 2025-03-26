@@ -148,6 +148,27 @@ json::JSON SSplitter2x2::ToJSON()
     return j;
 }
 
+json::JSON SSplitter2x2::ToJSONRatio()
+{
+    FVector2 swapSize = UEngine::Get().GetRenderer()->GetSwapChainSize();
+    float width = swapSize.X;
+    float height = swapSize.Y;
+
+    json::JSON j;
+    j["VMinX"] = verticalHandle.Min.X/width;
+    j["VMinY"] = verticalHandle.Min.Y/height;
+    j["VMaxX"] = verticalHandle.Max.X/width;
+    j["VMaxY"] = verticalHandle.Max.Y/height;
+
+    j["HMinX"] = horitionalHandle.Min.X/width;
+    j["HMinY"] = horitionalHandle.Min.Y/height;
+    j["HMaxX"] = horitionalHandle.Max.X/width;
+    j["HMaxY"] = horitionalHandle.Max.Y/height;
+    j["type"] = "SSplitter2*2";
+    return j;
+
+}
+
 ECameraViewMode::Type SSplitter2x2::GetCameraViewMode()
 {
     return ECameraViewMode::Type::None;

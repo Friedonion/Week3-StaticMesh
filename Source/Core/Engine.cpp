@@ -30,7 +30,9 @@ LRESULT UEngine::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         return true;
     }
-    
+
+    static bool m_isManualResize = false;
+
     switch (uMsg)
     {
         // 창이 제거될 때 (창 닫기, Alt+F4 등)
@@ -59,8 +61,14 @@ LRESULT UEngine::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_RBUTTONUP:
         APlayerInput::Get().HandleMouseInput(hWnd, lParam, false, true);
         break;
+    case WM_SIZING:
+        m_isManualResize = true;
+        break;
     case WM_SIZE:
-		UEngine::Get().UpdateWindowSize(LOWORD(lParam), HIWORD(lParam));
+    if(m_isManualResize){
+        UEngine::Get().UpdateWindowSize(LOWORD(lParam), HIWORD(lParam));
+        m_isManualResize = false;
+    }
 		break;   
     case WM_DROPFILES:
 {
@@ -367,6 +375,9 @@ void UEngine::UpdateWindowSize(UINT InScreenWidth, UINT InScreenHeight)
     if (InScreenHeight == 0 || InScreenWidth == 0)return;
     float resizeWidthRatio = float(InScreenWidth) / ScreenWidth;
     float resizeHeightRatio = float(InScreenHeight) / ScreenHeight;
+    UE_LOG("New size %d %d", InScreenWidth, InScreenHeight);
+    UE_LOG("Origin size %d %d", ScreenWidth, ScreenHeight);
+    UE_LOG("Resize Ratio %f %f", resizeWidthRatio, resizeHeightRatio);
     FSlateApplication::Get().ResizeScreen(resizeWidthRatio, resizeHeightRatio);
 	ScreenWidth = InScreenWidth;
 	ScreenHeight = InScreenHeight;

@@ -93,6 +93,27 @@ json::JSON SWindow::ToJSON()
 	return j;
 }
 
+json::JSON SWindow::ToJSONRatio()
+{
+	FVector2 swapSize = UEngine::Get().GetRenderer()->GetSwapChainSize();
+	float width = swapSize.X;
+	float height = swapSize.Y;
+
+	json::JSON j;
+	j["MinX"] = Rect.Min.X/width;
+	j["MinY"] = Rect.Min.Y/height;
+	j["MaxX"] = Rect.Max.X/width;
+	j["MaxY"] = Rect.Max.Y/height;
+
+	if (viewport)
+	{
+		j["CameraType"] = static_cast<int>(viewport->GetCameraViewMode());
+		j["ViewportPos"] = static_cast<int>(viewport->GetViewportPos());
+	}
+	j["type"] = "SWindow";
+	return j;
+}
+
 void SWindow::SetActiveFullViewport()
 {
 	if(viewport) viewport->SetActiveFullViewport();
