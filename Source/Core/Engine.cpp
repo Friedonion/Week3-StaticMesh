@@ -30,7 +30,9 @@ LRESULT UEngine::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         return true;
     }
-    
+
+    static bool m_isManualResize = false;
+
     switch (uMsg)
     {
         // 창이 제거될 때 (창 닫기, Alt+F4 등)
@@ -59,8 +61,14 @@ LRESULT UEngine::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_RBUTTONUP:
         APlayerInput::Get().HandleMouseInput(hWnd, lParam, false, true);
         break;
+    case WM_SIZING:
+        m_isManualResize = true;
+        break;
     case WM_SIZE:
-		UEngine::Get().UpdateWindowSize(LOWORD(lParam), HIWORD(lParam));
+    if(m_isManualResize){
+        UEngine::Get().UpdateWindowSize(LOWORD(lParam), HIWORD(lParam));
+        m_isManualResize = false;
+    }
 		break;   
     case WM_DROPFILES:
 {

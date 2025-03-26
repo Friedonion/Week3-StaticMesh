@@ -4,7 +4,7 @@
 #include "../FViewport.h"
 #include "Core/Engine.h"
 #include "Source/Core/Input/PlayerInput.h"
-
+#include "Debug/DebugConsole.h"
 void FSlateApplication::Initialize()
 {
 
@@ -15,11 +15,27 @@ void FSlateApplication::Tick()
 	ProcessIsHover();
 	ProcessKeyDownEvent();
 	ProcessMouseButtonDownEvent();
+	FVector2 swapSize = UEngine::Get().GetRenderer()->GetSwapChainSize();
+	float width = swapSize.X;
+	float height = swapSize.Y;
+	UE_LOG("SwapChain size %f, %f", width, height);
+	for (int i = 0; i < windows.Num(); i++)
+	{
+		FRect rect = windows[i]->Rect;
+		UE_LOG(*rect.ToFString());
+	}
 }
 
 void FSlateApplication::ShutDown()
 {
 	SaveSWindowToJSON();
+	SaveSWindowRatioToJSON();
+
+	for (int i = 0; i < windows.Num(); i++)
+	{
+		SWindow* window = windows[i];
+		delete window;
+	}
 }
 
 FRect FSlateApplication::GetCurrentWindow()
@@ -66,11 +82,19 @@ void FSlateApplication::SaveSWindowToJSON()
 	outFile << jsonArray.dump(4); // pretty print
 	outFile.close();
 
+}
+
+void FSlateApplication::SaveSWindowRatioToJSON()
+{
+	json::JSON jsonArray = json::Array();
 	for (int i = 0; i < windows.Num(); i++)
 	{
-		SWindow* window = windows[i];
-		delete window;
+		jsonArray.append(windows[i]->ToJSONRatio());
+
 	}
+	std::ofstream outFile("engineRatio.ini");
+	outFile << jsonArray.dump(4); // pretty print
+	outFile.close();
 }
 
 SWindow* FSlateApplication::GetClickedWindow()

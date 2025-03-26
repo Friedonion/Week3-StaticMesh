@@ -22,6 +22,7 @@ public:
 	virtual void Resize(const FRect& _rect);
 	virtual void ScreenResize(float resizeWidthRatio, float resizeHeightRatio);
 	virtual json::JSON ToJSON();
+	virtual json::JSON ToJSONRatio();
 	void SetActiveFullViewport();
 	void RestorePrevSize();
 	void ChangeMainCamera();

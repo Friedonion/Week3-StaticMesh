@@ -679,6 +679,7 @@ void UI::RenderViewOption()
     // LT
     {
         FViewport* viewportLT = renderer->GetMultiViewport(EViewport::Position::LT);
+        if (!viewportLT) return;
         static int current_itemLT = static_cast<int>(viewportLT->GetCameraType());
         const FRect& rectLT = viewportLT->GetRect();
         ImGui::SetNextWindowPos(ImVec2(rectLT.Max.X - width + offset.x, rectLT.Min.Y + offset.y), ImGuiCond_Always);

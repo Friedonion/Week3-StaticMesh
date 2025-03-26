@@ -933,7 +933,9 @@ void URenderer::InitMatrix()
 
 void URenderer::CreateMultipleViewports()
 {
+	
 	/*
+	
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
 	SwapChain->GetDesc(&swapChainDesc);
 
@@ -980,9 +982,10 @@ void URenderer::CreateMultipleViewports()
 	splitter->SideRB = windowRB;
 
 	FSlateApplication::Get().Add(splitter);
-
 	*/
-	LoadMultipleViewport();
+	
+	//LoadMultipleViewport();
+	LoadMultipleViewportByRatio();
 }
 
 SWindow* URenderer::CreateViewportWithWindow(const FRect& _rect, ECameraViewMode::Type cameraType, EViewport::Position viewportPos)
@@ -1067,6 +1070,95 @@ SSplitter2x2* URenderer::CreateSplitterFromJSON(const json::JSON& j, SSplitter2x
 	
 	FSlateApplication::Get().Add(splitter);
 	return splitter;
+}
+
+void URenderer::LoadMultipleViewportByRatio()
+{
+	std::ifstream inFile("engineRatio.ini");
+	std::stringstream ss;
+	ss << inFile.rdbuf();
+	json::JSON layout = json::JSON::Load(ss.str());
+
+	SSplitter2x2* splitter = new SSplitter2x2();
+
+	for (const auto& item : layout.ArrayRange())
+	{
+		std::string type = item.at("type").ToString();
+
+		if (type == "SWindow") {
+			SWindow* win = CreateWindowFromJSONByRatio(item, splitter);
+			//FSlateApplication::Get().Add(win);
+		}
+		else if (type == "SSplitter2*2") {
+			SSplitter2x2* s = CreateSplitterFromJSONByRatio(item, splitter);
+			//FSlateApplication::Get().Add(splitter);
+		}
+	}
+}
+
+SWindow* URenderer::CreateWindowFromJSONByRatio(const json::JSON& j, SSplitter2x2* splitter)
+{
+	FRect rectRatio;
+	rectRatio.Min = FVector2(j.at("MinX").ToFloat(), j.at("MinY").ToFloat());
+	rectRatio.Max = FVector2(j.at("MaxX").ToFloat(), j.at("MaxY").ToFloat());
+
+	ECameraViewMode::Type camType = static_cast<ECameraViewMode::Type>(j.at("CameraType").ToInt());
+	EViewport::Position pos = static_cast<EViewport::Position>(j.at("ViewportPos").ToInt());
+	
+	FVector2 swapSize = UEngine::Get().GetRenderer()->GetSwapChainSize();
+	float width = swapSize.X;
+	float height = swapSize.Y;
+
+	FRect rect;
+	rect.Min.X = width*rectRatio.Min.X;
+	rect.Min.Y = height*rectRatio.Min.Y;
+	rect.Max.X = width*rectRatio.Max.X;
+	rect.Max.Y = height * rectRatio.Max.Y;
+	SWindow* window = CreateViewportWithWindow(rect, camType, pos);
+
+	switch (pos)
+	{
+	case EViewport::Position::LT:
+		splitter->SideLT = window;
+		break;
+	case EViewport::Position::RT:
+		splitter->SideRT = window;
+		break;
+	case EViewport::Position::LB:
+		splitter->SideLB = window;
+		break;
+	case EViewport::Position::RB:
+		splitter->SideRB = window;
+		break;
+	default:
+		break;
+	}
+
+	return window;
+}
+
+SSplitter2x2* URenderer::CreateSplitterFromJSONByRatio(const json::JSON& j, SSplitter2x2* splitter)
+{
+	FVector2 swapSize = UEngine::Get().GetRenderer()->GetSwapChainSize();
+	float width = swapSize.X;
+	float height = swapSize.Y;
+
+	splitter->horitionalHandle.Min = 
+		FVector2(j.at("HMinX").ToFloat()*width,
+			j.at("HMinY").ToFloat()*height);
+	splitter->horitionalHandle.Max = 
+		FVector2(j.at("HMaxX").ToFloat()*width,
+			j.at("HMaxY").ToFloat()*height);
+
+	splitter->verticalHandle.Min = 
+		(j.at("VMinX").ToFloat()*width,
+			j.at("VMinY").ToFloat()*height);
+	splitter->verticalHandle.Max = 
+		FVector2(j.at("VMaxX").ToFloat()*width,
+			j.at("VMaxY").ToFloat()*height);
+
+	FSlateApplication::Get().Add(splitter);
+	return nullptr;
 }
 
 const TMap<EViewport::Position, FViewport*>& URenderer::GetActiveViewport()

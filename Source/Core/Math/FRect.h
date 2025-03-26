@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "Vector.h"
+class FString;
+
 struct FRect
 {
 	FRect();
@@ -10,5 +12,6 @@ struct FRect
 
 	bool Contains(const FVector2& mousePos) const;
 	void ResizeRatio(float widthRatio,float heightRatio);
+	FString ToFString() const;
 };
 

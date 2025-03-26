@@ -303,6 +303,12 @@ protected:
 	SWindow* CreateWindowFromJSON(const json::JSON& j, SSplitter2x2* splitter);
 
 	SSplitter2x2* CreateSplitterFromJSON(const json::JSON& j, SSplitter2x2* splitter);
+
+	void LoadMultipleViewportByRatio();
+
+	SWindow* CreateWindowFromJSONByRatio(const json::JSON& j, SSplitter2x2* splitter);
+
+	SSplitter2x2* CreateSplitterFromJSONByRatio(const json::JSON& j, SSplitter2x2* splitter);
 protected:
     // Direct3D 11 장치(Device)와 장치 컨텍스트(Device Context) 및 스왑 체인(Swap Chain)을 관리하기 위한 포인터들
     ID3D11Device* Device = nullptr;                         // GPU와 통신하기 위한 Direct3D 장치
