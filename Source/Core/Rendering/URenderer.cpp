@@ -1150,12 +1150,11 @@ SSplitter2x2* URenderer::CreateSplitterFromJSONByRatio(const json::JSON& j, SSpl
 			j.at("HMaxY").ToFloat()*height);
 
 	splitter->verticalHandle.Min = 
-		(j.at("VMinX").ToFloat()*width,
+		FVector2(j.at("VMinX").ToFloat()*width,
 			j.at("VMinY").ToFloat()*height);
 	splitter->verticalHandle.Max = 
 		FVector2(j.at("VMaxX").ToFloat()*width,
 			j.at("VMaxY").ToFloat()*height);
-
 	FSlateApplication::Get().Add(splitter);
 	return nullptr;
 }

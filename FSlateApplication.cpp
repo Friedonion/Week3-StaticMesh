@@ -10,7 +10,8 @@ void FSlateApplication::Initialize()
 	FVector2 swapSize = UEngine::Get().GetRenderer()->GetSwapChainSize();
 	float width = swapSize.X;
 	float height = swapSize.Y;
-	UE_LOG("SwapSize %f %f", swapSize.X, swapSize.Y);
+	UEngine::Get().SetScreenWidth(swapSize.X);
+	UEngine::Get().SetScreenHeight(swapSize.Y);
 }
 
 void FSlateApplication::Tick()
