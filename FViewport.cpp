@@ -38,16 +38,14 @@ void FViewport::SetViewportRendering()
 	UEngine::Get().SetScreenWidth(viewportWidth);
 	UEngine::Get().SetScreenHeight(viewportHeight);
 
-	FEditorManager::Get().SetOrthoCamera(cameraType);
-	ACamera* cam = FEditorManager::Get().GetCamera();
+	ACamera* cam = FEditorManager::Get().GetOrthoCamera(cameraType);
 	renderer->UpdateViewMatrix(cam->GetActorRelativeTransform());
 	renderer->UpdateProjectionMatrix(cam);
-
 }
 
 void FViewport::ChangeMainCamera()
 {
-	FEditorManager::Get().SetOrthoCamera(cameraType);
+	FEditorManager::Get().SetMainCameraByType(cameraType);
 }
 
 void FViewport::Resize(FRect rect)

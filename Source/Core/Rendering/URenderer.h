@@ -124,7 +124,10 @@ class URenderer
 private:
     struct alignas(16) FConstants
     {
-        FMatrix MVP;
+    	FMatrix ModelMatrix;
+    	FMatrix ViewMatrix;
+    	FMatrix ProjectionMatrix;
+        // FMatrix MVP;
         FVector4 Color;
         EPixelType PixelType; //0 기본색 1 커스텀 색 2텍스처
     	FVector CameraPos;

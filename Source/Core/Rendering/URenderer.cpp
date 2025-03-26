@@ -585,10 +585,8 @@ void URenderer::RenderPrimitive(UPrimitiveComponent* Component)
 
             // 셰이더 상수 업데이트
             UpdateConstant(Component);
-        	if (Unit.Material != nullptr)
-        	{
-	        	UpdateMaterialConstant(*Unit.Material);
-        	}
+
+	        UpdateMaterialConstant(*Unit.Material);
         	
             // Topology 설정
             if (CurrentTopology != D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST)
@@ -659,7 +657,8 @@ void URenderer::UpdateMaterialConstant(const FMaterialData& Material) const
 
 	FMaterialConstants MaterialConstant;
 	
-	MaterialConstant.AmbientColor = Material.AmbientColor;
+	// MaterialConstant.AmbientColor = Material.AmbientColor;
+	MaterialConstant.AmbientColor = FVector(0.5f,0.5f,0.5f);
 	MaterialConstant.DiffuseColor = Material.DiffuseColor;
 	MaterialConstant.SpecularColor = Material.SpecularColor;
 	MaterialConstant.EmissiveColor = Material.EmissiveColor;
@@ -684,14 +683,15 @@ void URenderer::UpdateConstant(USceneComponent* Component) const
 
 	D3D11_MAPPED_SUBRESOURCE ConstantBufferMSR;
 	
-    FMatrix MVP =
-        FMatrix::Transpose(ProjectionMatrix)
-        * FMatrix::Transpose(ViewMatrix)
-        * FMatrix::Transpose(Component->GetComponentTransformMatrix());
+    // FMatrix MVP =
+    //     FMatrix::Transpose(ProjectionMatrix)
+    //     * FMatrix::Transpose(ViewMatrix)
+    //     * FMatrix::Transpose(Component->GetComponentTransformMatrix());
 
     FVector4 Color = FVector4();
     EPixelType PixelType = EDefalutColor;
-	FVector CameraPos = Camera->GetActorTransformMatrix().GetOrigin();
+	FTransform CamTransform = Camera->GetActorRelativeTransform();
+	FVector CameraPos = CamTransform.GetPosition();
 
     if (Component->IsA(UPrimitiveComponent::StaticClass()))
     {
@@ -705,7 +705,10 @@ void URenderer::UpdateConstant(USceneComponent* Component) const
     {
         // 매핑된 메모리를 FConstants 구조체로 캐스팅
         FConstants* Constants = static_cast<FConstants*>(ConstantBufferMSR.pData);
-        Constants->MVP = MVP;
+        // Constants->MVP = MVP;
+		Constants->ModelMatrix = FMatrix::Transpose(Component->GetComponentTransformMatrix());
+		Constants->ViewMatrix = FMatrix::Transpose(ViewMatrix);
+		Constants->ProjectionMatrix = FMatrix::Transpose(ProjectionMatrix);
 		Constants->Color = Color;
         Constants->PixelType = PixelType;
 		Constants->CameraPos = CameraPos;

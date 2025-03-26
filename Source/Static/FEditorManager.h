@@ -40,7 +40,8 @@ public:
     }
     
     void SetCamera(ACamera* NewCamera);
-    void SetOrthoCamera(ECameraViewMode::Type type);
+    void SetMainCameraByType(ECameraViewMode::Type type);
+    ACamera* GetOrthoCamera(ECameraViewMode::Type type);
 
     void AddOrthoCamera(ECameraViewMode::Type type, ACamera* NewMultiCamera);
 

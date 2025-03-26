@@ -77,8 +77,7 @@ void UWorld::Render(float DeltaTime)
 	{
 		return;
 	}
-
-
+	
 	float initialHeight = UEngine::Get().GetScreenHeight();
 	float initialWidth = UEngine::Get().GetScreenWidth();
 	TMap<EViewport::Position, FViewport*> activeViewport = Renderer->GetActiveViewport();
