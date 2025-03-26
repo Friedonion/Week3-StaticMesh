@@ -19,7 +19,6 @@ void UBoundingBoxComponent::Tick(float DeltaTime)
 		if (FEditorManager::Get().GetSelectedActor() != nullptr)
 		{
 			bIsDefaultRendered = true;
-			UpdateMinMax();
 		}
 		else
 		{
@@ -30,7 +29,6 @@ void UBoundingBoxComponent::Tick(float DeltaTime)
 		if (TargetPrimitive == FEditorManager::Get().GetSelectedComponent())
 		{
 			bIsDefaultRendered = true;
-			UpdateMinMax();
 		}
 		else
 		{
@@ -41,6 +39,7 @@ void UBoundingBoxComponent::Tick(float DeltaTime)
 		bIsDefaultRendered = false;
 		return;
 	}
+	UpdateMinMax();
 	//bIsDefaultRendered = true;
 }
 

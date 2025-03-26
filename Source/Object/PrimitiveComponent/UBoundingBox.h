@@ -31,6 +31,6 @@ private:
 	UPrimitiveComponent* TargetPrimitive = nullptr;
 public:
 	void SetTargetPrimitive(UPrimitiveComponent* Target) { TargetPrimitive = Target; }
-	
+	UPrimitiveComponent* GetTargetPrimitive() const { return TargetPrimitive; }
 };
 
