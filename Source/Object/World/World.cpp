@@ -373,13 +373,13 @@ UWorldInfo UWorld::GetWorldInfo() const
 	uint32 CameraCount = 0;
 	uint32 StaticMeshCount = 0;
 	
-	for (TObjectIterator<AActor> It; It; ++It)
+	for (auto& Actor : Actors)
 	{
-		if (It->IsA(ACamera::StaticClass()))
+		if (Actor->IsA(ACamera::StaticClass()))
 		{
 			CameraCount++;
 		}
-		if (It->IsA(AStaticMesh::StaticClass()))
+		if (Actor->IsA(AStaticMesh::StaticClass()))
 		{
 			StaticMeshCount++;
 		}

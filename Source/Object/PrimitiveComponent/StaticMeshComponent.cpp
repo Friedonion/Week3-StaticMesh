@@ -4,18 +4,18 @@
 #include "Static/ResourceManager.h"
 #include <filesystem>
 
-void UStaticMeshComponent::LoadFromObj(const std::string& path)
+void UStaticMeshComponent::LoadFromObj(const std::string& ObjName)
 {
     // Obj 파일 로드
-
     namespace fs = std::filesystem;
-    std::string ObjName = fs::path(path).stem().string();
-    UEngine::Get().GetObjLoader()->LoadFromFile(path);
+    std::string InObjName = fs::path(ObjName).stem().string();
+    
+    UEngine::Get().GetObjLoader()->LoadFromFile(InObjName);
 
-    const TArray<FSubMeshData>* meshData = UResourceManager::Get().GetMeshData(ObjName);
+    const TArray<FSubMeshData>* meshData = UResourceManager::Get().GetMeshData(InObjName);
     if (!meshData) return;
 
-    CurrentObjName = ObjName;
+    CurrentObjName = InObjName;
     RenderUnits.Empty();
 
     for (const auto& sub : *meshData)
@@ -25,7 +25,7 @@ void UStaticMeshComponent::LoadFromObj(const std::string& path)
         unit.Indices = &sub.Indices;
         unit.Material = UResourceManager::Get().GetMaterial(sub.MaterialName);
         unit.GUID = unit.Material ? unit.Material->GUID : 0;
-        unit.ObjName = ObjName;
+        unit.ObjName = InObjName;
         RenderUnits.Add(unit);
     }
 }

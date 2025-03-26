@@ -220,7 +220,7 @@ void AGizmoHandle::DoTransform(FTransform& AT, FVector Result, AActor* Actor )
 	LocalDelta.Z = FVector::DotProduct(WorldDelta, AT.GetWorldUp());       // 로컬 Z축 이동량
 
 
-	float MoveSpeedFactor = 0.1f;  // 이동 속도 조절
+	float MoveSpeedFactor = 1.f;  // 이동 속도 조절
 
 
 	if (SelectedAxis == ESelectedAxis::X)
