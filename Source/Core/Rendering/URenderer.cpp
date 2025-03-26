@@ -726,10 +726,9 @@ void URenderer::CreateDeviceAndSwapChain(HWND hWindow)
 		nullptr,                                                       // 선택된 기능 수준을 나타내는 D3D_FEATURE_LEVEL 값을 반환
 		&DeviceContext                                                 // 생성된 ID3D11DeviceContext 인터페이스에 대한 포인터
 	);
-
+	
 	// 생성된 SwapChain의 정보 가져오기
 	SwapChain->GetDesc(&SwapChainDesc);
-
 	// 뷰포트 정보 설정
 	ViewportInfo = {
 		0.0f, 0.0f,

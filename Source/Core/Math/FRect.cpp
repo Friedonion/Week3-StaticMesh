@@ -24,8 +24,8 @@ bool FRect::Contains(const FVector2& mousePos) const
 void FRect::ResizeRatio(float widthRatio, float heightRatio)
 {
 	Min.X *= widthRatio;
-	Max.X *= widthRatio;
 	Min.Y *= heightRatio;
+	Max.X *= widthRatio;
 	Max.Y *= heightRatio;
 }
 

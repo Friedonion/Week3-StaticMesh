@@ -7,7 +7,10 @@
 #include "Debug/DebugConsole.h"
 void FSlateApplication::Initialize()
 {
-
+	FVector2 swapSize = UEngine::Get().GetRenderer()->GetSwapChainSize();
+	float width = swapSize.X;
+	float height = swapSize.Y;
+	UE_LOG("SwapSize %f %f", swapSize.X, swapSize.Y);
 }
 
 void FSlateApplication::Tick()
@@ -18,16 +21,17 @@ void FSlateApplication::Tick()
 	FVector2 swapSize = UEngine::Get().GetRenderer()->GetSwapChainSize();
 	float width = swapSize.X;
 	float height = swapSize.Y;
-	UE_LOG("SwapChain size %f, %f", width, height);
+	//UE_LOG("SwapChain size %f, %f", width, height);
 	for (int i = 0; i < windows.Num(); i++)
 	{
 		FRect rect = windows[i]->Rect;
-		UE_LOG(*rect.ToFString());
+		//UE_LOG(*rect.ToFString());
 	}
 }
 
 void FSlateApplication::ShutDown()
 {
+	if (fullWindow) fullWindow->RestorePrevSize();
 	SaveSWindowToJSON();
 	SaveSWindowRatioToJSON();
 

@@ -375,6 +375,9 @@ void UEngine::UpdateWindowSize(UINT InScreenWidth, UINT InScreenHeight)
     if (InScreenHeight == 0 || InScreenWidth == 0)return;
     float resizeWidthRatio = float(InScreenWidth) / ScreenWidth;
     float resizeHeightRatio = float(InScreenHeight) / ScreenHeight;
+    UE_LOG("New size %d %d", InScreenWidth, InScreenHeight);
+    UE_LOG("Origin size %d %d", ScreenWidth, ScreenHeight);
+    UE_LOG("Resize Ratio %f %f", resizeWidthRatio, resizeHeightRatio);
     FSlateApplication::Get().ResizeScreen(resizeWidthRatio, resizeHeightRatio);
 	ScreenWidth = InScreenWidth;
 	ScreenHeight = InScreenHeight;
