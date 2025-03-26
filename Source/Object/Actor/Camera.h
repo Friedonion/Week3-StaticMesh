@@ -58,7 +58,7 @@ public:
     void SetFar(float Far);
     void SetNear(float Near);
     void SetCameraSensitivity(float sensitivity);
-    void SetCameraViewMode(ECameraViewMode::Type cameraViewMode);
+    void SetCameraViewMode(ECameraViewMode::Type CameraViewMode);
     float GetFieldOfView() const;
     float GetNear() const;
     float GetFar() const;

@@ -15,7 +15,7 @@
 #include "Data/ObjManager.h"
 #include "Core/HAL/PlatformType.h"
 #include"Static/ResourceManager.h"
-#include"Object/Actor/Custom.h"
+#include"Object/Actor/StaticMesh.h"
 #include <shellapi.h>
 class AArrow;
 class APicker;
@@ -83,8 +83,8 @@ LRESULT UEngine::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         // 액터 스폰 및 obj 로딩
         if (UEngine::Get().GetWorld())
         {
-            ACustom* CustomActor = UEngine::Get().GetWorld()->SpawnActor<ACustom>();
-            CustomActor->SetObjPath(path);
+            AStaticMesh* CustomActor = UEngine::Get().GetWorld()->SpawnActor<AStaticMesh>();
+            CustomActor->SetObjName(path);
         }
         MessageBox(hWnd, filePath, TEXT(L"드롭된 파일 경로"), MB_OK);
     }
@@ -304,79 +304,43 @@ void UEngine::InitWorld()
 {
     World = FObjectFactory::ConstructObject<UWorld>();
     
-    
     ACamera* mainCamera = World->SpawnActor<ACamera>();
-    mainCamera->ProjectionMode = ECameraProjectionMode::Type::Perspective;
     mainCamera->SetCameraViewMode(ECameraViewMode::Type::Perspective);
-    FEditorManager::Get().SetCamera(mainCamera);        //메인 카메라 설정
-    FEditorManager::Get().AddOrthoCamera(ECameraViewMode::Type::Perspective, mainCamera);
-    float d = 10.0f;
+    FEditorManager::Get().SetCamera(mainCamera);
 
     //Front
     ACamera* frontCamera = World->SpawnActor<ACamera>();
-    frontCamera->ProjectionMode = ECameraProjectionMode::Type::Orthographic;
     frontCamera->SetCameraViewMode(ECameraViewMode::Type::Front);
-    FTransform frontTransform = frontCamera->GetActorRelativeTransform();
-    frontTransform.SetPosition(FVector(d,0,0));
-    frontCamera->SetActorRelativeTransform(frontTransform);
-    FEditorManager::Get().AddOrthoCamera(ECameraViewMode::Type::Front,frontCamera);
-
+    
     //Top
     ACamera* topCamera = World->SpawnActor<ACamera>();
-    topCamera->ProjectionMode = ECameraProjectionMode::Type::Orthographic;
     topCamera->SetCameraViewMode(ECameraViewMode::Type::Top);
-    FTransform topTransform = topCamera->GetActorRelativeTransform();
-    topTransform.SetPosition(FVector(0, 0, d));
-    topCamera->SetActorRelativeTransform(topTransform);
-    FEditorManager::Get().AddOrthoCamera(ECameraViewMode::Type::Top,topCamera);
-
+    
     //Right
     ACamera* rightCamera = World->SpawnActor<ACamera>();
-    rightCamera->ProjectionMode = ECameraProjectionMode::Type::Orthographic;
     rightCamera->SetCameraViewMode(ECameraViewMode::Type::Right);
-    FTransform rightTransform = rightCamera->GetActorRelativeTransform();
-    rightTransform.SetPosition(FVector(0, d, 0));
-    rightCamera->SetActorRelativeTransform(rightTransform);
-    FEditorManager::Get().AddOrthoCamera(ECameraViewMode::Type::Right,rightCamera);
-
-
+    
     //Back
     ACamera* backCamera = World->SpawnActor<ACamera>();
-    backCamera->ProjectionMode = ECameraProjectionMode::Type::Orthographic;
     backCamera->SetCameraViewMode(ECameraViewMode::Type::Back);
-    FTransform backTransform = backCamera->GetActorRelativeTransform();
-    backTransform.SetPosition(FVector(-d, 0, 0));
-    backCamera->SetActorRelativeTransform(backTransform);
-    FEditorManager::Get().AddOrthoCamera(ECameraViewMode::Type::Back,backCamera);
-
+    
     //Bottom
     ACamera* bottomCamera = World->SpawnActor<ACamera>();
-    bottomCamera->ProjectionMode = ECameraProjectionMode::Type::Orthographic;
     bottomCamera->SetCameraViewMode(ECameraViewMode::Type::Bottom);
-    FTransform bottomTransform = bottomCamera->GetActorRelativeTransform();
-    bottomTransform.SetPosition(FVector(0, 0, -d));
-    bottomCamera->SetActorRelativeTransform(bottomTransform);
-    FEditorManager::Get().AddOrthoCamera(ECameraViewMode::Type::Bottom,bottomCamera);
-
+   
     //Left
     ACamera* leftCamera = World->SpawnActor<ACamera>();
-    leftCamera->ProjectionMode = ECameraProjectionMode::Type::Orthographic;
     leftCamera->SetCameraViewMode(ECameraViewMode::Type::Left);
-    FTransform leftTransform = leftCamera->GetActorRelativeTransform();
-    leftTransform.SetPosition(FVector(0, -d, 0));
-    leftCamera->SetActorRelativeTransform(leftTransform);
-    FEditorManager::Get().AddOrthoCamera(ECameraViewMode::Type::Left,leftCamera);
-
-
+    
     FEditorManager::Get().SetWorldGrid(World->SpawnActor<AWorldGrid>());
 
-    ConfigManager::Get().LoadAllConfigs();
 #ifdef _DEBUG
     World->LoadWorld(*World->DebugDefaultSceneName);
 #else
     World->LoadWorld(*World->ReleaseDefaultSceneName);
 #endif
     
+    ConfigManager::Get().LoadAllConfigs();
     
     World->SpawnActor<AAxis>();
     World->SpawnActor<APicker>();

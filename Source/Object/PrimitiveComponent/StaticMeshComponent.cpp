@@ -5,6 +5,8 @@
 
 void UStaticMeshComponent::LoadFromObj(const std::string& path)
 {
+   
+    
     // Obj 파일 로드
     UEngine::Get().GetObjLoader()->LoadFromFile(path);
     // ResourceManager에서 데이터 가져오기

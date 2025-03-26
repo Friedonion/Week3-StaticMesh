@@ -70,7 +70,7 @@ public:
 	uint32 Version = 1;
 	
 protected:
-	TArray<AActor*>  Actors;
+	TArray<AActor*> Actors;
 	TArray<UPrimitiveComponent*> ZIgnoreRenderComponents;
 	TArray<UPrimitiveComponent*> TextRenderComponents;
 	TArray<UPrimitiveComponent*> BillBoardRenderComponents;

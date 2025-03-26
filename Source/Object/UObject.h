@@ -28,6 +28,7 @@ private:
 
 public:
 	uint32 GetUUID() const { return UUID; }
+	void SetUUID(uint32 InUUID) {UUID = InUUID;}
 	uint32 GetInternalIndex() const { return InternalIndex; }
 
 public:
