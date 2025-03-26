@@ -226,6 +226,7 @@ void UEngine::Run()
 
 void UEngine::Shutdown()
 {
+    FSlateApplication::Get().ShutDown();
     Renderer->Release();
     
     ConfigManager::Get().SaveAllConfigs();
@@ -235,7 +236,6 @@ void UEngine::Shutdown()
 #else
     World->SaveWorld(*World->DefaultSceneName)
 #endif
-    FSlateApplication::Get().ShutDown();
         UResourceManager::Get().Shutdown();
     ShutdownWindow();
 }
@@ -344,7 +344,7 @@ void UEngine::InitWorld()
     
     World->SpawnActor<AAxis>();
     World->SpawnActor<APicker>();
-
+    World->SpawnActor<AArrow>();
 	World->BeginPlay();
 }
 
@@ -363,10 +363,11 @@ void UEngine::ShutdownWindow()
 
 void UEngine::UpdateWindowSize(UINT InScreenWidth, UINT InScreenHeight)
 {
+    //화면 최소화 반응 안하기
+    if (InScreenHeight == 0 || InScreenWidth == 0)return;
     float resizeWidthRatio = float(InScreenWidth) / ScreenWidth;
     float resizeHeightRatio = float(InScreenHeight) / ScreenHeight;
     FSlateApplication::Get().ResizeScreen(resizeWidthRatio, resizeHeightRatio);
-    UE_LOG("ResizeRatio %f %f", resizeWidthRatio, resizeHeightRatio);
 	ScreenWidth = InScreenWidth;
 	ScreenHeight = InScreenHeight;
 

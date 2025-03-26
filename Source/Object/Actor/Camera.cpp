@@ -72,6 +72,8 @@ void ACamera::SetCameraViewMode(ECameraViewMode::Type CameraViewMode)
         {
             Rotation = FQuat::AxisAngleToQuaternion(FVector(0, 1, 0), -90);
             ProjectionMode = ECameraProjectionMode::Type::Orthographic;
+            FQuat RotationLocal = FQuat::AxisAngleToQuaternion(FVector(1, 0, 0), 180);
+            Rotation = FQuat::MultiplyQuaternions(Rotation, RotationLocal);
             CameraTransform.SetPosition(FVector(0, 0, -d));
             break;
         }

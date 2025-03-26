@@ -25,7 +25,8 @@ namespace ECameraViewMode
         Bottom,
         Left,
         Right,
-        Perspective
+        Perspective,
+        None
     };
 }
 

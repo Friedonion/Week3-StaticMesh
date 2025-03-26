@@ -1,7 +1,9 @@
 ﻿#pragma once
 #include "Source\Core\Math\FRect.h"
-
+#include "SimpleJSON/Json.hpp"
 class ISlateViewport;
+
+namespace ECameraViewMode { enum class Type : uint8; }
 
 class SWindow
 {
@@ -19,13 +21,18 @@ public:
 	virtual bool OnMouseUp();
 	virtual void Resize(const FRect& _rect);
 	virtual void ScreenResize(float resizeWidthRatio, float resizeHeightRatio);
+	virtual json::JSON ToJSON();
 	void SetActiveFullViewport();
 	void RestorePrevSize();
 	void ChangeMainCamera();
+	virtual ECameraViewMode::Type GetCameraViewMode();
 private:
 	bool bisHover = false;
 	bool bisClicked = false;
 	ISlateViewport* viewport;
 	FRect prevRect;
+
+	const float minWidth=300.0f;
+	const float maxWidth=300.0f;
 };
 

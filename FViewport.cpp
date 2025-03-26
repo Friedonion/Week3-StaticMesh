@@ -61,6 +61,29 @@ void FViewport::SetActiveFullViewport()
 	renderer->activeFullViewport = this;
 }
 
+EViewport::Position FViewport::GetViewportPos()
+{
+	return viewportPos;
+}
+
+ECameraViewMode::Type FViewport::GetCameraViewMode()
+{
+	return cameraType;
+}
+
+
+
+
+EViewport::Position FViewport::GetViewportPosType()
+{
+	return viewportPos;
+}
+
+void FViewport::SetViewportPosType(EViewport::Position pos)
+{
+	viewportPos = pos;
+}
+
 const FRect& FViewport::GetRect()
 {
 	return Rect;

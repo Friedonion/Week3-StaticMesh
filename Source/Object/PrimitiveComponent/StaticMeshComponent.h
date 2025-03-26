@@ -9,10 +9,10 @@
 #include "Object/ObjectMacros.h"
 
 struct FStaticMesh {
-    TArray<FVertexPNCT> Vertices;
-    TArray<uint32_t> Indices;
-    const FMaterialData* Material;
-    uint32_t GUID;
+    const TArray<FVertexPNCT>* Vertices = nullptr;
+    const TArray<uint32_t>* Indices = nullptr;
+    const FMaterialData* Material = nullptr;
+    uint32_t GUID = 0;
 };
 
 class UStaticMeshComponent : public UPrimitiveComponent

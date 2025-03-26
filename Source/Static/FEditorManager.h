@@ -61,6 +61,7 @@ public:
     
     void MoveAllOrthoCameras(ECameraViewMode::Type cameraType, FVector MouseDeltaPos);
     void MoveOrthoCamera(ECameraViewMode::Type cameraType, FVector deltaMove);
+    ACamera* GetCameraByViewMode(ECameraViewMode::Type cameraType);
 private:
     AActor* SelectedActor = nullptr;
     UPrimitiveComponent* SelectedComponent = nullptr;

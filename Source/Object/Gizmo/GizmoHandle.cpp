@@ -150,23 +150,6 @@ void AGizmoHandle::Tick(float DeltaTime)
 		type = (type + 1) % static_cast<int>(EGizmoType::Max);
 		GizmoType = static_cast<EGizmoType>(type);
 	}
-
-
-	// Gizmo에서 그려주고 있는 bounding box를 그릴지 여부를 결정합니다.
-	if (SelectedActor)
-	{
-		for (auto BoundingBox : SelectedActorBoundingBox)
-		{
-			BoundingBox->SetIsDefaultRendered(true);
-		}
-	}
-	else
-	{
-		for (auto BoundingBox : SelectedActorBoundingBox)
-		{
-			BoundingBox->SetIsDefaultRendered(false);
-		}
-	}
 }
 
 void AGizmoHandle::SetActive(bool bActive)
@@ -187,8 +170,8 @@ void AGizmoHandle::SetActive(bool bActive)
 		BoundingBox->DetachFromComponent();
 		GetWorld()->RemoveRenderComponent(BoundingBox);
 		RemoveComponent(BoundingBox);
-
 		GObjects.Remove(BoundingBox->GetUUID());
+		
 	}
 	SelectedActorBoundingBox.Empty();
 

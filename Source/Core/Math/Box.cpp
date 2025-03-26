@@ -130,7 +130,7 @@ FBox::FBox(const TArray<FStaticMesh>& RenderUnits, const FMatrix& TransformMatri
 	Min = FVector(FLT_MAX, FLT_MAX, FLT_MAX);
 	for (const FStaticMesh& RenderUnit : RenderUnits)
 	{
-		for (const FVertexPNCT& Vertex : RenderUnit.Vertices)
+		for (const FVertexPNCT& Vertex : *RenderUnit.Vertices)
 		{
 			FVector4 Vertex4 = FVector4(Vertex.X, Vertex.Y, Vertex.Z, 1.f);
 			Vertex4 = Vertex4 * TransformMatrix;
@@ -151,6 +151,19 @@ FBox::FBox(const FVector InMin, const FVector InMax)
 	Max = InMax;
 	//UpdateValid();
 }
+
+
+FBox::FBox(const FBox& A, const FBox& B)
+{
+	Min.X = min(A.Min.X, B.Min.X);
+	Min.Y = min(A.Min.Y, B.Min.Y);
+	Min.Z = min(A.Min.Z, B.Min.Z);
+	Max.X = max(A.Max.X, B.Max.X);
+	Max.Y = max(A.Max.Y, B.Max.Y);
+	Max.Z = max(A.Max.Z, B.Max.Z);
+	bIsValid = A.IsValid() || B.IsValid(); 
+}
+
 
 FBox FBox::BuildAABB(const FVector Origin, const FVector Extent)
 {

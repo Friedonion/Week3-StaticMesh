@@ -23,7 +23,7 @@ public:
 	FBox(const TArray<FVector> &Vertices, const FTransform& Transform);
 	FBox(const TArray<FStaticMesh> &RenderUnits, const FMatrix& TransformMatrix);
 	FBox(const FVector InMin, const FVector InMax);
-
+	FBox(const FBox& A, const FBox& B);
 	static FBox BuildAABB(const FVector Origin, const FVector Extent);
 	bool Intersects(const FVector RayOrigin, const FVector RayDir, float& Distance) const;
 

@@ -555,8 +555,7 @@ void UI::RenderSceneManager()
         return;
 
     // Scene Manager 창을 독립된 OS 창으로 만들기 위한 설정
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
-    flags |= ImGuiWindowFlags_NoSavedSettings;   
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse; 
     flags |= ImGuiWindowFlags_MenuBar;           
 
     // 최초 위치/크기 지정 (윈도우 밖으로)

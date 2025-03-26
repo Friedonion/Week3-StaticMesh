@@ -19,11 +19,7 @@ void FSlateApplication::Tick()
 
 void FSlateApplication::ShutDown()
 {
-	for (int i=0;i<windows.Num();i++)
-	{
-		SWindow* window = windows[i];
-		delete window;
-	}
+	SaveSWindowToJSON();
 }
 
 FRect FSlateApplication::GetCurrentWindow()
@@ -58,6 +54,30 @@ void FSlateApplication::ResizeScreen(float resizeWidthRatio, float resizeHeightR
 	}
 }
 
+void FSlateApplication::SaveSWindowToJSON()
+{
+	json::JSON jsonArray = json::Array();
+	for (int i = 0; i < windows.Num(); i++)
+	{
+		jsonArray.append(windows[i]->ToJSON());
+
+	}
+	std::ofstream outFile("engine.ini");
+	outFile << jsonArray.dump(4); // pretty print
+	outFile.close();
+
+	for (int i = 0; i < windows.Num(); i++)
+	{
+		SWindow* window = windows[i];
+		delete window;
+	}
+}
+
+SWindow* FSlateApplication::GetClickedWindow()
+{
+	return clickedWindow;
+}
+
 void FSlateApplication::ProcessMouseButtonDownEvent()
 {
 	POINT pt;
@@ -90,7 +110,7 @@ void FSlateApplication::ProcessMouseButtonDownEvent()
 	
 	if (Input.IsPressedMouse(false))
 	{
-		if (clickedWindow)
+		if (clickedWindow&&DeltaPos.X!=0&&DeltaPos.Y!=0)
 		{
 			clickedWindow->OnMouseDrag(DeltaPos2D);
 		}
