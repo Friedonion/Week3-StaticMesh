@@ -77,8 +77,10 @@ bool SSplitter2x2::isClicked(FVector2 mousePos)
 
 bool SSplitter2x2::OnMouseDrag(FVector2 mouseDelta) 
 {
-    if (bisHoriClicked)
+
+    if (bisHoriClicked&&ClampHorizontal(mouseDelta))
     {
+
         horitionalHandle.Max.X += mouseDelta.X;
         horitionalHandle.Min.X += mouseDelta.X;
 
@@ -96,7 +98,7 @@ bool SSplitter2x2::OnMouseDrag(FVector2 mouseDelta)
 
         //UE_LOG("Hori Splitter Clicked");
     }
-    else if (bisVertiClicked)
+    else if (bisVertiClicked&&ClampVertical(mouseDelta))
     {
         verticalHandle.Max.Y += mouseDelta.Y;
         verticalHandle.Min.Y += mouseDelta.Y;
@@ -173,3 +175,29 @@ ECameraViewMode::Type SSplitter2x2::GetCameraViewMode()
 {
     return ECameraViewMode::Type::None;
 }
+
+bool SSplitter2x2::ClampVertical(FVector2 mouseDelta)
+{
+    FVector2 swapSize = UEngine::Get().GetRenderer()->GetSwapChainSize();
+    float width = swapSize.X;
+    float height = swapSize.Y;
+
+    if ((verticalHandle.Min.Y + mouseDelta.Y) < minHeight) return false;
+    if ((verticalHandle.Max.Y + mouseDelta.Y) > height - minHeight) return false;
+
+    return true;
+}
+
+bool SSplitter2x2::ClampHorizontal(FVector2 mouseDleta)
+{
+    FVector2 swapSize = UEngine::Get().GetRenderer()->GetSwapChainSize();
+    float width = swapSize.X;
+    float height = swapSize.Y;
+
+    float nextMousePos = horitionalHandle.Min.X + mouseDleta.X;
+    if (nextMousePos < minWidth) return false;
+    if (nextMousePos > width - minWidth) return false;
+
+    return true;
+}
+
