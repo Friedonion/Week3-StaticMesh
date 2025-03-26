@@ -5,6 +5,7 @@
 #include <filesystem>
 #include "Static/ResourceManager.h"
 #include "Data//MaterialData.h"
+#include "Static/Util.h"
 
 namespace fs = std::filesystem;
 
@@ -27,8 +28,11 @@ bool MtlLoader::LoadMtlFile(const std::string& mtlPath) {
         std::istringstream iss(line);
         std::string token;
         iss >> token;
+        float r, g, b;
 
-        if (token == "newmtl") {
+        size_t HashToken = Hash(token);
+        
+        if (HashToken == Hash("newmtl")) {
             if (!currentMaterial.Name.empty()) {
                 UResourceManager::Get().SetMaterial(currentMaterial.Name, currentMaterial);
             }
@@ -38,13 +42,58 @@ bool MtlLoader::LoadMtlFile(const std::string& mtlPath) {
             currentMaterial = FMaterialData();
             currentMaterial.Name = newName;
         }
-        else if (token == "Kd") {
-            float r, g, b;
+        else if (HashToken == Hash("Ka")) {
+            iss >> r >> g >> b;
+            currentMaterial.AmbientColor = { r, g, b };
+        }
+        else if (HashToken == Hash("Kd")) {
             iss >> r >> g >> b;
             currentMaterial.DiffuseColor = { r, g, b };
         }
-        else if (token == "map_Kd") {
+        else if (HashToken == Hash("Ks")) {
+            iss >> r >> g >> b;
+            currentMaterial.SpecularColor = { r, g, b };
+        }
+        else if (HashToken == Hash("Ke")) {
+            iss >> r >> g >> b;
+            currentMaterial.EmissiveColor = { r, g, b };
+        }
+        else if (HashToken == Hash("Ns"))
+        {
+            iss >> r;
+            currentMaterial.Shininess = r;
+        }
+        else if (HashToken == Hash("Ni"))
+        {
+            iss >> r;
+            currentMaterial.OpticalDensity = r;
+        }
+        else if (HashToken == Hash("d"))
+        {
+            iss >> r;
+            currentMaterial.Transparency = r;
+        }
+        else if (HashToken == Hash("illum"))
+        {
+            iss >> r;
+            currentMaterial.IlluminationModel = r;
+        }
+        else if (HashToken == Hash("map_Ka")) {
+            iss >> currentMaterial.AmbientTexturePath;
+        }
+        else if (HashToken == Hash("map_Kd")) {
             iss >> currentMaterial.DiffuseTexturePath;
+        }
+        else if (HashToken == Hash("map_Ks")) {
+            iss >> currentMaterial.SpecularTexturePath;
+        }
+        else if (HashToken == Hash("map_bump") || HashToken == Hash("bump"))
+        {
+            iss >> currentMaterial.BumpMap;
+        }
+        else if (HashToken == Hash("map_d"))
+        {
+            iss >> currentMaterial.AlphaMap;
         }
     }
 

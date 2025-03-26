@@ -12,7 +12,23 @@ struct FSubMeshData {
 
 struct FMaterialData {
     std::string Name;
-    std::string DiffuseTexturePath;
-    FVector DiffuseColor = { 1.0f, 1.0f, 1.0f };
+
+    FVector AmbientColor = { 0.f,0.f,0.f };
+    FVector DiffuseColor = { 1.f,1.f,1.f };
+    FVector SpecularColor = { 0.f,0.f,0.f };
+    FVector EmissiveColor = { 0.f,0.f,0.f };
+
+    float Shininess = 32.f;
+    float OpticalDensity = 1.f;
+    float Transparency = 0.f;
+    float IlluminationModel = 2.f;
+    
+    std::string AmbientTexturePath = "";
+    std::string DiffuseTexturePath = "";
+    std::string SpecularTexturePath = "";
+
+    std::string BumpMap = "";
+    std::string AlphaMap = "";
+    
     uint32_t GUID; //자기 GUID
 };

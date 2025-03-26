@@ -20,6 +20,8 @@
 #include "../FViewport.h"
 #include "Static/Enum.h"
 #include "ThirdParty/SimpleJSON/Json.hpp"
+#include "Data/MaterialData.h"
+
 struct FVertexPNCT;
 struct FVector4;
 class UPrimitiveComponent;
@@ -125,18 +127,25 @@ private:
         FMatrix MVP;
         FVector4 Color;
         EPixelType PixelType; //0 기본색 1 커스텀 색 2텍스처
+    	FVector CameraPos;
     };
-	
-	struct alignas(16) FPickingConstants
-	{
-		FVector4 UUIDColor;
-	};
 
-	struct alignas(16) FDepthConstants{
-		unsigned int DepthOffset;
-		int nearPlane;
-		int farPlane;
+	struct alignas(16) FMaterialConstants{
+		FVector AmbientColor;
+		FVector DiffuseColor;
+		FVector SpecularColor;
+		FVector EmissiveColor;
+
+		float Shiness;
+		float OpticalDensity;
+		float Transparency;
+		float IlluminationModel;
 	};
+	
+	// struct alignas(16) FPickingConstants
+	// {
+	// 	FVector4 UUIDColor;
+	// };
 	
     struct ConstantUpdateInfo
     {
@@ -214,6 +223,7 @@ public:
 	void ReleaseVertexBuffer(D3D11_PRIMITIVE_TOPOLOGY Topology);
     void RenderPrimitive(UPrimitiveComponent* Component);
     void ReleaseAllVertexBuffer();
+    void UpdateMaterialConstant(const FMaterialData& Material) const;
     /** Constant Data를 업데이트 합니다. */
     void UpdateConstant(USceneComponent* Component) const;
 
@@ -313,9 +323,11 @@ protected:
     ID3D11Texture2D* FrameBuffer = nullptr;                 // 화면 출력용 텍스처
     ID3D11RenderTargetView* FrameBufferRTV = nullptr;       // 텍스처를 렌더 타겟으로 사용하는 뷰
     ID3D11RasterizerState* RasterizerState = nullptr;       // 래스터라이저 상태(컬링, 채우기 모드 등 정의)
-    ID3D11Buffer* ConstantBuffer = nullptr;                 // 쉐이더에 데이터를 전달하기 위한 상수 버퍼
 	TMap<D3D11_PRIMITIVE_TOPOLOGY, VertexBufferInfo> BatchVertexBuffers;
 	TMap<uint32_t, VertexBufferInfo> VertexBuffers;
+
+    ID3D11Buffer* ConstantBuffer = nullptr;                 // 쉐이더에 데이터를 전달하기 위한 상수 버퍼
+	ID3D11Buffer* ConstantMaterialBuffer = nullptr;
 	
     FLOAT ClearColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f }; // 화면을 초기화(clear)할 때 사용할 색상 (RGBA)
     D3D11_VIEWPORT ViewportInfo = {};                       // 렌더링 영역을 정의하는 뷰포트 정보
@@ -371,9 +383,8 @@ protected:
 	// 피킹용 버퍼들
 	ID3D11Texture2D* PickingFrameBuffer = nullptr;                 // 화면 출력용 텍스처
 	ID3D11RenderTargetView* PickingFrameBufferRTV = nullptr;       // 텍스처를 렌더 타겟으로 사용하는 뷰
-	ID3D11Buffer* ConstantPickingBuffer = nullptr;                 // 뷰 상수 버퍼
+	// ID3D11Buffer* ConstantPickingBuffer = nullptr;                 // 뷰 상수 버퍼
 	FLOAT PickingClearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f }; //
-	ID3D11Buffer* ConstantsDepthBuffer = nullptr;
 
 	ID3D11DepthStencilState* IgnoreDepthStencilState = nullptr;   // DepthStencil 상태(깊이 테스트, 스텐실 테스트 등 정의)
 
@@ -382,10 +393,9 @@ public:
     void ReleasePickingFrameBuffer();
     void CreatePickingTexture(HWND hWnd);
     void PrepareZIgnore();
- //    void PreparePicking();
+	// void PreparePicking();
 	// void PreparePickingShader() const;
-	void UpdateConstantPicking(FVector4 UUIDColor) const;
-    void UpdateConstantDepth(int Depth) const;
+	// void UpdateConstantPicking(FVector4 UUIDColor) const;
 
     void PrepareMain();
 	void PrepareMainShader();

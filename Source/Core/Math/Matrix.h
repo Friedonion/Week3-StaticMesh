@@ -41,7 +41,8 @@ struct alignas(16) FMatrix
 	FVector GetTranslation() const;
 	FVector GetScale() const;
 	FVector GetRotation() const;
-
+	FVector GetOrigin() const;
+	
 	FVector4 TransformVector4(const FVector4& Vector) const;
 	FVector TransformVector(const FVector& Vector)const;
 
