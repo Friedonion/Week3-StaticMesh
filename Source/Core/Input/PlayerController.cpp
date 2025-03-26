@@ -14,6 +14,9 @@ void APlayerController::HandleCameraMovement(float DeltaTime) {
 
     FVector NewVelocity(0, 0, 0);
 
+    float CameraSensitivySpeed = 10.f;
+    float CameraMovementSpeed = 10.f;
+    
     if (APlayerInput::Get().IsPressedMouse(true) == false)
     {
         // Camera->SetVelocity(NewVelocity);
@@ -35,8 +38,8 @@ void APlayerController::HandleCameraMovement(float DeltaTime) {
     FTransform CameraTransform = Camera->GetActorRelativeTransform();
 
     FVector TargetRotation = CameraTransform.GetRotation().GetEuler();
-    TargetRotation.Y += Camera->GetCameraSensitivity() * DeltaPos.Y * DeltaTime;
-    TargetRotation.Z += Camera->GetCameraSensitivity() * DeltaPos.X * DeltaTime;
+    TargetRotation.Y += Camera->GetCameraSensitivity() * DeltaPos.Y * DeltaTime * CameraSensitivySpeed;
+    TargetRotation.Z += Camera->GetCameraSensitivity() * DeltaPos.X * DeltaTime * CameraSensitivySpeed;
     
     TargetRotation.Y = FMath::Clamp(TargetRotation.Y, -Camera->MaxYDegree, Camera->MaxYDegree);
     CameraTransform.SetRotation(TargetRotation);
@@ -69,40 +72,40 @@ void APlayerController::HandleCameraMovement(float DeltaTime) {
     }
 
     //회전이랑 마우스클릭 구현 카메라로 해야할듯?
-    CameraTransform.Translate(NewVelocity * DeltaTime * CamSpeed);
+    CameraTransform.Translate(NewVelocity * DeltaTime * CamSpeed * CameraMovementSpeed);
     Camera->SetActorRelativeTransform(CameraTransform); //임시용
     // FCamera::Get().SetVelocity(NewVelocity);
-}
-
-void APlayerController::HandleGizmoMovement(float DeltaTime)
-{
-    if (APlayerInput::Get().IsPressedMouse(false) == false)
-    {
-        return;
-    }
-
-    AActor* SelectedActor = FEditorManager::Get().GetSelectedActor();
-    
-    if (SelectedActor == nullptr) //이거를 나중엔 기즈모로 체크
-    {
-        return;
-    }
 }
 
 void APlayerController::ProcessKeyBind(float DeltaTime)
 {
     if (APlayerInput::Get().GetKeyDown(EKeyCode::Delete))
     {
-        if (AActor* SelectedActor = FEditorManager::Get().GetSelectedActor())
+        switch (FEditorManager::Get().GetPickState())
         {
-            SelectedActor->Destroy();
+        case PickState::Actor:
+            if (AActor* SelectedActor = FEditorManager::Get().GetSelectedActor())
+            {
+                FEditorManager::Get().ReleasePick();
+                SelectedActor->Destroy();
+            }
+            break;
+        case PickState::Component:
+            if (UPrimitiveComponent* SelectedComponent = FEditorManager::Get().GetSelectedComponent())
+            {
+                FEditorManager::Get().ReleasePick();
+                AActor* ParentActor = SelectedComponent->GetOwner();
+                ParentActor->RemoveComponent(SelectedComponent);
+            }
+            break;
+        default:
+            break;
         }
     }
 }
 
 void APlayerController::ProcessPlayerInput(float DeltaTime) {
 
-    HandleGizmoMovement(DeltaTime);
     HandleCameraMovement(DeltaTime);
     ProcessKeyBind(DeltaTime);
 }

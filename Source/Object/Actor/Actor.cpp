@@ -86,7 +86,7 @@ void AActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		}
 		if (FEditorManager::Get().GetSelectedActor() == this)
 		{
-			FEditorManager::Get().SelectComponent(nullptr);
+			FEditorManager::Get().ReleasePick();
 		}
 		GObjects.Remove(Component->GetUUID());
 	}
