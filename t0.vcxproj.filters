@@ -178,6 +178,13 @@
     <ClCompile Include="Source\Static\ResourceManager.cpp">
       <Filter>Static</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Data\MtlLoader.cpp" />
+    <ClCompile Include="Source\Data\ObjManager.cpp" />
+    <ClCompile Include="Source\Object\Actor\StaticMesh.cpp" />
+    <ClCompile Include="Source\Object\PrimitiveComponent\StaticMeshComponent.cpp" />
+    <ClCompile Include="Source\Object\PrimitiveComponent\TextureComponent.cpp" />
+    <ClCompile Include="Source\Object\TObjectIterator.cpp" />
+    <ClCompile Include="Source\Object\UObjectArray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Core\AbstractClass\Singleton.h">
@@ -398,6 +405,15 @@
       <Filter>Static</Filter>
     </ClInclude>
     <ClInclude Include="Source\Object\ObjectMacros.h" />
+    <ClInclude Include="Source\Data\MaterialData.h" />
+    <ClInclude Include="Source\Data\MtlLoader.h" />
+    <ClInclude Include="Source\Data\ObjManager.h" />
+    <ClInclude Include="Source\Object\Actor\StaticMesh.h" />
+    <ClInclude Include="Source\Static\Util.h" />
+    <ClInclude Include="Source\Object\PrimitiveComponent\StaticMeshComponent.h" />
+    <ClInclude Include="Source\Object\PrimitiveComponent\TextureComponent.h" />
+    <ClInclude Include="Source\Object\TObjectIterator.h" />
+    <ClInclude Include="Source\Object\UObjectArray.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\ThirdParty\DirectXTex\Include\DirectXTex.inl">

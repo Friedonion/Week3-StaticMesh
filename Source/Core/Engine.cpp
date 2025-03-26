@@ -243,7 +243,7 @@ void UEngine::Shutdown()
 #ifdef _DEBUG
     World->SaveWorld(*World->DebugDefaultSceneName);
 #else
-    World->SaveWorld(*World->DefaultSceneName)
+    World->SaveWorld(*World->ReleaseDefaultSceneName);
 #endif
         UResourceManager::Get().Shutdown();
     ShutdownWindow();

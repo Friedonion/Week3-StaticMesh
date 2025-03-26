@@ -64,6 +64,7 @@ private:
 	UWorldInfo GetWorldInfo() const;
 
 public:
+	FString DefaultSceneName = "DefaultScene";
 	FString DebugDefaultSceneName = "DebugDefaultScene";
 	FString ReleaseDefaultSceneName = "DefaultScene";
 	FString SceneName;
