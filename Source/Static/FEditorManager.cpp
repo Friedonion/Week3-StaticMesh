@@ -208,11 +208,12 @@ void FEditorManager::SavePerspectiveCamera()
 	j["LocY"] = transform.GetPosition().Y;
 	j["LocZ"] = transform.GetPosition().Z;
 
-	j["RotX"] = transform.GetRotation().X;
-	j["RotY"] = transform.GetRotation().Y;
-	j["RotZ"] = transform.GetRotation().Z;
+	FVector rot = transform.GetRotation().GetEuler();
+	j["RotX"] = rot.X;
+	j["RotY"] = rot.Y;
+	j["RotZ"] = rot.Z;
 
-
+	std::string s = j.ToString();
 	jsonArray.append(j);
 
 	std::ofstream file("CameraSettings.ini");
