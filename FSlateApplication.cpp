@@ -139,7 +139,7 @@ void FSlateApplication::ProcessMouseButtonDownEvent()
 	
 	if (Input.IsPressedMouse(false))
 	{
-		if (clickedWindow&&DeltaPos.X!=0&&DeltaPos.Y!=0)
+		if (clickedWindow&&DeltaPos.X!=0&&DeltaPos.Y!=0&&!fullWindow)
 		{
 			clickedWindow->OnMouseDrag(DeltaPos2D);
 		}
