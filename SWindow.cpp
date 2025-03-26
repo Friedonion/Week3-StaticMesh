@@ -1,6 +1,7 @@
 ﻿#include "SWindow.h"
 #include "Source\Debug\DebugConsole.h"
 #include "ISlateViewport.h"
+#include "Object/Actor/Camera.h"
 SWindow::SWindow()
 {
 }
@@ -64,6 +65,8 @@ void SWindow::Resize(const FRect& _rect)
 	prevRect = Rect;
 	Rect = _rect;
 	if(viewport) viewport->Resize(_rect);
+	UE_LOG("Resize Min (%f %f), Max (%f %f)",
+		Rect.Min.X, Rect.Min.Y, Rect.Max.X, Rect.Max.Y);
 }
 
 void SWindow::ScreenResize(float resizeWidthRatio, float resizeHeightRatio)
@@ -71,6 +74,23 @@ void SWindow::ScreenResize(float resizeWidthRatio, float resizeHeightRatio)
 	prevRect = Rect;
 	Rect.ResizeRatio(resizeWidthRatio, resizeHeightRatio);
 	if(viewport) viewport->Resize(Rect);
+}
+
+json::JSON SWindow::ToJSON()
+{
+	json::JSON j;
+	j["MinX"] = Rect.Min.X;
+	j["MinY"] = Rect.Min.Y;
+	j["MaxX"] = Rect.Max.X;
+	j["MaxY"] = Rect.Max.Y;
+	
+	if (viewport)
+	{
+		j["CameraType"] = static_cast<int>(viewport->GetCameraViewMode());
+		j["ViewportPos"] = static_cast<int>(viewport->GetViewportPos());
+	}
+	j["type"] = "SWindow";
+	return j;
 }
 
 void SWindow::SetActiveFullViewport()
@@ -89,4 +109,10 @@ void SWindow::RestorePrevSize()
 void SWindow::ChangeMainCamera()
 {
 	if(viewport!=nullptr) viewport->ChangeMainCamera();
+}
+
+ECameraViewMode::Type SWindow::GetCameraViewMode()
+{
+	if (viewport) return viewport->GetCameraViewMode();
+	else return ECameraViewMode::Type::None;
 }

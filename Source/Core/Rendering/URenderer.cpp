@@ -12,6 +12,7 @@
 #include "Object/PrimitiveComponent/StaticMeshComponent.h"
 #include "Data/MaterialData.h"
 
+
 void VertexBufferInfo::AddVertices(TArray<FVertexPNCT> InVertices, TArray<uint32_t> InIndices)
 {
 	Vertices.Insert(Vertices.end(), InVertices.begin(), InVertices.end());
@@ -932,6 +933,7 @@ void URenderer::InitMatrix()
 
 void URenderer::CreateMultipleViewports()
 {
+	/*
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
 	SwapChain->GetDesc(&swapChainDesc);
 
@@ -945,22 +947,14 @@ void URenderer::CreateMultipleViewports()
 	rectLT.Max = FVector2(halfWidth, halfHeight);
 	SWindow* windowLT = CreateViewportWithWindow(rectLT,
 		ECameraViewMode::Type::Perspective,EViewport::Position::LT);
-	/*
-	FViewport* viewportLT = FSlateApplication::Get().SNEW(rectLT);
-	viewportLT->SetCamera(ECameraViewMode::Type::Front);
-	MultiFViewports.Add(viewportLT);
-	*/
+
 
 	FRect rectRT;
 	rectRT.Min = FVector2(halfWidth, 0);
 	rectRT.Max = FVector2(fullWidth, halfHeight);
 	SWindow* windowRT = CreateViewportWithWindow(rectRT, 
 		ECameraViewMode::Type::Top, EViewport::Position::RT);
-	/*
-	FViewport* viewportRT = FSlateApplication::Get().SNEW(rectRT);
-	viewportRT->SetCamera(ECameraViewMode::Type::Top);
-	MultiFViewports.Add(viewportRT);
-	*/
+
 
 	FRect rectLB;
 	rectLB.Min = FVector2(0, halfHeight);
@@ -968,27 +962,11 @@ void URenderer::CreateMultipleViewports()
 	SWindow* windowLB = CreateViewportWithWindow(rectLB, 
 		ECameraViewMode::Type::Back, EViewport::Position::LB);
 
-	/*
-	FViewport* viewportLB = FSlateApplication::Get().SNEW(rectLB);
-	viewportLB->SetCamera(ECameraViewMode::Type::Back);
-	MultiFViewports.Add(viewportLB);
-	*/
-
 	FRect rectRB;
 	rectRB.Min = FVector2(halfWidth, halfHeight);
 	rectRB.Max = FVector2(fullWidth, fullHeight);
 	SWindow* windowRB = CreateViewportWithWindow(rectRB, 
 		ECameraViewMode::Type::Right, EViewport::Position::RB);
-	/*
-	FViewport* viewportRB = new FViewport(rectRB);
-	viewportRB->SetCamera(ECameraViewMode::Type::Bottom);
-	MultiFViewports.Add(viewportRB);
-
-	SWindow* windowRB = new SWindow(rectRB);
-	windowRB->SetISlateViewport(viewportRB);
-	FSlateApplication::Get().Add(windowRB);
-	FViewport* viewportRB = FSlateApplication::Get().SNEW(rectRB);
-	*/
 
 	SSplitter2x2* splitter = new SSplitter2x2();
 	float border = 30;
@@ -1003,15 +981,15 @@ void URenderer::CreateMultipleViewports()
 
 	FSlateApplication::Get().Add(splitter);
 
-
-	// 뷰포트 설정 적용
-	//DeviceContext->RSSetViewports(4, viewports);
+	*/
+	LoadMultipleViewport();
 }
 
 SWindow* URenderer::CreateViewportWithWindow(const FRect& _rect, ECameraViewMode::Type cameraType, EViewport::Position viewportPos)
 {
 	FViewport* viewport = new FViewport(_rect);
 	viewport->SetCamera(cameraType);
+	viewport->SetViewportPosType(viewportPos);
 	MultiFViewports.Add(viewportPos, viewport);
 
 	SWindow* window = new SWindow(_rect);
@@ -1019,6 +997,76 @@ SWindow* URenderer::CreateViewportWithWindow(const FRect& _rect, ECameraViewMode
 	FSlateApplication::Get().Add(window);
 
 	return window;
+}
+
+void URenderer::LoadMultipleViewport()
+{
+	std::ifstream inFile("engine.ini");
+	std::stringstream ss;
+	ss << inFile.rdbuf();
+	json::JSON layout = json::JSON::Load(ss.str());
+
+	SSplitter2x2* splitter = new SSplitter2x2();
+
+	for (const auto& item : layout.ArrayRange())
+	{
+		std::string type = item.at("type").ToString();
+
+		if (type == "SWindow") {
+			SWindow* win = CreateWindowFromJSON(item,splitter);
+			//FSlateApplication::Get().Add(win);
+		}
+		else if (type == "SSplitter2*2") {
+			SSplitter2x2* s = CreateSplitterFromJSON(item, splitter);
+			//FSlateApplication::Get().Add(splitter);
+		}
+	}
+
+}
+
+SWindow* URenderer::CreateWindowFromJSON(const json::JSON& j, SSplitter2x2* splitter)
+{
+	FRect rect;
+	rect.Min = FVector2(j.at("MinX").ToFloat(), j.at("MinY").ToFloat());
+	rect.Max = FVector2(j.at("MaxX").ToFloat(), j.at("MaxY").ToFloat());
+
+	ECameraViewMode::Type camType = static_cast<ECameraViewMode::Type>(j.at("CameraType").ToInt());
+	EViewport::Position pos = static_cast<EViewport::Position>(j.at("ViewportPos").ToInt());
+
+	SWindow* window = CreateViewportWithWindow(rect, camType, pos);
+
+	switch (pos)
+	{
+	case EViewport::Position::LT:
+		splitter->SideLT = window;
+		break;
+	case EViewport::Position::RT:
+		splitter->SideRT = window;
+		break;
+	case EViewport::Position::LB:
+		splitter->SideLB = window;
+		break;
+	case EViewport::Position::RB:
+		splitter->SideRB = window;
+		break;
+	default:
+		break;
+	}
+
+	return window;
+}
+
+SSplitter2x2* URenderer::CreateSplitterFromJSON(const json::JSON& j, SSplitter2x2* splitter)
+{
+	// 핸들 정보
+	splitter->horitionalHandle.Min = FVector2(j.at("HMinX").ToFloat(), j.at("HMinY").ToFloat());
+	splitter->horitionalHandle.Max = FVector2(j.at("HMaxX").ToFloat(), j.at("HMaxY").ToFloat());
+
+	splitter->verticalHandle.Min = FVector2(j.at("VMinX").ToFloat(), j.at("VMinY").ToFloat());
+	splitter->verticalHandle.Max = FVector2(j.at("VMaxX").ToFloat(), j.at("VMaxY").ToFloat());
+	
+	FSlateApplication::Get().Add(splitter);
+	return splitter;
 }
 
 const TMap<EViewport::Position, FViewport*>& URenderer::GetActiveViewport()

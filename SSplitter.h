@@ -11,6 +11,7 @@ public:
     virtual bool OnMouseDrag(FVector2 mouseDelta) ;
     virtual bool OnMouseUp()  override;
     virtual void ScreenResize(float resizeWidthRatio, float resizeHeightRatio) override;
+    virtual json::JSON ToJSON() override;
     SWindow* SideLT;
     SWindow* SideRB;
     FRect Handle;
@@ -26,6 +27,8 @@ public:
     virtual bool OnMouseDrag(FVector2 mouseDelta) ;
     virtual bool OnMouseUp()  override;
     virtual void ScreenResize(float resizeWidthRatio, float resizeHeightRatio) override;
+    virtual json::JSON ToJSON() override;
+    virtual ECameraViewMode::Type GetCameraViewMode() override;
     SWindow* SideLT;
     SWindow* SideLB;
     SWindow* SideRB;

@@ -19,11 +19,13 @@
 #include "Texture/TextureRenderer.h"
 #include "../FViewport.h"
 #include "Static/Enum.h"
-
+#include "ThirdParty/SimpleJSON/Json.hpp"
 struct FVertexPNCT;
 struct FVector4;
 class UPrimitiveComponent;
 class ACamera;
+class SSplitter2x2;
+class SWindow;
 namespace EViewport
 {
 	enum class Position : uint8{
@@ -296,6 +298,11 @@ protected:
 
 	SWindow* CreateViewportWithWindow(const FRect& _rect, ECameraViewMode::Type cameraType, EViewport::Position viewportPos);
 	
+	void LoadMultipleViewport();
+
+	SWindow* CreateWindowFromJSON(const json::JSON& j, SSplitter2x2* splitter);
+
+	SSplitter2x2* CreateSplitterFromJSON(const json::JSON& j, SSplitter2x2* splitter);
 protected:
     // Direct3D 11 장치(Device)와 장치 컨텍스트(Device Context) 및 스왑 체인(Swap Chain)을 관리하기 위한 포인터들
     ID3D11Device* Device = nullptr;                         // GPU와 통신하기 위한 Direct3D 장치

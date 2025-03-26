@@ -183,4 +183,7 @@ void FEditorManager::MoveOrthoCamera(ECameraViewMode::Type cameraType, FVector d
 
 }
 
-
+ACamera* FEditorManager::GetCameraByViewMode(ECameraViewMode::Type cameraType)
+{
+	return OrthogonalCamera[cameraType];
+}
