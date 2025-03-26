@@ -22,12 +22,12 @@ struct Loader //로더로 바꿀때 사용
 {
     TMap<std::string, TMap<std::string, Face>> Object;
     TArray<std::string> Materials;
-
     TArray<FVector> Vertices;
     TArray<FVector> Normals;
     TArray<FVector2> UVs;
 };
 #pragma pack(push, 1) //패딩 없음
+
 struct BinaryHeader
 {
     char Magic[4] = { 'O', 'B', 'J', 'B' };   //매직 넘버
@@ -64,10 +64,10 @@ bool FObjManager::LoadFromFile(const std::string& Filename)
 
     bool bIsAbsolutePath = fs::path(Filename).is_absolute();
     std::string ObjPath = bIsAbsolutePath ? Filename : ObjFileDir + Filename + ObjFileExt;
-
+    std::string ObjName = fs::path(ObjPath).stem().string();
   
 
-    if (UResourceManager::Get().HasMeshData(Filename))
+    if (UResourceManager::Get().HasMeshData(ObjName))
     {
         return true; // 이미 파싱된 경우
     }
@@ -75,10 +75,10 @@ bool FObjManager::LoadFromFile(const std::string& Filename)
     TArray<FSubMeshData> SubMeshes;
 
     namespace fs = std::filesystem;
-    if (fs::exists(BinaryFileDir + Filename + BinaryFileExt))
+    if (fs::exists(BinaryFileDir + ObjName + BinaryFileExt))
     {
         TArray<std::string> MT;
-        LoadFromBinary(SubMeshes, MT, Filename);
+        LoadFromBinary(SubMeshes, MT, ObjName);
 
         for (auto& MaterialName : MT)
         {
@@ -231,8 +231,8 @@ bool FObjManager::LoadFromFile(const std::string& Filename)
         }
     }
     
-    SaveToBinary(SubMeshes, MaterialNames, Filename);
-    UResourceManager::Get().SetMeshData(Filename, SubMeshes);
+    SaveToBinary(SubMeshes, MaterialNames, ObjName);
+    UResourceManager::Get().SetMeshData(ObjName, SubMeshes);
     return true;
 }
 

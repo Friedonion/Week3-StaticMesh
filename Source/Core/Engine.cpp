@@ -344,7 +344,7 @@ void UEngine::InitWorld()
     
     World->SpawnActor<AAxis>();
     World->SpawnActor<APicker>();
-    World->SpawnActor<AArrow>();
+   // World->SpawnActor<AArrow>();
 	World->BeginPlay();
 }
 
