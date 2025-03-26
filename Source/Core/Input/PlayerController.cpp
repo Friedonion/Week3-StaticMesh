@@ -35,6 +35,25 @@ void APlayerController::HandleCameraMovement(float DeltaTime) {
         return;
     }
 
+    
+    /*
+    POINT pt;
+    GetCursorPos(&pt);
+    ScreenToClient(UEngine::Get().GetWindowHandle(), &pt);
+    
+    RECT rect;
+    int d = 10;
+    rect.left = pt.x - d;
+    rect.right = pt.x + d;
+    rect.bottom = pt.y + d;
+    rect.top = pt.y - d;
+    //GetClientRect(UEngine::Get().GetWindowHandle(), &rect);
+    ClientToScreen(UEngine::Get().GetWindowHandle(), (POINT*)&rect.left);
+    ClientToScreen(UEngine::Get().GetWindowHandle(), (POINT*)&rect.right);
+    ClipCursor(&rect);
+    */
+    
+
     FTransform CameraTransform = Camera->GetActorRelativeTransform();
 
     FVector TargetRotation = CameraTransform.GetRotation().GetEuler();
