@@ -24,6 +24,8 @@ bool MtlLoader::LoadMtlFile(const std::string& mtlPath) {
     FMaterialData currentMaterial;
     std::string line;
 
+    std::string fileName;
+    
     while (std::getline(file, line)) {
         std::istringstream iss(line);
         std::string token;
@@ -79,21 +81,31 @@ bool MtlLoader::LoadMtlFile(const std::string& mtlPath) {
             currentMaterial.IlluminationModel = r;
         }
         else if (HashToken == Hash("map_Ka")) {
-            iss >> currentMaterial.AmbientTexturePath;
+            iss >> fileName;
+            currentMaterial.AmbientTexturePath = TextureDir + fileName;
         }
         else if (HashToken == Hash("map_Kd")) {
-            iss >> currentMaterial.DiffuseTexturePath;
+            iss >> fileName;
+            currentMaterial.DiffuseTexturePath = TextureDir + fileName;
         }
         else if (HashToken == Hash("map_Ks")) {
-            iss >> currentMaterial.SpecularTexturePath;
+            iss >> fileName;
+            currentMaterial.SpecularTexturePath = TextureDir + fileName;
+        }
+        else if (HashToken == Hash("map_Ke"))
+        {
+            iss >> fileName;
+            currentMaterial.EmissiveTexturePath = TextureDir + fileName;
         }
         else if (HashToken == Hash("map_bump") || HashToken == Hash("bump"))
         {
-            iss >> currentMaterial.BumpMap;
+            iss >> fileName;
+            currentMaterial.BumpMap = TextureDir + fileName;
         }
         else if (HashToken == Hash("map_d"))
         {
-            iss >> currentMaterial.AlphaMap;
+            iss >> fileName;
+            currentMaterial.AlphaMap = TextureDir + fileName;
         }
     }
 

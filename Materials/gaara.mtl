@@ -1,0 +1,201 @@
+newmtl Custom_HairMat
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd gaara/Custom_HairMat_diffuse.png
+    map_Pm gaara/Custom_HairMat_metallic.png
+    map_Pr gaara/Custom_HairMat_roughness.png
+newmtl Std_Eyelash
+    Ns 20.000000
+    d 1.000000
+    Ka 0.196078 0.196078 0.196078
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.898039 0.898039 0.898039
+    map_Kd gaara/Std_Eyelash_diffuse.png
+    map_Pm gaara/Std_Eyelash_metallic.png
+    map_Pr gaara/Std_Eyelash_roughness.png
+newmtl Eye_R
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd gaara/Eye_R_diffuse.png
+    map_Pm gaara/Eye_R_metallic.png
+    map_Pr gaara/Eye_R_roughness.png
+newmtl Std_Skin_Body
+    Ns 20.000000
+    d 1.000000
+    Ka 0.196078 0.196078 0.196078
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.898039 0.898039 0.898039
+    map_Kd gaara/Std_Skin_Body_diffuse.png
+    map_Pm gaara/Std_Skin_Body_metallic.png
+    map_Pr gaara/Std_Skin_Body_roughness.png
+newmtl Irises
+    Ns 0.000000
+    d 1.000000
+    Ka 0.000000 0.000000 0.000000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd gaara/Irises_diffuse.png
+    map_Pm gaara/Irises_metallic.png
+    map_Pr gaara/Irises_roughness.png
+newmtl Mouth
+    Ns 70.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd gaara/Mouth_diffuse.png
+    map_Pm gaara/Mouth_metallic.png
+    map_Pr gaara/Mouth_roughness.png
+newmtl EyeMoisture
+    Ns 79.999992
+    d 0.100000
+    Ka 0.200000 0.200000 0.200000
+    Kd 0.000000 0.000000 0.000000
+    Ks 0.901961 0.901961 0.901961
+    map_Pm gaara/EyeMoisture_metallic.png
+    map_Pr gaara/EyeMoisture_roughness.png
+newmtl MI_CHR_Man_LeatherCoat_02
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd gaara/MI_CHR_Man_LeatherCoat_02_diffuse.png
+    map_Pm gaara/MI_CHR_Man_LeatherCoat_02_metallic.png
+    map_Pr gaara/MI_CHR_Man_LeatherCoat_02_roughness.png
+newmtl Pupils
+    Ns 0.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.745098 0.745098 0.745098
+    map_Kd gaara/Pupils_diffuse.png
+    map_Pm gaara/Pupils_metallic.png
+    map_Pr gaara/Pupils_roughness.png
+newmtl Teeth
+    Ns 50.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 1.000000 1.000000 1.000000
+    map_Kd gaara/Teeth_diffuse.png
+    map_Pm gaara/Teeth_metallic.png
+    map_Pr gaara/Teeth_roughness.png
+newmtl Std_Nails
+    Ns 20.000000
+    d 1.000000
+    Ka 0.196078 0.196078 0.196078
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.898039 0.898039 0.898039
+    map_Kd gaara/Std_Nails_diffuse.png
+    map_Pm gaara/Std_Nails_metallic.png
+    map_Pr gaara/Std_Nails_roughness.png
+newmtl Sclera
+    Ns 0.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 0.886275 0.752941
+    Ks 0.745098 0.745098 0.745098
+    map_Kd gaara/Sclera_diffuse.png
+    map_Pm gaara/Sclera_metallic.png
+    map_Pr gaara/Sclera_roughness.png
+newmtl MI_CHR_Man_LeatherCoat_02_00
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd gaara/MI_CHR_Man_LeatherCoat_02_00_diffuse.png
+    map_Pm gaara/MI_CHR_Man_LeatherCoat_02_00_metallic.png
+    map_Pr gaara/MI_CHR_Man_LeatherCoat_02_00_roughness.png
+newmtl Cornea
+    Ns 79.999992
+    d 0.440000
+    Ka 0.200000 0.200000 0.200000
+    Kd 0.000000 0.000000 0.000000
+    Ks 0.745098 0.745098 0.745098
+    map_Pm gaara/Cornea_metallic.png
+    map_Pr gaara/Cornea_roughness.png
+newmtl GaaraNinjaWar_GaaraNinjaWar
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd gaara/GaaraNinjaWar_GaaraNinjaWar_diffuse.png
+    map_Pm gaara/GaaraNinjaWar_GaaraNinjaWar_metallic.png
+    map_Pr gaara/GaaraNinjaWar_GaaraNinjaWar_roughness.png
+newmtl Std_Tongue
+    Ns 20.000000
+    d 1.000000
+    Ka 0.196078 0.196078 0.196078
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.898039 0.898039 0.898039
+    map_Kd gaara/Std_Tongue_diffuse.png
+    norm gaara/Std_Tongue_normal.png
+    map_Pm gaara/Std_Tongue_metallic.png
+    map_Pr gaara/Std_Tongue_roughness.png
+    ao gaara/Std_Tongue_ao.png
+    Shader__MicroNormal gaara/Std_Tongue_MicroNormal.png
+    Shader__GradientAO gaara/Std_Tongue_GradientAO.png
+newmtl Std_Skin_Head
+    Ns 20.000000
+    d 1.000000
+    Ka 0.196078 0.196078 0.196078
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.898039 0.898039 0.898039
+    map_Kd gaara/Std_Skin_Head_diffuse.png
+    map_Pm gaara/Std_Skin_Head_metallic.png
+    map_Pr gaara/Std_Skin_Head_roughness.png
+newmtl Std_Skin_Arm
+    Ns 20.000000
+    d 1.000000
+    Ka 0.196078 0.196078 0.196078
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.898039 0.898039 0.898039
+    map_Kd gaara/Std_Skin_Arm_diffuse.png
+    map_Pm gaara/Std_Skin_Arm_metallic.png
+    map_Pr gaara/Std_Skin_Arm_roughness.png
+newmtl Std_Skin_Leg
+    Ns 20.000000
+    d 1.000000
+    Ka 0.196078 0.196078 0.196078
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.898039 0.898039 0.898039
+    map_Kd gaara/Std_Skin_Leg_diffuse.png
+    map_Pm gaara/Std_Skin_Leg_metallic.png
+    map_Pr gaara/Std_Skin_Leg_roughness.png
+newmtl Eye_L
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd gaara/Eye_L_diffuse.png
+    map_Pm gaara/Eye_L_metallic.png
+    map_Pr gaara/Eye_L_roughness.png
+newmtl Eye_Shine
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd gaara/Eye_Shine_diffuse.png
+    map_D gaara/Eye_Shine_opacity.png
+    map_Pm gaara/Eye_Shine_metallic.png
+    map_Pr gaara/Eye_Shine_roughness.png
+newmtl MI_CHR_Man_LeatherCoat_02_01
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd gaara/MI_CHR_Man_LeatherCoat_02_01_diffuse.png
+    map_Pm gaara/MI_CHR_Man_LeatherCoat_02_01_metallic.png
+    map_Pr gaara/MI_CHR_Man_LeatherCoat_02_01_roughness.png

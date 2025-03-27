@@ -19,15 +19,16 @@ namespace ECameraViewMode
 {
     enum class Type : uint8
     {
-        Front,
-        Back,
-        Top,
-        Bottom,
-        Left,
-        Right,
-        Perspective,
-        None
+        Front = 0,
+        Back = 1,
+        Top = 2,
+        Bottom = 3,
+        Left = 4,
+        Right = 5,
+        Perspective = 6,
+        None = 7
     };
+
 }
 
 class ACamera : public AActor

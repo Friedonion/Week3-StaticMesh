@@ -105,9 +105,12 @@ void ACamera::SetCameraViewMode(ECameraViewMode::Type CameraViewMode)
     {
         FEditorManager::Get().AddOrthoCamera(CameraViewMode, this);
     }
-    
-    CameraTransform.SetRotation(Rotation);
-    SetActorRelativeTransform(CameraTransform);
+
+    if (CameraViewMode != ECameraViewMode::Type::Perspective)
+    {
+        CameraTransform.SetRotation(Rotation);
+        SetActorRelativeTransform(CameraTransform);
+    }
 }
 
 float ACamera::GetFieldOfView() const

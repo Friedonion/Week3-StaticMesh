@@ -132,7 +132,7 @@ void AGizmoHandle::Tick(float DeltaTime)
 		FTransform GizmoTransform = this->GetRootComponent()->GetRelativeTransform();
 		GizmoTransform.SetPosition(SelectedActorPosition);
 		
-			GizmoTransform.SetRotation(SelectedActor->GetRootComponent()->GetComponentTransform().GetRotation());
+		GizmoTransform.SetRotation(SelectedActor->GetRootComponent()->GetComponentTransform().GetRotation());
 		
 		/*else
 		{

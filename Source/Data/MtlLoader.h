@@ -13,4 +13,5 @@ public:
 
 private:
     std::string MtlDir = "Materials/";
+    std::string TextureDir = "Textures/";
 };

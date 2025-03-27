@@ -1,0 +1,314 @@
+newmtl T_CHR_Kakashi_BC_png
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/T_CHR_Kakashi_BC_png_diffuse.png
+    map_Pm Kakashi/T_CHR_Kakashi_BC_png_metallic.png
+    map_Pr Kakashi/T_CHR_Kakashi_BC_png_roughness.png
+newmtl Teeth
+    Ns 50.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 1.000000 1.000000 1.000000
+    map_Kd Kakashi/Teeth_diffuse.png
+    map_Pm Kakashi/Teeth_metallic.png
+    map_Pr Kakashi/Teeth_roughness.png
+newmtl Std_Tongue
+    Ns 2.000000
+    d 1.000000
+    Ka 0.490196 0.490196 0.490196
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.900000 0.900000 0.900000
+    map_Kd Kakashi/Std_Tongue_diffuse.png
+    norm Kakashi/Std_Tongue_normal.png
+    map_Pm Kakashi/Std_Tongue_metallic.png
+    map_Pr Kakashi/Std_Tongue_roughness.png
+    ao Kakashi/Std_Tongue_ao.png
+    Shader__MicroNormal Kakashi/Std_Tongue_MicroNormal.png
+    Shader__GradientAO Kakashi/Std_Tongue_GradientAO.png
+newmtl Metal
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/Metal_diffuse.png
+    map_Pm Kakashi/Metal_metallic.png
+    map_Pr Kakashi/Metal_roughness.png
+newmtl Scar
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/Scar_diffuse.png
+    map_D Kakashi/Scar_opacity.png
+    map_Pm Kakashi/Scar_metallic.png
+    map_Pr Kakashi/Scar_roughness.png
+newmtl T_CHR_Kakashi_BC_png_00
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/T_CHR_Kakashi_BC_png_00_diffuse.png
+    map_Pm Kakashi/T_CHR_Kakashi_BC_png_00_metallic.png
+    map_Pr Kakashi/T_CHR_Kakashi_BC_png_00_roughness.png
+newmtl T_CHR_KakashiEyeR_BC_png
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/T_CHR_KakashiEyeR_BC_png_diffuse.png
+    map_Pm Kakashi/T_CHR_KakashiEyeR_BC_png_metallic.png
+    map_Pr Kakashi/T_CHR_KakashiEyeR_BC_png_roughness.png
+newmtl Std_Skin_Body
+    Ns 20.000000
+    d 1.000000
+    Ka 0.490196 0.490196 0.490196
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.269400 0.269400 0.269400
+    map_Kd Kakashi/Std_Skin_Body_diffuse.png
+    map_Pm Kakashi/Std_Skin_Body_metallic.png
+    map_Pr Kakashi/Std_Skin_Body_roughness.png
+    Shader__TransmissionMap Kakashi/Std_Skin_Body_TransmissionMap.png
+    Shader__RGBAAreaMask Kakashi/Std_Skin_Body_RGBAAreaMask.tga
+    Shader__SSSMap Kakashi/Std_Skin_Body_SSSMap.png
+    Shader__MicroNormal Kakashi/Std_Tongue_MicroNormal.png
+    Shader__MicroNormalMask Kakashi/Std_Skin_Body_MicroNormalMask.png
+newmtl T_CHR_KakashiEyeL_BC_png
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/T_CHR_KakashiEyeL_BC_png_diffuse.png
+    map_Pm Kakashi/T_CHR_KakashiEyeL_BC_png_metallic.png
+    map_Pr Kakashi/T_CHR_KakashiEyeL_BC_png_roughness.png
+newmtl Std_Skin_Arm
+    Ns 20.000000
+    d 1.000000
+    Ka 0.490196 0.490196 0.490196
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.269400 0.269400 0.269400
+    map_Kd Kakashi/Std_Skin_Arm_diffuse.png
+    map_Pm Kakashi/Std_Skin_Arm_metallic.png
+    map_Pr Kakashi/Std_Skin_Arm_roughness.png
+    Shader__TransmissionMap Kakashi/Std_Skin_Arm_TransmissionMap.png
+    Shader__RGBAAreaMask Kakashi/Std_Skin_Arm_RGBAAreaMask.tga
+    Shader__SSSMap Kakashi/Std_Skin_Arm_SSSMap.png
+    Shader__MicroNormal Kakashi/Std_Tongue_MicroNormal.png
+    Shader__MicroNormalMask Kakashi/Std_Skin_Body_MicroNormalMask.png
+newmtl T_CHR_Kakashi_BC_png_01
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/T_CHR_Kakashi_BC_png_01_diffuse.png
+    map_Pm Kakashi/T_CHR_Kakashi_BC_png_01_metallic.png
+    map_Pr Kakashi/T_CHR_Kakashi_BC_png_01_roughness.png
+newmtl Std_Skin_Leg
+    Ns 20.000000
+    d 1.000000
+    Ka 0.490196 0.490196 0.490196
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.269400 0.269400 0.269400
+    map_Kd Kakashi/Std_Skin_Leg_diffuse.png
+    map_Pm Kakashi/Std_Skin_Leg_metallic.png
+    map_Pr Kakashi/Std_Skin_Leg_roughness.png
+    Shader__TransmissionMap Kakashi/Std_Skin_Leg_TransmissionMap.png
+    Shader__RGBAAreaMask Kakashi/Std_Skin_Leg_RGBAAreaMask.tga
+    Shader__SSSMap Kakashi/Std_Skin_Leg_SSSMap.png
+    Shader__MicroNormal Kakashi/Std_Tongue_MicroNormal.png
+    Shader__MicroNormalMask Kakashi/Std_Skin_Body_MicroNormalMask.png
+newmtl Std_Eyelash
+    Ns 2.000000
+    d 1.000000
+    Ka 0.490196 0.490196 0.490196
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.900000 0.900000 0.900000
+    map_Kd Kakashi/Std_Eyelash_diffuse.png
+    map_Pm Kakashi/Std_Eyelash_metallic.png
+    map_Pr Kakashi/Std_Eyelash_roughness.png
+newmtl T_CHR_Kakashi_BC_png_02
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/T_CHR_Kakashi_BC_png_02_diffuse.png
+    map_Pm Kakashi/T_CHR_Kakashi_BC_png_02_metallic.png
+    map_Pr Kakashi/T_CHR_Kakashi_BC_png_02_roughness.png
+newmtl T_CHR_Kakashi_BC_png_03
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/T_CHR_Kakashi_BC_png_03_diffuse.png
+    map_Pm Kakashi/T_CHR_Kakashi_BC_png_03_metallic.png
+    map_Pr Kakashi/T_CHR_Kakashi_BC_png_03_roughness.png
+newmtl Sclera
+    Ns 0.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 0.886275 0.752941
+    Ks 0.745098 0.745098 0.745098
+    map_Kd Kakashi/Sclera_diffuse.png
+    map_Pm Kakashi/Sclera_metallic.png
+    map_Pr Kakashi/Sclera_roughness.png
+newmtl T_CHR_Kakashi_BC_png_04
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/T_CHR_Kakashi_BC_png_04_diffuse.png
+    map_Pm Kakashi/T_CHR_Kakashi_BC_png_04_metallic.png
+    map_Pr Kakashi/T_CHR_Kakashi_BC_png_04_roughness.png
+newmtl EyeMoisture
+    Ns 79.999992
+    d 0.100000
+    Ka 0.200000 0.200000 0.200000
+    Kd 0.000000 0.000000 0.000000
+    Ks 0.901961 0.901961 0.901961
+    map_Pm Kakashi/EyeMoisture_metallic.png
+    map_Pr Kakashi/EyeMoisture_roughness.png
+newmtl Std_Nails
+    Ns 20.000000
+    d 1.000000
+    Ka 0.490196 0.490196 0.490196
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.269400 0.269400 0.269400
+    map_Kd Kakashi/Std_Nails_diffuse.png
+    map_Pm Kakashi/Std_Nails_metallic.png
+    map_Pr Kakashi/Std_Nails_roughness.png
+    Shader__TransmissionMap Kakashi/Std_Nails_TransmissionMap.png
+    Shader__RGBAAreaMask Kakashi/Std_Nails_RGBAAreaMask.tga
+    Shader__SSSMap Kakashi/Std_Skin_Body_MicroNormalMask.png
+    Shader__MicroNormal Kakashi/Std_Tongue_MicroNormal.png
+    Shader__MicroNormalMask Kakashi/Std_Skin_Body_MicroNormalMask.png
+newmtl Std_Skin_Head
+    Ns 20.000000
+    d 1.000000
+    Ka 0.490196 0.490196 0.490196
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.269400 0.269400 0.269400
+    map_Kd Kakashi/Std_Skin_Head_diffuse.png
+    map_Pm Kakashi/Std_Skin_Head_metallic.png
+    map_Pr Kakashi/Std_Skin_Head_roughness.png
+    Shader__SpecularMask Kakashi/Std_Skin_Head_SpecularMask.png
+    Shader__TransmissionMap Kakashi/Std_Skin_Head_TransmissionMap.png
+    Shader__MouthCavityMaskandAO Kakashi/Std_Skin_Head_MouthCavityMaskandAO.tga
+    Shader__SSSMap Kakashi/Std_Skin_Head_SSSMap.png
+    Shader__MicroNormal Kakashi/Std_Tongue_MicroNormal.png
+    Shader__CheekForeUpperLipChinMask Kakashi/Std_Skin_Head_CheekForeUpperLipChinMask.tga
+    Shader__EarNeckMask Kakashi/Std_Skin_Head_EarNeckMask.tga
+    Shader__NoseMouthUpperInnerLidMask Kakashi/Std_Skin_Head_NoseMouthUpperInnerLidMask.tga
+    Shader__BaseColorBlend2 Kakashi/Std_Skin_Head_BaseColorBlend2.png
+    Shader__NormalMapBlend Kakashi/Std_Skin_Head_NormalMapBlend.png
+    Shader__MicroNormalMask Kakashi/Std_Skin_Head_MicroNormalMask.png
+    Shader__BlendMask Kakashi/Std_Skin_Head_BlendMask.png
+newmtl Mouth
+    Ns 70.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/Mouth_diffuse.png
+    map_Pm Kakashi/Mouth_metallic.png
+    map_Pr Kakashi/Mouth_roughness.png
+newmtl Cornea
+    Ns 79.999992
+    d 0.440000
+    Ka 0.200000 0.200000 0.200000
+    Kd 0.000000 0.000000 0.000000
+    Ks 0.745098 0.745098 0.745098
+    map_Pm Kakashi/Cornea_metallic.png
+    map_Pr Kakashi/Cornea_roughness.png
+newmtl Irises
+    Ns 0.000000
+    d 1.000000
+    Ka 0.000000 0.000000 0.000000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/Irises_diffuse.png
+    map_Pm Kakashi/Irises_metallic.png
+    map_Pr Kakashi/Irises_roughness.png
+newmtl Pupils
+    Ns 0.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.745098 0.745098 0.745098
+    map_Kd Kakashi/Pupils_diffuse.png
+    map_Pm Kakashi/Pupils_metallic.png
+    map_Pr Kakashi/Pupils_roughness.png
+newmtl T_CHR_Kakashi_BC_png_05
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/T_CHR_Kakashi_BC_png_05_diffuse.png
+    map_Pm Kakashi/T_CHR_Kakashi_BC_png_05_metallic.png
+    map_Pr Kakashi/T_CHR_Kakashi_BC_png_05_roughness.png
+newmtl Glove_Metal
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/Glove_Metal_diffuse.png
+    map_Pm Kakashi/Glove_Metal_metallic.png
+    map_Pr Kakashi/Glove_Metal_roughness.png
+newmtl T_CHR_Kakashi_BC_png_06
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/T_CHR_Kakashi_BC_png_06_diffuse.png
+    map_Pm Kakashi/T_CHR_Kakashi_BC_png_06_metallic.png
+    map_Pr Kakashi/T_CHR_Kakashi_BC_png_06_roughness.png
+newmtl T_CHR_Kakashi_BC_png_07
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/T_CHR_Kakashi_BC_png_07_diffuse.png
+    map_Pm Kakashi/T_CHR_Kakashi_BC_png_07_metallic.png
+    map_Pr Kakashi/T_CHR_Kakashi_BC_png_07_roughness.png
+newmtl T_CHR_Kakashi_BC_png_08
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/T_CHR_Kakashi_BC_png_08_diffuse.png
+    map_Pm Kakashi/T_CHR_Kakashi_BC_png_08_metallic.png
+    map_Pr Kakashi/T_CHR_Kakashi_BC_png_08_roughness.png
+newmtl T_CHR_Kakashi_BC_png_09
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/T_CHR_Kakashi_BC_png_09_diffuse.png
+    map_Pm Kakashi/T_CHR_Kakashi_BC_png_09_metallic.png
+    map_Pr Kakashi/T_CHR_Kakashi_BC_png_09_roughness.png
+newmtl T_CHR_Kakashi_BC_png_10
+    Ns 20.000000
+    d 1.000000
+    Ka 0.200000 0.200000 0.200000
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.200000 0.200000 0.200000
+    map_Kd Kakashi/T_CHR_Kakashi_BC_png_10_diffuse.png
+    map_Pm Kakashi/T_CHR_Kakashi_BC_png_10_metallic.png
+    map_Pr Kakashi/T_CHR_Kakashi_BC_png_10_roughness.png

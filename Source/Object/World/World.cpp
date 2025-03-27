@@ -325,12 +325,12 @@ void UWorld::LoadWorld(const char* SceneName)
 			FEditorManager::Get().SetCamera(Camera);
 		}
 
-		Camera->SetActorRelativeTransform(Transform);
 		Camera->SetFieldOfView(CameraFOV);
 		Camera->SetNear(CameraNearClip);
 		Camera->SetFar(CameraFarClip);
 		Camera->SetUUID(CameraInfo->UUID);
 		Camera->SetCameraViewMode(CameraInfo->ViewMode);
+		Camera->SetActorRelativeTransform(Transform);
 		FEditorManager::Get().SetViewCamera(CameraInfo->ViewMode, Camera);
 	}
 	

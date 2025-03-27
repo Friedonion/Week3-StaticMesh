@@ -39,7 +39,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd Textures/_Madara_texture_main_mAIN.png
+map_Kd _Madara_texture_main_mAIN.png
 
 newmtl Blender_Render_Madara_Material_NONE
 Ns 96.078453
@@ -49,7 +49,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd Textures/_Madara_texture_main_mAIN.png
+map_Kd _Madara_texture_main_mAIN.png
 
 newmtl None
 Ns 0.000000

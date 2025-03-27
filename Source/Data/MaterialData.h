@@ -26,7 +26,8 @@ struct FMaterialData {
     std::string AmbientTexturePath = "";
     std::string DiffuseTexturePath = "";
     std::string SpecularTexturePath = "";
-
+    std::string EmissiveTexturePath="";
+    
     std::string BumpMap = "";
     std::string AlphaMap = "";
 };

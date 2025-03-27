@@ -748,7 +748,7 @@ void UI::SetViewOption(const char* name, int& current_item, EViewport::Position 
     ImGui::Begin(name, nullptr, flags);
     
     const char* items[] = { "Front", "Back", "Top", "Bottom", "Left", "Right", "Perspective" };
-
+    
     if (ImGui::Combo(name, &current_item, items, IM_ARRAYSIZE(items))) {
         ECameraViewMode::Type newViewMode = static_cast<ECameraViewMode::Type>(current_item);
         UEngine::Get().GetRenderer()->ChangeViewportCameraType(viewportPos, newViewMode);
